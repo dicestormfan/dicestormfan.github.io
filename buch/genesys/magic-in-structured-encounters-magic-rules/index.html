@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Magic in Structured Encounters (Magic Rules)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 214&gt;</p>
+<h1 id="magic-in-structured-encounters" tabindex="-1">Magic in Structured Encounters</h1>
+<p>Magic can be used to attack opponents, protect allies, summon items or weapons, and do other impressive and amazing things. The core of these actions follows the same skill check system that forms the core of <strong>Genesys</strong>.</p>
+<p>The difference is that magic is much more customizable. You can do quite a bit with magic, but the more you want to do, the more difficult the check becomes.</p>
+<h3 id="magic-actions-and-maneuvers" tabindex="-1">Magic Actions and Maneuvers</h3>
+<p>As with anything else characters might attempt in structured encounters, spells are categorized as either actions or maneuvers. This section presents example magic actions that cover some of the most common things characters might attempt. We try to leave the narrative descriptions up to you and your players; it's fun to describe the appearance of spells in ways unique to your characters. These actions are presented in the same format as those in <strong>Part I–Chapter 6: Combat Encounters,</strong> and they can be used alongside other combat actions. Like standard actions and maneuvers, many of these can also be used outside of combat.</p>
+<p>Again, these are only examples of what characters might do with magic—common uses that we thought could use some detail and guidance. As you've doubtless already guessed, adjudicating activities other than those described here is up to you and your players.</p>
+<h3 id="actions" tabindex="-1">Actions</h3>
+<p>Here are a few of the most likely actions characters might attempt using magic. Of course, these are just some of the possibilities, and GMs, you can use these as guidelines for creating your own magic actions if you like.</p>
+<p>Each entry specifies whether the spell can be sustained using the Concentration maneuver and what skills can be used to perform the action. Not all skills can be used to perform each action; some magic skills are better at performing certain kinds of magic than others. <strong>A character must have at least one rank in the skill required by the magic action to perform that magic action.</strong></p>
+<p>&lt;Page 215&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–5: MAGIC ATTACK ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Blast:</strong> The attack gains the Blast quality with a rating equal to your character's ranks in Knowledge.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Close Combat:</strong> May select a target engaged with your character.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Deadly:</strong> The attack gains a Critical rating of 2. The attack also gains the Vicious quality with a rating equal to the character's ranks in Knowledge.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Fire:</strong> The attack gains the Burn quality with a rating equal to your character's ranks in Knowledge.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Holy/Unholy (Divine Only):</strong> When dealing damage to a target that the GM determines is the antithesis of the character's faith or deity (such as a priest of a god of life attacking an undead zombie), each {S} deals +2 damage, instead of +1.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Ice:</strong> The attack gains the Ensnare quality with a rating equal to the character's ranks in Knowledge.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Impact:</strong> The attack gains the Knockdown quality. The attack also gains the Disorient quality with a rating equal to the character's ranks in Knowledge.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Lightning:</strong> The attack gains the Stun quality with a rating equal to the character's ranks in Knowledge. The attack also gains the Auto-fire quality. (You must increase the difficulty by one to use the Auto-fire quality as normal.)</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Manipulative (Arcana Only):</strong> If the attack hits, you may spend {A} to move the target up to one range band in any direction.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Non-Lethal (Primal Only):</strong> The attack gains the Stun Damage quality.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Destructive:</strong> The attack gains the Sunder quality. The attack also gains the Pierce quality with a rating equal to the character's ranks in Knowledge.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Empowered:</strong> The attack deals damage equal to twice the characteristic linked to the skill (instead of dealing damage equal to the characteristic). If the attack has the Blast quality, it affects all characters within short range, instead of engaged.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Poisonous:</strong> If the attack deals damage, the target must immediately make a <strong>Hard ([D][D][D]) Resilience check</strong> or suffer wounds equal to the character's ranks in Knowledge, and strain equal to the character's ranks in Knowledge. This counts as a poison.</td>
+<td>+ [D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Where magic gets interesting is in the options a character has for customizing their spell. Before making a magic action, the character may choose any number of additional effects to add to that action (these effects are listed on an associated table). However, each effect has a difficulty increase associated with it. You add each difficulty increase to the overall difficulty of the check. You may not add an effect if it would increase the difficulty beyond <strong>Formidable ([D][D][D][D][D])</strong> (after any reductions, such as from magic implements, are applied; see page 218). Each effect can be added once, unless the effect specifies otherwise.</p>
+<p>Since all magic actions require a check (and are thus spells that require a check), whenever a character performs a magic action, they suffer 2 strain.</p>
+<h4 id="attack" tabindex="-1">Attack</h4>
+<p><strong>Concentration:</strong> No</p>
+<p><strong>Skills:</strong> Arcana, Divine, Primal</p>
+<p>Magic attacks are combat checks, and they follow the normal rules for performing a combat check, on page 101, using the character's magic skill instead of a combat skill. There are some exceptions, however, which we detail here.</p>
+<p>When making a magic attack, the character must select one target at short range (but not engaged). The default difficulty of the check is <strong>Easy ([D])</strong>. The attack deals damage equal to the characteristic linked to the skill used to make the attack (so if the character uses Arcana, they would deal damage equal to their Intellect), plus 1 damage per uncanceled {S}. The attack has no set Critical rating, so you may only inflict a Critical Injury with a {Tr}.</p>
+<p>Before making a magic attack check, choose any number of additional effects listed on <strong>Table III.2–5: Magic Attack Additional Effects.</strong> These effects are added to the attack.</p>
+<h4 id="augment" tabindex="-1">Augment</h4>
+<p><strong>Concentration:</strong> Yes</p>
+<p><strong>Skills:</strong> Divine, Primal</p>
+<p>This is using magic to enhance people. A character selects one target they are engaged with (which can be themself), then makes a Primal or Divine skill check. The default difficulty of the check is <strong>Average ([D][D])</strong>. If the check is successful, until the end of your character's next turn, the target increases the ability of any skill checks they make by one (in effect, this means they add [A] to their checks).</p>
+<p>&lt;Page 216&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–6: AUGMENT ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Divine Health (Divine Only):</strong> The target increases their wound threshold by a value equal to the character's ranks in Knowledge for the duration of the spell.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Haste:</strong> Targets affected by the spell can always perform a second maneuver during their turn without spending strain (they may still only perform two maneuvers a turn).</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Primal Fury (Primal Only):</strong> The target adds damage equal to the character's ranks in Knowledge to unarmed combat checks, and their Critical rating for unarmed combat checks becomes 3.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Swift:</strong> Targets affected by the spell ignore the effects of difficult terrain and cannot be immobilized.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Additional Target:</strong> The spell affects one additional target within range of the spell. In addition, after casting the spell, you may spend {A} to affect one additional target within range of the spell (and may trigger this multiple times, spending {A} each time).</td>
+<td>+ [D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–7: BARRIER ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Additional Target:</strong> The spell affects one additional target within range of the spell. In addition, after casting the spell, you may spend {A} to affect one additional target within range of the spell (and may trigger this multiple times, spending {A} each time).</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Add Defense:</strong> Each affected target gains ranged and melee defense equal to your ranks in Knowledge.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Empowered:</strong> The barrier reduces damage equal to the number of uncanceled {S} instead of the normal effect.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Reflection (Arcana Only):</strong> If an opponent makes a magic attack against an affected target and generates {Th}{Th}{Th} or {D} on the check, after the check is resolved, they suffer a hit dealing damage equal to the total damage of the attack.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Sanctuary (Divine Only):</strong> Opponents the GM determines are the antithesis of the character's faith or deity automatically disengage from affected targets, and may not engage them for the duration of the spell.</td>
+<td>+ [D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>A character may not be affected by more than one Augment spell at the same time (so no stacking effects).</p>
+<p>Before making an augment check, choose any number of additional effects listed on <strong>Table III.2–6: Augment Additional Effects.</strong> These effects are added to the check.</p>
+<h4 id="barrier" tabindex="-1">Barrier</h4>
+<p><strong>Concentration:</strong> Yes</p>
+<p><strong>Skills:</strong> Arcana, Divine</p>
+<p>Both arcane and divine spellcasters have the power to create barriers of magical energy to protect themselves and their allies. The character selects one target they are engaged with (which can be themself), then makes an Arcana or Divine skill check. The default difficulty of the check is <strong>Easy ([D])</strong>. If the check is successful, until the end of the character's next turn, reduce the damage of all hits the target suffers by one, and further reduce it by one for every uncanceled {S}{S} beyond the first.</p>
+<p>Before making a Barrier check, choose any number of additional effects listed on <strong>Table III.2–7: Barrier Additional Effects.</strong> These effects are added to the check.</p>
+<h4 id="conjure" tabindex="-1">Conjure</h4>
+<p><strong>Concentration:</strong> Yes</p>
+<p><strong>Skills:</strong> Arcana, Primal</p>
+<p>This action represents the ability of a spellcaster to animate objects or create items (or even allies) out of thin air and the aether. The character makes an Arcana or Primal skill check. The default difficulty for the check is <strong>Easy ([D])</strong>. If the check is successful, the character summons a simple tool with no moving parts (such as a shovel or pickax), a one-handed melee weapon with no moving parts (such as a sword or knife), or a minion no bigger than silhouette 1 (such as an animal, magical creature, elemental spirit, or even undead monstrosity). These appear engaged with the character. The summoned minion or item remains present until the end of the character's next turn.</p>
+<p>If the character summons a creature, the creature behaves in the best approximation of its natural instincts (as determined by the GM). It is not controlled by the character, and may even be hostile to them. In a structured encounter, it takes its turn immediately after the character.</p>
+<p>&lt;Page 217&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–8: CONJURE ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Additional Summon:</strong> The spell summons one additional item, weapon, or creature. In addition, after casting the spell, you may spend {A}{A} to summon one additional item, weapon, or creature (and may trigger this multiple times, spending {A}{A} each time).</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Medium Summon:</strong> The character may summon a more complicated tool with moving parts, a rival no larger than silhouette 1, or a two-handed melee weapon.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell (the distance from the character that the summoned item or creature appears) by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Summon Ally:</strong> The creature the character summons is friendly to them and obeys their commands. The character may spend a maneuver to direct the creature, allowing them to determine its action and maneuver. (If the character summons multiple creatures, the character may spend one maneuver on their turn to direct the turns of all summoned creatures.)</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Grand Summon:</strong> The character may summon a rival of up to silhouette 3.</td>
+<td>+ [D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–9: CURSE ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Enervate:</strong> If a target suffers strain for any reason, they suffer 1 additional strain.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Misfortune:</strong> After the target makes a check, you may change one [S] to a face displaying a {F}.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Additional Target:</strong> The spell affects one additional target within range of the spell. In addition, after casting the spell, you may spend {A} to affect one additional target within range of the spell (and may trigger this multiple times, spending {A} each time).</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Despair (Divine Only):</strong> The target's strain and wound thresholds are reduced by an amount equal to the character's ranks in Knowledge. This effect may not be combined with the additional target effect.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Doom (Arcana Only):</strong> After a target makes a check, you may change any one die in the pool not displaying a {Tr} or {D} to a different face.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Paralyzed:</strong> The target is staggered for the duration of the spell. This affect may not be combined with the additional target effect.</td>
+<td>+ [D][D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Before making a conjure check, choose any number of additional effects listed on <strong>Table III.2–8: Conjure Additional Effects.</strong> These effects are added to the check.</p>
+<h4 id="curse" tabindex="-1">Curse</h4>
+<p><strong>Concentration:</strong> Yes</p>
+<p><strong>Skills:</strong> Arcana, Divine</p>
+<p>This action represents the combat use of curse magic. Your character selects one target within short range, then makes an Arcana or Divine skill check. The default difficulty of the check is <strong>Average ([D][D])</strong>. If it is successful, until the end of the character's next turn, the target decreases the ability of any skill checks they make by one (in effect, this means they remove one [A] from their checks).</p>
+<p>Before making the curse check, choose any number of additional effects listed on <strong>Table III.2–9: Curse Additional Effects.</strong> These effects are added to the check.</p>
+<h4 id="dispel" tabindex="-1">Dispel</h4>
+<p><strong>Concentration:</strong> No</p>
+<p><strong>Skills:</strong> Arcana</p>
+<p>The ability to nullify magic is a strange and wondrous art that only certain arcane spellcasters possess. The character selects one target within short range that is under the effects of a spell, then makes an Arcana skill check. The default difficulty for the check is <strong>Hard ([D][D][D])</strong>. If the check is successful, the effects the target is under immediately end (if the spell affected multiple targets, the other targets remain affected).</p>
+<p>Before making a dispel check, choose any number of additional effects listed on <strong>Table III.2–10: Dispel Additional Effects.</strong> These effects are added to the check.</p>
+<h4 id="heal" tabindex="-1">Heal</h4>
+<p><strong>Concentration:</strong> No</p>
+<p><strong>Skills:</strong> Divine, Primal</p>
+<p>Priests and other practitioners of divine magic are often known for their healing abilities. Often, those in touch with nature also possess the capacity to heal wounds and illness. The character can use the Divine or Primal magic skill in place of a Medicine check in order to remove damage or heal Critical Injuries. When making the check, the character selects one target they are engaged with who is not incapacitated. The default difficulty of the check is <strong>Easy ([D])</strong>. Upon success, the character heals 1 wound per uncanceled {S}, and 1 strain per uncanceled {A}.</p>
+<p>&lt;Page 218&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–10: DISPEL ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Additional Target:</strong> The spell affects one additional target within range of the spell. In addition, after casting the spell, you may spend {A} to affect one additional target within range of the spell (and may trigger this multiple times, spending {A} each time).</td>
+<td>+ [D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–11: HEAL ADDITIONAL EFFECTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>EFFECTS</strong></th>
+<th><strong>DIFFICULTY MOD</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Additional Target:</strong> The spell affects one additional target within range of the spell. In addition, after casting the spell, you may spend {A} to affect one additional target within range of the spell (and may trigger this multiple times, spending {A} each time).</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Range:</strong> Increase the range of the spell by one range band. This may be added multiple times, increasing the range by one range band each time.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Restoration:</strong> Select one ongoing status effect the target is suffering. This status effect immediately ends.</td>
+<td>+ [D]</td>
+</tr>
+<tr>
+<td><strong>Heal Critical:</strong> Select one Critical Injury the target is suffering. If the spell is successful, the Critical Injury is also healed.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Revive Incapacitated:</strong> The character may select targets who are incapacitated.</td>
+<td>+ [D][D]</td>
+</tr>
+<tr>
+<td><strong>Resurrection:</strong> The character may select a target who has died during this encounter. If the check is successful, the target is restored to life, suffering wounds equal to their wound threshold. If the check fails, no characters may attempt to resurrect the target again.</td>
+<td>+ [D][D][D][D]</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Before making a heal check, choose any number of additional effects listed on <strong>Table III.2–11: Heal Additional Effects.</strong> These effects are added to the check.</p>
+<h3 id="maneuvers" tabindex="-1">Maneuvers</h3>
+<p>These maneuvers are specific to characters who use magic skills. Like most maneuvers, these don't actually require checks, but affect the character's skill checks.</p>
+<p>Of course, you and your players might also describe common maneuvers in terms of magic when it seems appropriate. For instance, a player might describe guarded stance (page 99) as their character focusing their attention on erecting a minor magical barrier, or they might narrate assist (page 98) as a subtle push of magical energy to guide an ally's sword strike.</p>
+<h4 id="counterspell" tabindex="-1">Counterspell</h4>
+<p>Most skilled mages or spellcasters can attempt to counter an opponent's spells as they are being cast. If the character performs the counterspell maneuver, all opponents within medium range upgrade the difficulty of checks to cast spells once, until the end of the character's next turn.</p>
+<h4 id="concentrate" tabindex="-1">Concentrate</h4>
+<p>Some magical effects might require concentration to sustain. If a magical action (or spell) can benefit from concentration, the action description notes this.</p>
+<p>Spells that can be sustained through concentration last until the end of the character's next turn (as noted in their description). However, if the character performs the concentrate maneuver during that next turn, the spell's effects last until the end of the character's following turn, instead. This can be sustained indefinitely by performing the concentrate maneuver each turn.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 214-218</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

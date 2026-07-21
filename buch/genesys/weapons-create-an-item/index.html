@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Weapons (Create an Item)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 199&gt;</p>
+<h1 id="weapons" tabindex="-1">Weapons</h1>
+<p>Weapons are the most complicated items to design, since they have the most attributes.</p>
+<p>First, decide whether your weapon is going to be a melee weapon (such as a knife or club), or a ranged weapon (such as a bow or gun). Your choice is going to determine some of those characteristics.</p>
+<h3 id="general-attributes" tabindex="-1">General Attributes</h3>
+<p>Unsurprisingly, ranged and melee weapons share a lot of the same attributes. So first, we'll discuss the attributes that both weapons share. Then, we'll discuss those that are specific to melee weapons, and then ranged weapons.</p>
+<h4 id="critical-rating" tabindex="-1">Critical Rating</h4>
+<p>When choosing a Crit rating for your weapon, consider how lethal you want the weapon to be. Crit ratings range from 1 to 6. Values of 1 or 6 are very rare, since checks generate {A} really often and almost never generate {A}{A}{A}{A}{A}{A}. The &quot;average&quot; Crit rating is 3. This should probably be the default for your weapon, as it makes Critical Injuries rare enough to be an event, but still common enough to happen a couple of times per encounter. A Crit rating of 2 should be applied to a more deadly weapon. Likewise, a Crit rating of 4 is a weapon that is going to inflict lasting or immediately lethal injuries less often. A Crit rating of 5 or higher means the weapon is almost never going to inflict a Critical Injury without spending {Tr}.</p>
+<h4 id="encumbrance" tabindex="-1">Encumbrance</h4>
+<p>When setting the encumbrance value of a weapon, consider the skill being used to wield it. Brawl weapons should have an encumbrance of 1. Melee (Light) weapons and Ranged (Light) weapons should have an encumbrance of 1, maybe 2. Melee (Heavy) and Ranged (Heavy) weapons should have an encumbrance of 3 or 4. Gunnery weapons can have a lot of encumbrance, as much as 8 or 9. This may be too much for one person to wield, but then again, most people can't carry a heavy machine gun around the battlefield in real life, either! Most of these weapons need bipods or slings to help offset their heavy weight and bulkiness, and the optional attachment rules cover this (see page 206).</p>
+<h4 id="cost-and-rarity" tabindex="-1">Cost and Rarity</h4>
+<p>As with armor, <strong>Table III.1–2: Weapon Cost Calculations</strong> does not give you a perfect means of calculating cost. All we intend for it to do is give you a starting point from which you can modify as needed. Costs should start at 0. Rarity, of course, is entirely up to you.</p>
+<h4 id="special-rules-and-item-qualities" tabindex="-1">Special Rules and Item Qualities</h4>
+<p>Most of the item qualities listed on page 86 work with weapons, so you have quite a few qualities to choose from! When choosing qualities for your weapon, think through the interactions of the various qualities. For example, don't give a weapon Pierce and Breach, since they both do the same thing.</p>
+<p>&lt;Page 200&gt;</p>
+<p>Overall, you probably want to limit the number of item qualities you give a weapon to three or four at maximum, and don't be afraid to only give it one (or even none). Qualities are meant to add extra interest or utility to a weapon, and sometimes to represent certain unique aspects of its use (for example, a net gun would need to have the Ensnare quality). However, give a weapon too many qualities, and it becomes hard to interpret exactly what that weapon does when you're playing.</p>
+<p>Most qualities have a rating associated with them. This rating is a numeric value, and it defines some aspect of the item quality. Deciding what number to give a quality can be tricky, so we have some suggestions.</p>
+<p><strong>Burn, Concussive, Disorient, and Ensnare:</strong> These qualities all have ratings that affect the duration of their effect. The higher the rating, the more rounds the effect lasts. Disorient is fairly mild, so you can give it higher ratings of 4 or even 5. You don't want to give it a rating of 1, because that's no different than spending {A}{A} to add [S] to your target's next check. Burn and Ensnare are more potent. Generally, these should have ratings of 1 to 3, with 4 only very rarely. Concussive is extremely potent and should only be given a rating of 1 or possibly 2.</p>
+<p><strong>Cumbersome and Unwieldy:</strong> Since these qualities require your character to have certain characteristics or suffer penalties, you should use them to balance out powerful weapons by adding drawbacks. If you use these qualities, just make sure you don't give them a rating of 1. Since the rating is the minimum Brawn or Agility the wielder needs to have, and all species or archetypes start with a minimum of 1 in every characteristic, a rating of 1 does nothing.</p>
+<p><strong>Accurate, Inaccurate, Defensive, and Deflection:</strong> Since these are qualities that add dice to checks, keep the ratings at 1 or 2, to avoid excessive bloat in your dice pools. Also, remember Inaccurate is a penalty, and should be added to balance weapons that are otherwise cheap or powerful.</p>
+<p><strong>Pierce and Breach:</strong> Although Pierce and Breach both let you ignore soak, Breach is ten times as effective. Really, Breach is intended to mostly be used with the optional vehicle rules (page 220), so unless you're making a weapon that ignores soak, don't bother with this quality.</p>
+<p>With Pierce, just keep in mind that until you get to ratings of 5 or higher, you can think of your Pierce rating as the equivalent of adding damage to checks. Pierce has diminishing returns after the value exceeds average soak values, so price weapons accordingly.</p>
+<p><strong>Prepare and Slow-Firing:</strong> Both of these qualities represent the extra time it takes to use a weapon, so they should have low ratings of 1 or 2. Waiting three rounds before using something (or having to spend more than a turn's worth of maneuvers preparing to use something) makes it nearly worthless in most players' eyes.</p>
+<p><strong>Blast:</strong> When selecting a Blast rating, use the same guidelines you use to determine the base damage for weapons. Blast can have a slightly lower damage than the weapon's base damage, though.</p>
+<p><strong>Guided:</strong> Guided allows projectiles to &quot;track&quot; and make follow-up attacks if they miss the target. We recommend a rating of 2 to 4 for Guided. A rating of 1 means the projectile will almost never hit, while a rating of 5 is probably better than the initial attack!</p>
+<p><strong>Limited Ammo:</strong> If you're dealing with a thrown weapon such as a grenade or throwing knife, it should have a Limited Ammo rating of 1 (representing that you can only use it once). Otherwise, you can go with whatever rating makes sense for the weapon.</p>
+<p>However, remember that combat encounters generally only last four or five rounds, so if your Limited Ammo rating is higher than that, running out of ammo won't come into play. So, unless each shot costs money, don't give weapons high Limited Ammo ratings.</p>
+<p><strong>Linked:</strong> Since we used Linked to represent weapons that fire multiple barrels at once, choose a value that best represents the number of shots this weapon can make in a round (counting the number of barrels if you need to). Just remember, the Linked rating determines <em>additional</em> hits. If you have a weapon with four barrels, you would give it Linked 3. The weapon can score one initial hit, and three additional hits, for a total of four.</p>
+<p><strong>Stun:</strong> Keep this quality's rating at 1 to 4. Any more, and you could potentially incapacitate your target in one hit, which we want to avoid.</p>
+<p><strong>Vicious:</strong> Vicious amplifies the effect of Critical Injuries. Since Critical Injuries are the only way characters can be killed, Vicious makes weapons especially deadly. Any rating of Vicious is powerful (so don't apply this to too many weapons), but don't give a weapon a Vicious rating of 6 or higher. Adding +60 to a Critical Injury result means that the right roll can permanently kill a completely uninjured character, which breaks the spirit of the game.</p>
+<h3 id="melee-and-brawl-weapons" tabindex="-1">Melee (and Brawl) Weapons</h3>
+<p>A melee weapon is anything your character uses to attack someone right in front of them. Examples include swords, clubs, brass knuckles, tasers, and laser blades. This section discusses the attributes unique to these weapons.</p>
+<h4 id="skill" tabindex="-1">Skill</h4>
+<p>The skill listed for the weapon is the skill your character uses when fighting with it. Here's a list of the applicable skills for close combat weapons.</p>
+<p>&lt;Page 201&gt;</p>
+<ul>
+<li>
+<p><strong>Brawl:</strong> Although Brawl generally covers unarmed fighting, there are some weapons that use the Brawl skill. These include brass knuckles, <em>cestuses, tekkös,</em> and anything else designed to make you hit harder or do something unpleasant when you punch someone.</p>
+</li>
+<li>
+<p><strong>Melee (Light):</strong> Melee (Light) is a variant of the Melee skill that covers using one-handed close combat weapons, including swords, knives, clubs, katanas, light spears, shock prods, and even shields.</p>
+</li>
+<li>
+<p><strong>Melee (Heavy):</strong> Melee (Heavy) is the other variant of the Melee skill. This covers large, two-handed close combat weapons including greatswords, laser spears, mauls, pikes, halberds, and greataxes.</p>
+</li>
+</ul>
+<p>When deciding what skill to use with the weapon, just pick the description that best fits, keeping in mind which skills exist in your setting.</p>
+<h4 id="damage" tabindex="-1">Damage</h4>
+<p>The guidelines for damage for ranged weapons apply for close combat weapons, with one important exception. Most close combat weapons have a &quot;+&quot; in front of their damage rating, which means characters add their Brawn to the damage rating to determine the weapon's base damage. When you're determining damage rating, mentally add three to the value you're considering to determine actual damage (most melee-focused characters have a Brawn of at least 3).</p>
+<p>One-handed close combat weapons (Brawl or Melee [Light]) have a damage rating of +1 to +3, while two-handed close combat weapons (Melee [Heavy]) have a damage rating of +3 to +5. Close combat weapons tend to have slightly lower damage ratings than ranged weapons. Players can improve the damage simply by increasing their characters' Brawn, so with less control over the total damage rating, it's better to err on the side of caution.</p>
+<h4 id="range" tabindex="-1">Range</h4>
+<p>Close combat weapons almost universally have a range of engaged, for obvious reasons.</p>
+<h3 id="ranged-weapons" tabindex="-1">Ranged Weapons</h3>
+<p>Ranged weapons are anything your character can use to attack someone at a distance. Examples include bows, slings, pistols, rifles, and futuristic lasers and railguns.</p>
+<h4 id="skill-1" tabindex="-1">Skill</h4>
+<p>The skill listed on the weapon is the skill your character uses when fighting with it. There are quite a few combat skills (most of them specific to certain settings):</p>
+<ul>
+<li>
+<p><strong>Ranged (Light):</strong> Ranged (Light) is a variant of the Ranged skill that covers any one-handed ranged weapons. Generally these are pistols, but Ranged (Light) could also encompass grenades, throwing knives, <em>shuriken,</em> and darts.</p>
+</li>
+<li>
+<p><strong>Ranged (Heavy):</strong> Ranged (Heavy) is a variant of the Ranged skill that covers any two-handed ranged weapons. Generally these are rifles, but Ranged (Heavy) could also encompass bows, crossbows, shotguns, and automatic weapons.</p>
+</li>
+<li>
+<p><strong>Gunnery:</strong> Gunnery is a skill that specifically covers the heaviest ranged weaponry, often weapons that are mounted on vehicles. It can also include large &quot;handheld&quot; weapons such as rocket launchers, catapults, machine guns, swivel guns, laser cannons, and so forth. Basically, if the weapon belongs on a vehicle, is used to destroy vehicles, or needs a tripod or bipod to shoot, it's probably a Gunnery weapon.</p>
+</li>
+</ul>
+<p>When deciding what skill to use with the weapon, just pick the description that best fits.</p>
+<h4 id="damage-1" tabindex="-1">Damage</h4>
+<p>When you set damage for your weapon, it looks like you have a wide range of options to choose from. However, weapon damage should fall into the specific range of 4 to 15, with 4 being damage for the weakest weapons, and 15 being for the heaviest weapons that a person can carry into battle. That range is set to interact with the character's soak value, which should usually be between 2 and 6, with 4 being the most common.</p>
+<p>Finally, we recommend limiting weapons that use a particular combat skill to certain amounts of damage. Basically, Ranged (Light) weapons do less damage than Ranged (Heavy) weapons, and Gunnery weapons do the most damage. These distinctions help separate different types and classes of weapons.</p>
+<p>Generally, Ranged (Light) weapons deal 4 to 7 damage, Ranged (Heavy) weapons deal 8 to 12 damage, and Gunnery weapons deal 13+ damage. Feel free to adjust these values, especially when dealing with weapons that don't quite fit the mold, such as grenades.</p>
+<h4 id="range-1" tabindex="-1">Range</h4>
+<p>Ranged weapons should all have a maximum range of short range or higher. Generally, most Ranged (Light) weapons should be short or medium range (and any thrown weapons such as knives or grenades should be short range). Ranged (Heavy) weapons are more likely to be medium or long range, although a sniper rifle or its equivalent might be able to attack at extreme range. Gunnery weapons should almost always be medium, long, or extreme ranged weapons (a grenade launcher or ballista might be medium range, while a guided missile or trebuchet might be long range).</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 199-201</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Modifying a Dice Pool (Building a Basic Dice Pool)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 20&gt;</p>
+<h1 id="modifying-a-dice-pool" tabindex="-1">Modifying a Dice Pool</h1>
+<p>It's entirely possible that if nothing else could affect the outcome of the check, the dice pool contains just the Ability dice and Proficiency dice from your character's skill and characteristic, matched against the Difficulty dice determined by your GM. However, any number of other factors can influence your check. Maybe your character is trying to track a foe through a howling sandstorm, or maybe bright lights in a room silhouette the villain, giving your character a clear shot. If an action is important enough to assemble and roll a dice pool, there's a good chance other factors are involved.</p>
+<p>These other factors can affect or modify the dice pool in a number of ways. The most common ways are by adding dice, upgrading/downgrading dice, and removing dice. These modifications may be triggered by you or your GM, or they may simply make sense given the environment and situation. Here are a few examples of these factors: obstructing terrain, poor lighting, tactical advantages, time constraints, superior equipment, special talents, unlocked career abilities, investment of Story Points, and Critical Injuries. The following sections describe these modifications in more detail.</p>
+<p>It's also important to note that when modifying a dice pool, players perform the modifications in a specific order. First, players assemble the basic pool, and then they add additional dice. Next, they upgrade dice. Then they downgrade dice. Finally, they remove dice.</p>
+<h3 id="adding-dice" tabindex="-1">Adding Dice</h3>
+<p>One way to modify the basic dice pool is to add dice to reflect environmental conditions or various advantages and disadvantages. Generally, we do this by adding Boost and Setback dice.</p>
+<p>As a general rule, your GM adds one Boost die [B] to the dice pool for each bonus that could help your character succeed, and one Setback die [S] for each impediment or disadvantage that hurts your character's chances.</p>
+<p>A single Boost die [B] represents the benefits provided by such things as useful gear, ample time to prepare, superior position, or the element of surprise. Your GM may add multiple Boost dice if your character benefits from more than one of these advantages.</p>
+<p>Likewise, a single Setback die [S] reflects the impact of detrimental or obstructing effects like poor lighting, inferior supplies, a harsh environment, or outside distractions. If your character is unlucky enough to suffer from more than one of these setbacks, your GM may add multiple Setback dice to the pool.</p>
+<p>&lt;Page 21&gt;</p>
+<p>It's important to note that while these dice are essentially mirror opposites in their use, Boost dice and Setback dice do not cancel each other out. If the situation warrants the addition of two Boost dice and one Setback die, you add all three dice ([B][B][S]) to the dice pool.</p>
+<p>All players can use Boost dice and Setback dice to help reinforce important elements of the story. You should describe your character's actions in detail, pointing out both advantages and disadvantages that may influence a particular action. As you do, your GM should recognize when a particular detail offers a noticeable advantage and add a Boost die [B]. After all, part of the idea is to reward good storytelling on everyone's part.</p>
+<p>Of course, sometimes the description you or your GM comes up with makes it more appropriate to add a Setback die [S] to the pool. When that happens, embrace it! If your GM is doing their job right, they're already looking for places where it makes sense to add Setback dice to your checks. So all you're doing is helping your GM make the [S] addition more narratively appropriate.</p>
+<p>Some equipment may add Boost dice [B] to a pool to reflect superior craftsmanship, while your character's talents may allow you to add Boost dice [B] to a pool to reflect special training or aptitudes that apply to the situation. Maneuvers like aiming may also allow you to add Boost dice [B] to a pool. Conversely, some effects may specifically impose Setback dice [S], such as the defined effects of a Critical Injury or a penalty for using inferior tools for a delicate task.</p>
+<p>While you may (and should!) offer up suggestions for adding Boost and Setback dice to your checks, your GM is the final arbiter, deciding which and how many dice to add to the pool. Your GM bases what dice to add on some helpful guidelines we've provided. The GM should always use common sense, taking into account the way the scene and action have been described. See the <strong>Positive Dice and Negative Dice</strong> sidebar, on page 9, for examples of the types of situations that may warrant the addition of Boost or Setback dice.</p>
+<h3 id="upgrading-and-downgrading-dice" tabindex="-1">Upgrading and Downgrading Dice</h3>
+<p>Game effects can &quot;improve&quot; dice, basically by letting you remove a die with a lower probability of generating results from your pool and replacing it with a die that has a higher probability for results. Likewise, game effects can &quot;degrade&quot; a die, removing a die with a high probability of generating results and replacing it with a die with a lower probability for results. (Note, we said &quot;results,&quot; not &quot;success&quot; or &quot;failure.&quot; Both of these effects can apply to positive and negative dice.)</p>
+<p>We call improving a die upgrading, while weakening a die is called downgrading. Beyond the upgrading based on your character's ranks in a skill or characteristic (see <strong>Applying Skills and Characteristics,</strong> page 19), upgrading and downgrading dice most often occurs when you or your GM spends a Story Point to increase the chances of a skill check succeeding or failing. Your character may also have certain talents or other special abilities that allow you to upgrade or downgrade dice.</p>
+<p>&lt;Page 22&gt;</p>
+<blockquote>
+<p><strong>Infobox: Upgrading and Downgrading Ability and Difficulty</strong></p>
+<p>Certain rules may call for you to upgrade or downgrade the ability or difficulty of a dice pool. For example, the Dodge talent allows you to upgrade the difficulty of a combat check that targets your character by a certain value. Upgrading or downgrading the ability of a pool refers to upgrading Ability dice [A] into Proficiency dice [P] or downgrading Proficiency dice [P] into Ability dice [A]. Likewise, upgrading or downgrading the difficulty of a pool refers to upgrading Difficulty dice [D] into Challenge dice [C] or downgrading Challenge dice [C] into Difficulty dice [D].</p>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Upgrade versus Increase</strong></p>
+<p>Upgrading Difficulty dice [D] in a dice pool is different than increasing a skill check's difficulty. Increasing or decreasing difficulty is simply a measure of how many Difficulty dice [D] are added to the initial dice pool; we cover this in more detail on page 16. Upgrading Difficulty dice [D] into Challenge dice [C] is generally triggered by a special ability or the investment of Story Points by one of the participants.</p>
+</blockquote>
+<h4 id="upgrading-dice" tabindex="-1">Upgrading Dice</h4>
+<p>Upgrading dice is a mechanic specific to Ability dice and Difficulty dice, and these are the only two types of dice that can be upgraded. When you upgrade an Ability die [A], you remove the die and replace it with a Proficiency die [P]. When you upgrade a Difficulty die [D], you remove the die and replace it with a Challenge die [C].</p>
+<p>When a special talent or effect calls for one or more dice to be upgraded, first you need to determine how many dice are to be upgraded. Once you determine this, you remove that number of Ability dice [A] or Difficulty dice [D] from the pool and replace those dice with an equal number of either Proficiency dice [P] or Challenge dice [C]. When an effect requires you to upgrade dice, the rules always state whether to replace Ability dice [A] or Difficulty dice [D].</p>
+<h5 id="upgrading-more-dice-than-available" tabindex="-1">Upgrading More Dice than Available</h5>
+<p>Sometimes you may need to upgrade Ability dice into Proficiency dice but you have no more Ability dice (the pool has nothing but Proficiency dice in it). In this case, you perform the following steps. First, you determine how many upgrades you still need to perform. Then, using one upgrade, you add one additional Ability die [A] to the pool. If any upgrade opportunities remain, you then upgrade the newly added Ability die [A] into a Proficiency die [P]. You then repeat this process until you've performed all of the upgrades you need to perform.</p>
+<p>If you need to upgrade Difficulty dice into Challenge dice but you have no more Difficulty dice (the pool has nothing but Challenge dice in it), you're going to follow the same process. First, you add one additional Difficulty die [D]; then, if any more upgrades remain, you replace the Difficulty die [D] with a Challenge die [C], and so on.</p>
+<h4 id="downgrading-dice" tabindex="-1">Downgrading Dice</h4>
+<p>Downgrading dice is also a specific mechanic, and it applies only to Proficiency dice and Challenge dice. When you downgrade a Proficiency die [P], you remove the die and replace it with an Ability die [A]. When you downgrade a Challenge die [C], you remove the die and replace it with a Difficulty die [D].</p>
+<p>Special talents or effects may call for one or more dice to be downgraded. If you have to perform multiple downgrades, you first determine how many dice you need to downgrade. Once you determine this, you remove that number of Proficiency dice [P] or Challenge dice [C] from the pool and replace them with an equal number of either Ability dice [A] or Difficulty dice [D]. When an effect requires you to downgrade dice, the rules always state whether Proficiency dice [P] or Challenge dice [C] are to be downgraded.</p>
+<h5 id="downgrading-more-dice-than-available" tabindex="-1">Downgrading More Dice than Available</h5>
+<p>There may be situations where you need to downgrade more Proficiency dice [P] into Ability dice [A] or Challenge dice [C] into Difficulty dice [D] than are available. If, as you are downgrading dice, there are no more Proficiency dice [P] or Challenge dice [C] left to downgrade, any further downgrades are ignored.</p>
+<p>This takes a different approach from upgrading, where you continue adding more dice if there are no more Difficulty [D] or Ability [A] dice left. We did this on purpose; if downgrading dice let you remove Ability [A] or Difficulty [D] dice, it would overlap with the rules for adding and removing dice. We go into those rules later.</p>
+<h4 id="upgrades-and-downgrades-in-the-same-pool" tabindex="-1">Upgrades and Downgrades in the Same Pool</h4>
+<p>Sometimes you end up with various talents or abilities that mean you need to apply both upgrades and downgrades to the same dice pool. When this occurs, you apply all upgrades first. Then, you apply any</p>
+<p>&lt;Page 23&gt;</p>
+<p>downgrades second. This is important, since upgrading dice could add more dice to the overall pool, and the higher number of dice would remain the same after you apply any downgrades.</p>
+<h3 id="removing-dice" tabindex="-1">Removing Dice</h3>
+<p>Just like some effects add Boost dice [B] or Setback dice [S] to a pool, some effects remove dice from the pool before you even roll them. Most often, this is a result of talents that allow the removal of Setback dice [S] (for instance, the Knack for It talent on page 73). However, some talents or other effects may remove [B] from your skill checks as well; these are just a bit less common.</p>
+<p>The individual talent or effect describes under what circumstances you remove the dice, as well as the number and type of dice you remove. If an ability calls for the removal of more dice of a type than there are in the dice pool, all of the dice of that type in the pool are removed, and any additional removals are ignored.</p>
+<p>Remove dice after all other dice have been added and all upgrades and downgrades have been applied.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 20-23</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>
