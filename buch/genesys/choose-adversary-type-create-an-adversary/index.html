@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Choose Adversary Type (Create an Adversary)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 202&gt;</p>
+<h1 id="choose-adversary-type" tabindex="-1">Choose Adversary Type</h1>
+<p>We have three categories of adversaries in <strong>Genesys</strong>: minion, rival, and nemesis. These types, and the differences between them, are described on page 131. Although you might decide on an adversary's type after building its profile, most of the time you'll decide on a type based on the part you expect it to play in the adventure.</p>
+<p>Most of the time, your original concept is going to suggest the appropriate adversary type. A group of outlaws intended to harass your PCs during a journey are probably just minions, while their leader may be a rival. Nemeses are the rarest type and are almost always highly defined NPCs with a name, strong motivations, and a big part to play in the ongoing story.</p>
+<h3 id="building-the-profile" tabindex="-1">Building the Profile</h3>
+<p>Once you have a concept for the adversary, you can start the actual process of &quot;building&quot; the adversary profile. As we've previously stated, adversaries are not confined by the rules for player character creation and progression. This is especially important to remember when designing your own adversaries.</p>
+<p>Designing an adversary's profile is simpler than you might think. As a guiding principle, always remember that adversaries exist to interact with your players' characters, and they're only ever going to see a few aspects of the adversary, so keep things simple! Only include skills you think your adversary will use, and add one or two significant talents and abilities that will make a big impact in an encounter instead of a lot of minor abilities that probably won't come up. An adversary is not a player character, so don't treat them like one.</p>
+<h4 id="name-and-description" tabindex="-1">Name and Description</h4>
+<p>A good name is important for any NPC, since that's what your players will remember. The rest of the description can be a few bullet points or notes to record the adversary's most memorable attributes and personality quirks.</p>
+<h4 id="characteristics" tabindex="-1">Characteristics</h4>
+<p>When assigning characteristics, remember that your goal should be to challenge the player characters, but not defeat them. So, most adversaries should have a few strong characteristics, a few average characteristics, and at least one weak characteristic.</p>
+<p>When creating minions, you can assign characteristics of 2 (human average) in areas you want them to be proficient in, and of 1 in areas you want them to be weak in. Minions work best in groups, so they'll be relying on their numbers to be dangerous. A powerful minion can have one or two characteristics of 3, but not higher.</p>
+<p>Rivals work alone, so you should give them characteristics of 3 in the areas you expect them to be proficient in (a combat-focused rival should have Brawn 3 or Agility 3, for example), the rest of their characteristics being a 2 or 1. Nemeses follow these guidelines as well, but they can have slightly higher overall characteristics than rivals. Monsters and creatures can have even higher characteristics to represent their inhuman nature. Remember that we try to limit characteristic values to 5; however, you might decide a characteristic of 6 is necessary for an inhumanly potent foe. Do this rarely, and your players are sure to be impressed when you assemble the dice pool!</p>
+<h4 id="thresholds-and-soak-defense" tabindex="-1">Thresholds and Soak/Defense</h4>
+<p>Thresholds represent an adversary's ability to suffer physical and mental injury, stress, and other punishment and keep on going. Although there is no set formula for determining thresholds, we do have some guidelines.</p>
+<p>Minions should generally have wound thresholds of 3 to 5, never higher than 7. Rivals should have wound thresholds between 10 and 15 (unless the rival is a creature or monster, in which case you can go as high as 20 to 25). Nemeses can have wound thresholds of 10 to 20 (with giant creatures and monsters being potentially higher).</p>
+<p>&lt;Page 203&gt;</p>
+<p>Nemeses also get strain thresholds. These should usually be lower than wound thresholds, probably in the 10 to 15 range. Also, consider giving a nemesis with a higher wound threshold a lower strain threshold, and vice versa.</p>
+<p>When selecting a soak and defense for your adversary, you can use their Brawn characteristic and armor as a starting point, then increase as needed. Just remember that a defense of 2 and soak of 4 or 5 is good, and a defense of 3 or soak of 6 or 7 is very hard to overcome.</p>
+<h4 id="skills" tabindex="-1">Skills</h4>
+<p>Most adversaries really only need a few skills that reflect their areas of expertise. Keep in mind that a character can attempt a skill check even without any ranks in the skill, so a high characteristic can be just as good in some cases. When deciding which skills to include in an adversary profile, think not only about your adversary concept, but also about the part you expect it to play in the game. An adversary intended to pose a combat challenge only needs combat skills, while one planned for a social encounter might not need combat skills at all. Also, when designing a combat-focused adversary, only give it the combat skills it needs to use its weapons.</p>
+<p>An adversary's type also affects its skills. Minions, of course, don't possess ranks in skills, but they can have skills that they gain as a minion group. Minions are throw-away opponents and only need two or three skills. Rivals and nemeses can have more, but keep in mind our advice about keeping things simple.</p>
+<h4 id="talents" tabindex="-1">Talents</h4>
+<p>It can be tempting to load an adversary up with talents, but keep your focus on usability during the game. Choose talents that are important, likely to come up, and do something interesting. Remember that there is no need to include talents that directly modify other parts of the profile, like Grit or Toughened—you can just modify those values directly.</p>
+<p>We recommend that minions never have talents. A rival doesn't have to have any talents, but could have one (or two, but only in rare instances). A nemesis may have more, but three is plenty! In all cases, go with fewer, more potent talents over a lot of minor talents. And of course, adversaries don't have to follow the tier system or other restrictions, so just give them the talents that make the most sense. Finally, instead of giving adversaries lots of defensive talents, just give them the Adversary talent on page 131. Rivals should only have one rank at maximum, and nemeses shouldn't have more than three.</p>
+<h4 id="abilities" tabindex="-1">Abilities</h4>
+<p>Abilities are special rules for an adversary that allow them to do things talents and skills don't, which means that these are things they can do that PCs can't. There are few limits on the possibilities, and coming up with unique new abilities can be the most fun part of creating an adversary. Just keep these principles in mind.</p>
+<p>First, follow the same guidelines as with talents. Make sure your abilities are few in number and impactful in the game. Take a look at the abilities of the adversaries in this book. This can help you get an idea of what works well as an ability, and you also might find an existing ability that works perfectly for your new adversary.</p>
+<p>When designing a new ability, avoid unnecessary complication. Abilities should work within the existing structure of the rules. Don't design a new damage type when your spider's venom can just inflict strain, and don't invent new gliding rules when the flying rules work just as well in nearly every situation.</p>
+<h4 id="equipment" tabindex="-1">Equipment</h4>
+<p>There are no special rules to follow when equipping adversaries. We just recommend limiting your adversary to one or two weapons (perhaps a ranged and melee weapon) and one piece of armor (or none if your adversary wouldn't wear any). Other equipment can be handled narratively.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 202-203</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

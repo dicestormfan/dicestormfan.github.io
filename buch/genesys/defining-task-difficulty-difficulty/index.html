@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Defining Task Difficulty (Difficulty)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 16&gt;</p>
+<h1 id="defining-task-difficulty" tabindex="-1">Defining Task Difficulty</h1>
+<p>When used in a check to represent the challenge posed by a task, the difficulty level is indicated with one of the following labels: Simple, Easy, Average, Hard, Daunting, or Formidable. This label is followed in parentheses by the number of Difficulty dice [D] to be added to the dice pool. For example, you might face an <strong>Easy ([D]) Perception check</strong> or a <strong>Hard ([D][D][D]) Medicine check.</strong> We've provided some more extensive explanations of each difficulty level in this section.</p>
+<p>We've also included the rough chance of success for each difficulty. To calculate this, we're assuming a starting character with a characteristic of 3 and one rank in the relevant skill, which adds two Ability dice [A][A] and one Proficiency die [P] to the pool. This represents a newly created character whose player has invested enough experience in a certain skill and characteristic to be reasonably confident of success. This is our focused character—a character focused on accomplishing this kind of task. We've also provided a starting character with a characteristic of 2 and no ranks in the skill; this is our general character—a character with no particular skill at accomplishing the task.</p>
+<h3 id="simple-tasks" tabindex="-1">Simple Tasks (–)</h3>
+<p>A Simple task represents something so basic and routine that the outcome is rarely in doubt. We assume that your character succeeds at most of the Simple tasks they attempt (our focused character succeeds on a Simple check more than 90 percent of the time, and even the general character succeeds 75 percent of the time). Generally, your character isn't required to make a check if the task is so simple that your character is guaranteed to succeed. However, sometimes there is a slight chance of failure (even a check with no difficulty dice can fail if you don't roll any Success {S} results), or sometimes there are no consequences for failure, but you need to know the magnitude of your character's success. In these cases, your GM may require you to make a Simple check.</p>
+<p>&lt;Page 17&gt;</p>
+<p>A Simple task adds no Difficulty dice to the skill check's dice pool.</p>
+<h3 id="easy-tasks-d" tabindex="-1">Easy Tasks ([D])</h3>
+<p>An Easy task poses little challenge to most characters, but something could still go wrong, and failure remains possible. We assume that a character with the proper training and resources for a situation can expect to succeed at most of the Easy tasks they attempt (a focused character succeeds on an Easy check almost 80 percent of the time, and even a general character should succeed about 60 percent of the time). Often, the magnitude or potential side effects are more uncertain than the success itself.</p>
+<p>An Easy task adds one Difficulty die ([D]) to the skill check's dice pool.</p>
+<h3 id="average-tasks-d-d" tabindex="-1">Average Tasks ([D][D])</h3>
+<p>An Average task represents a routine action for which success is common enough to be expected, but failure is not surprising. We assume a character with the proper training, resources, and approach to the situation should expect to succeed at Average tasks more often than they fail (our focused character succeeds on an Average check about two thirds of the time, but our general character succeeds slightly less than half the time).</p>
+<p>An Average task adds two Difficulty dice ([D][D]) to the skill check's dice pool.</p>
+<h3 id="hard-tasks-d-d-d" tabindex="-1">Hard Tasks ([D][D][D])</h3>
+<p>Characters find Hard tasks much more challenging than Average tasks. Success is certainly feasible, but failure is far from surprising. A typical character with the proper training, resources, and tools for the situation should still expect fail a Hard check almost as often as they succeed (our focused character succeeds at Hard tasks just over half of the time, and our general character only succeeds about a third of the time).</p>
+<p>Hard tasks are challenging enough that before attempting them, you should consider improving your character's chances by equipping them with specific tools, purchasing specific talents, or purchasing additional ranks in the appropriate skill. You could also spend a Story Point to upgrade the check and increase your character's chances.</p>
+<p>A Hard task adds three Difficulty dice ([D][D][D]) to the skill check's dice pool.</p>
+<p>&lt;Page 18&gt;</p>
+<blockquote>
+<p><strong>TABLE I.1–3: DIFFICULTY LEVELS</strong></p>
+<table>
+<thead>
+<tr>
+<th>DIFFICULTY LEVEL</th>
+<th>DICE</th>
+<th>EXAMPLE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple</td>
+<td>–</td>
+<td>Routine, with the outcome rarely in question. Usually not rolled unless the GM wishes to know the magnitude of success or to add Setback dice [S] to indicate the possibility of complications.</td>
+</tr>
+<tr>
+<td>Easy</td>
+<td>[D]</td>
+<td>Picking a primitive lock, tending to minor cuts and bruises, finding food and shelter on a lush planet, shooting a target at short range, convincing a close friend to help you with a difficult task.</td>
+</tr>
+<tr>
+<td>Average</td>
+<td>[D][D]</td>
+<td>Picking a typical lock, stitching up a small wound, finding food and shelter on a temperate planet, shooting a target at medium range, trying to punch an opponent while within arm's reach, convincing an acquaintance to help you with a difficult task.</td>
+</tr>
+<tr>
+<td>Hard</td>
+<td>[D][D][D]</td>
+<td>Picking a complicated lock, setting broken bones or suturing large wounds, finding food and shelter on a rugged planet, shooting a target at long range, convincing a stranger to help you with a difficult task.</td>
+</tr>
+<tr>
+<td>Daunting</td>
+<td>[D][D][D][D]</td>
+<td>Picking an exceptionally sophisticated lock, performing surgery or grafting implants, finding food and shelter on a barren desert planet, shooting a target at extreme range, convincing someone who hates you to help you with a difficult task.</td>
+</tr>
+<tr>
+<td>Formidable</td>
+<td>[D][D][D][D][D]</td>
+<td>Picking a lock with no comprehensible mechanism, creating a genetic template to clone a new body, finding food and shelter on a planet without breathable atmosphere, convincing your lifelong nemesis to help you with a difficult task.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Impossible Tasks</strong></p>
+<p>Situations exist with impossibly low chances of success. In almost all cases, your GM simply states that any such check automatically fails without your needing to assemble and roll a dice pool.</p>
+<p>However, your GM may decide to allow your player character (PC) to attempt a check for which success is extremely improbable: for throwing a grenade in hopes that it puts out a fire, scaling a perfectly smooth wall, or trying to tame a mother bear when you find yourself between her and her cubs, for instance. If you're the GM, you should only allow a PC to attempt an Impossible task during critical moments in a story's arc or in life-or-death situations.</p>
+<p>If you want to attempt an Impossible task, you must spend one Story Point just to attempt the check. Your character gains no benefits for doing so, beyond being able to attempt the task in the first place (and you cannot spend any additional Story Points on the check). Once you've done so, an Impossible task adds five Difficulty dice ([D][D][D][D][D]) to the pool, the same as a Formidable task.</p>
+</blockquote>
+<h3 id="daunting-tasks-d-d-d-d" tabindex="-1">Daunting Tasks ([D][D][D][D])</h3>
+<p>A Daunting task taxes a character, pushing them to their limits. Success may be difficult to achieve, but it's certainly possible. We expect that a typical character with the proper training, resources, and tools for the situation likely fails more often than they succeed at Daunting tasks (our focused character succeeds on Daunting checks about 45 percent of the time, while our general character succeeds only a quarter of the time). The typical character also runs a significant risk of generating lots of Threat {Th} even if they succeed.</p>
+<p>A Daunting task adds four Difficulty dice ([D][D][D][D]) to the skill check's dice pool.</p>
+<h3 id="formidable-tasks-d-d-d-d-d" tabindex="-1">Formidable Tasks ([D][D][D][D][D])</h3>
+<p>Formidable tasks seem nigh impossible, and if you don't take them seriously, your character may find them insurmountable. However, with proper planning, a well-trained and well-equipped character has a chance at success. Typical characters often fail at Formidable tasks (our focused character succeeds only one third of the time, and our general character has a less than 20 percent chance of succeeding). Even highly trained characters fail Formidable tasks more often than they succeed. If you need to make a Formidable check, you should make sure your character has all the advantages (in the form of proper gear, aid from others, and maybe Story Points) that they can find.</p>
+<p>A Formidable task adds five Difficulty dice ([D][D][D][D][D]) to the skill check's dice pool.</p>
+<p>&lt;Page 19&gt;</p>
+<blockquote>
+<p><strong>Infobox: EXAMPLE 1: KENDRA'S CHECK</strong></p>
+<p>Kendra is trying to climb down a rocky cliff to escape from a vicious grizzly bear. This check uses Kendra's Athletics skill and Brawn characteristic. Kendra has Athletics 2 and Brawn 3. Her Brawn is higher, so the player begins by adding three Ability dice ([A][A][A]) to the pool. Kendra's Athletics skill is lower, so the player upgrades that many dice (two) to Proficiency dice ([P][P]). To attempt the climb, Kendra starts out with three dice in her pool: [A][P][P] (one Ability die and two Proficiency dice).</p>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: EXAMPLE 2: KATIE'S CHECK</strong></p>
+<p>Later, Katie must attempt to climb down the same cliff, following Kendra's path. Katie spends more time at the gym training, and she has an Athletics skill of 3 because of it. However, her Brawn is only 2. Katie's Athletics skill is higher, so the player begins by adding three Ability dice ([A][A][A]) to the pool. Katie's Brawn rating is lower, so the player upgrades that many dice (two) into Proficiency dice ([P][P]). To attempt this action, Katie starts out with three dice in her pool: [A][P][P] (one Ability die and two Proficiency dice).</p>
+<p>You may have noticed that both Kendra and Katie have the same size and type of dice pool, even though their Brawn ratings and ranks in the Athletics skill are different. Our system allows a character to compensate for a lack of innate ability by improving their skills, and vice versa.</p>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: EXAMPLE 3: REX'S CHECK</strong></p>
+<p>Finally, Rex, the wildlife researcher who got the three characters into this mess, tries to climb down the cliff and escape the grizzly bear as well. Rex has Brawn 2, but no ranks in the Athletics skill. His Brawn is higher, so the player begins by adding two Ability dice ([A][A]) to the pool. Since he has no ranks in Athletics, that value is considered to be zero, and no Ability dice are upgraded into Proficiency dice. To avoid being eaten by bears, Rex starts out with only two dice in his dice pool: [A][A] (two Ability dice).</p>
+</blockquote>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 16-19</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

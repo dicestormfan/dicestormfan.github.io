@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Armor Attachments (Item Attachments and Hard Points)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 209&gt;</p>
+<h1 id="armor-attachments" tabindex="-1">Armor Attachments</h1>
+<p>We've also included a list of basic armor attachments to go with these rules. Again, these are designed to be as broad as possible, but some only make sense in certain settings.</p>
+<h3 id="deflective-plating" tabindex="-1">Deflective Plating</h3>
+<p>This attachment applies angled plates or mildly reflective surfaces to help deflect incoming ranged attacks. This kind of attachment makes sense in <strong>fantasy, science fiction,</strong> and <strong>space opera</strong> settings (in the past, armor might be designed to deflect arrows or throwing knives, while in the future, it could reflect lasers or energy blasts).</p>
+<p><strong>Use With:</strong> This attachment can be applied to any armor.</p>
+<p><strong>Modifiers:</strong> Wearer increases their ranged defense by 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="enhanced-lifting-servos" tabindex="-1">Enhanced Lifting Servos</h3>
+<p>Futuristic servos (or other, similar devices) can be worked into suits of hard carapace armor to make them powered and let the user lift and carry far more than they could normally. This kind of attachment makes sense in <strong>science fiction</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any armor composed of a hardened carapace.</p>
+<p><strong>Modifiers:</strong> When wearing this armor, the user increases their encumbrance threshold by 5. The user reduces the rating of the Cumbersome quality of any carried weapons by 1, to a minimum of 1.</p>
+<p><strong>Hard Points Required:</strong> 2.</p>
+<h3 id="intimidating-visage" tabindex="-1">Intimidating Visage</h3>
+<p>Warriors from many cultures paint their armor or add imposing face masks to intimidate opponents. This kind of attachment makes sense in all settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any armor.</p>
+<p><strong>Modifiers:</strong> When wearing this armor, the user adds {S} to Coercion checks they make, and automatic {F} to Charm checks they make.</p>
+<p><strong>Hard Points Required:</strong> 0.</p>
+<h3 id="rare-metals" tabindex="-1">Rare Metals</h3>
+<p>Many fantasy settings feature rare, nearly magical metals that can be used to create superior armor. This kind of attachment makes sense in <strong>fantasy</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to chain or plate armor.</p>
+<p><strong>Modifiers:</strong> The armor reduces its encumbrance by 2, and it adds one fewer [S] to Stealth checks.</p>
+<p><strong>Hard Points:</strong> 2.</p>
+<h3 id="reinforced-plating" tabindex="-1">Reinforced Plating</h3>
+<p>This attachment represents adding extra layers of armor or using stronger materials to reinforce the armor. This kind of attachment makes sense in any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any armor that uses hardened plates for protection.</p>
+<p><strong>Modifiers:</strong> The armor gains the Reinforced quality. The armor also increases its encumbrance by 1.</p>
+<p><strong>Hard Points Required:</strong> 2.</p>
+<h3 id="vacuum-sealed" tabindex="-1">Vacuum Sealed</h3>
+<p>This attachment equips the armor with breathing gear and seals it against vacuum. This kind of attachment makes sense in the <strong>science fiction</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any armor.</p>
+<p><strong>Modifiers:</strong> While wearing this armor, the user may ignore the effects of vacuum or poisonous atmospheric environments for up to one hour.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<p>&lt;Page 210&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–3: PENALTIES WHEN CASTING SPELLS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>CONDITION</strong></th>
+<th><strong>PENALTY</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The character does not have at least one free hand.</td>
+<td>+ [S]</td>
+</tr>
+<tr>
+<td>The character is gagged, silenced, or otherwise unable to speak.</td>
+<td>+ [S][S]</td>
+</tr>
+<tr>
+<td>The character is wearing heavy armor that might hamper their gestures (armor with +2 soak or more), or carrying a shield. This could also include other restrictive outfits, at your discretion.</td>
+<td>+ [S]</td>
+</tr>
+<tr>
+<td>The character is in circumstances that interfere with their ability to concentrate, such as trying to cast while swimming or hanging from a rope, being buffeted by a sandstorm, or casting a spell that doesn't target the person they're fighting in hand-to-hand combat.</td>
+<td>Upgrade the difficulty once (or more at your GM's discretion).</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Learning Magic</strong></p>
+<p>Magic skills are potent and incredibly versatile. Although we suggest rules restrictions on training magic skills, as the GM you might want to consider imposing additional in-game requirements. Not only does this add more challenge for PCs seeking such power, but it provides an opportunity to underscore the rarity and power of magic and to illustrate how it fits into your setting. A character who wants to advance in Thaumaturgy might be required to abide by the rules of their religious order to receive training. You may require a would-be wizard to seek out a tutor and convince them to accept an apprentice, or to discover and study an ancient tome of spells.</p>
+</blockquote>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 209-210</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

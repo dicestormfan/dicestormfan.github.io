@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Weapon Attachments (Item Attachments and Hard Points)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 207&gt;</p>
+<h1 id="weapon-attachments" tabindex="-1">Weapon Attachments</h1>
+<p>To go with these rules, we've included a list of basic weapon attachments designed to be as broad as possible. However, most attachments are still only going to work with certain weapons, and only make sense in certain settings.</p>
+<h3 id="balanced-hilt" tabindex="-1">Balanced Hilt</h3>
+<p>This attachment represents modifying a melee weapon's balance (particularly around the hilt or haft) to make it easier to control. This kind of attachment makes sense for any setting (even futuristic combat knives can benefit from being finely weighted or balanced).</p>
+<p><strong>Use With:</strong> This attachment can be applied to any weapons that use the Melee (Light) skill and to one-handed weapons that use the Melee skill.</p>
+<p><strong>Modifiers:</strong> The weapon gains the Accurate 1 quality, or increases any existing Accurate quality by 1. (If the weapon has the Inaccurate quality, it reduces that quality's rating by 1 to a minimum of 0, instead.)</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="bipod-mount" tabindex="-1">Bipod Mount</h3>
+<p>A bipod (a folding, two-legged stand) can be attached to the barrel of a firearm. The legs stabilize the firearm and take up some of its weight. This kind of attachment makes sense for the <strong>weird war, modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any Ranged (Heavy) or Gunnery weapon.</p>
+<p><strong>Modifiers:</strong> If the user spends one preparation maneuver to deploy the bipod, the weapon's Cumbersome or Unwieldy qualities are reduced by 2, to a minimum of 0, and the weapon's encumbrance is reduced by 2, to a minimum of 0, while the user fires from a crouched or prone position (or can brace the bipod against something solid).</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="duelist-cross-guard" tabindex="-1">Duelist Cross Guard</h3>
+<p>This attachment represents modifying the cross guard of a sword to better catch and lock the blade of an opponent. This kind of attachment makes sense for the <strong>fantasy</strong> setting, but could make sense for any setting where dueling with swords is common.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any sword, whether one-handed or two-handed.</p>
+<p><strong>Modifiers:</strong> When an opponent resolves a melee combat check against the wielder, if the check generated at least one uncanceled {Th}, the wielder may suffer 1 strain as an out-of-turn incidental to add {Th}{Th} to the results.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="extended-barrel" tabindex="-1">Extended Barrel</h3>
+<p>This attachment extends the barrel (or makes similar modifications) to make the weapon fire farther. This kind of attachment makes sense for the <strong>weird war, modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any Ranged (Light), Ranged (Heavy), or Gunnery weapons (you may exclude weapons such as grenades, or weapons that fire self-propelled ammo such as missile launchers).</p>
+<p><strong>Modifiers:</strong> The weapon's range increases by one range band, to a maximum of extreme range. The weapon gains the Cumbersome 2 quality, or increases its existing Cumbersome quality by 2.</p>
+<p><strong>Hard Points Required:</strong> 2.</p>
+<h3 id="hair-trigger" tabindex="-1">Hair Trigger</h3>
+<p>A &quot;hair trigger&quot; represents a modification that allows the user to fire a weapon very quickly, although this can be at the expense of accuracy. This kind of attachment makes sense for the <strong>weird war, modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any pistol.</p>
+<p><strong>Modifiers:</strong> When the user makes the first combat check with this weapon in an encounter, add {S}{Th} to the results.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<p>&lt;Page 208&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–2: ARMOR ATTACHMENTS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>ATTACHMENT</strong></th>
+<th><strong>PRICE</strong></th>
+<th><strong>RARITY</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deflective Plating</td>
+<td>450</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Enhanced Lifting Servos</td>
+<td>1,500</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Intimidating Visage</td>
+<td>125</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Rare Metals</td>
+<td>1,000</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Reinforced Plating</td>
+<td>8,000</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Vacuum Sealed</td>
+<td>600</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="razor-edge" tabindex="-1">Razor Edge</h3>
+<p>This attachment represents sharpening a blade to a razor edge, then reinforcing or treating that edge so that it can withstand repeated blows. This kind of attachment makes sense for any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any close combat weapon that has a blade.</p>
+<p><strong>Modifiers:</strong> The weapon gains the Pierce 2 quality, or increases any existing Pierce quality by 1. The weapon also decreases its Crit rating by 1, to a minimum of 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="recurve-limbs" tabindex="-1">Recurve Limbs</h3>
+<p>Making the limbs of a bow or crossbow curve away from the wielder increases the penetrating power of the bow's shots, even if it also makes the bow larger and more difficult to wield. This kind of attachment makes sense for <strong>fantasy</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any bow or crossbow.</p>
+<p><strong>Modifiers:</strong> The weapon gains the Pierce 2 quality, or increases any existing Pierce quality by 1. The weapon also gains the Unwieldy 2 quality, or increases any existing Unwieldy quality by 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="serrated-edge" tabindex="-1">Serrated Edge</h3>
+<p>Adding jagged sawteeth to a bladed weapon means the wounds it makes are particularly brutal and damaging. This kind of attachment makes sense for any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any close combat weapon that has a blade.</p>
+<p><strong>Modifiers:</strong> The weapon gains the Vicious 1 quality, or increases any existing Vicious quality by 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="superior-weapon-customization" tabindex="-1">Superior Weapon Customization</h3>
+<p>This simply represents the weapon being modified by a master craftsman to be better than other examples of its type. This kind of attachment makes sense for any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any weapon.</p>
+<p><strong>Modifiers:</strong> The weapon gains the Superior quality.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="telescopic-sight" tabindex="-1">Telescopic Sight</h3>
+<p>A telescopic sight magnifies a target, allowing the user to shoot targets that they could normally barely be able to see (futuristic versions may use special enhanced optics, rather than simple lenses). This kind of attachment makes sense for the <strong>weird war, modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any ranged weapon that could logically benefit from the addition of a telescopic sight.</p>
+<p><strong>Modifiers:</strong> The user reduces the difficulty of ranged combat checks made with this weapon at long and extreme range by 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="tripod-mount" tabindex="-1">Tripod Mount</h3>
+<p>Like a bipod, the tripod mount is a set of three folding legs that deploy from the center of the weapon to provide a stable stand to fire from. This kind of attachment makes sense for the <strong>weird war, modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any Ranged (Heavy) or Gunnery weapon with an encumbrance of 4 or more.</p>
+<p><strong>Modifiers:</strong> If the user spends two preparation maneuvers to deploy the tripod, the weapon's Cumbersome or Unwieldy qualities are reduced by 3, to a minimum of 0, and the weapon's encumbrance is reduced by 4, to a minimum of 0. The weapon may not be moved (except to pivot on the tripod mount) once it has been set up. The user must spend two preparation maneuvers to take the tripod down.</p>
+<p><strong>Hard Points Required:</strong> 2.</p>
+<h3 id="under-barrel-weapon-attachment" tabindex="-1">Under-Barrel Weapon Attachment</h3>
+<p>Modern firearms sometimes have secondary weapons attached under the barrel, allowing the wielder to effectively carry two weapons in one. This kind of attachment makes sense for the <strong>modern day, science fiction,</strong> and <strong>space opera</strong> settings.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any rifle-sized Ranged (Heavy) weapons.</p>
+<p><strong>Modifiers:</strong> When installed, the user chooses one of the following secondary weapons. The weapon can then fire using the associated secondary profile.</p>
+<ul>
+<li><strong>Flamethrower:</strong> (Ranged [Heavy]; Damage 10; Critical 2; Range [Short]; Blast 6, Burn 4, Limited Ammo 2).</li>
+</ul>
+<p>&lt;Page 209&gt;</p>
+<ul>
+<li>
+<p><strong>Grenade Launcher:</strong> (Ranged [Heavy]; Damage 8; Critical 4; Range [Medium]; Blast 6, Limited Ammo 1).</p>
+</li>
+<li>
+<p><strong>Shotgun:</strong> (Ranged [Heavy]; Damage 8; Critical 3; Range [Short]; Blast 5, Knockdown).</p>
+</li>
+</ul>
+<p>The weapon gains the Cumbersome 2 quality, or increases its existing Cumbersome quality by 1. The weapon also gains the Unwieldy 2 quality, or increases its existing Unwieldy quality by 1. Finally, the weapon increases its encumbrance by 2.</p>
+<p><strong>Hard Points Required:</strong> 2.</p>
+<h3 id="weapon-sling" tabindex="-1">Weapon Sling</h3>
+<p>A sling helps a user carry a particularly heavy weapon by taking up part of the weight. This kind of attachment makes sense for any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any Ranged (Heavy) weapon or ranged weapons that require two hands to wield.</p>
+<p><strong>Modifiers:</strong> The weapon decreases its encumbrance by 2.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h3 id="weighted-head" tabindex="-1">Weighted Head</h3>
+<p>Adding extra weight to the head of a blunt weapon lets the wielder strike with greater impact and do more damage. This kind of attachment makes sense in any setting.</p>
+<p><strong>Use With:</strong> This attachment can be applied to any close combat weapon that deals bludgeoning or crushing damage (not one with a cutting edge).</p>
+<p><strong>Modifiers:</strong> The weapon increases its damage by 2. The weapon gains the Cumbersome 2 quality, or increases its existing Cumbersome quality by 1.</p>
+<p><strong>Hard Points Required:</strong> 1.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 207-209</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

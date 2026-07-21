@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Characteristic Ratings (Chapter 1 - Core Mechanics)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 14&gt;</p>
+<h1 id="characteristic-ratings" tabindex="-1">Characteristic Ratings</h1>
+<p>Characteristic ratings for any character (your character or non-player characters) generally range from 1 to 5. Some exceptions can exist, especially in powerful or unique cases. However, for the most part, we try to keep characteristics at 5 or lower, even for those special situations.</p>
+<p>Your typical human has an average characteristic rating of 2, so that's what we consider the average baseline. If your character has 2 Brawn, they're about as strong and fit as most people they meet on the street, and if they have a 2 in Willpower, they only lose their temper occasionally and usually stay awake during boring meetings.</p>
+<p>Ratings of 1 are below average. A character with a 1 in Presence may be physically unattractive, or may just be a jerk. Likewise, if your character has 1 Agility, they're probably clumsy and not very coordinated.</p>
+<p>Ratings of 3 and up are above average, with a 3 being notably above average, a 4 being significantly above average, and a 5 being an exemplar of that characteristic. So if your character has a 3 in Willpower, they're probably going to be more focused and determined than those around them. If your character has a 4 in Agility, they could have a career as a military sharpshooter or a professional acrobat. And if your character has a 5 in Cunning, they could match wits with Sherlock Holmes or other great detectives of fiction and lore.</p>
+<p>Your choice of species or archetype determines your character's starting characteristics, as explained on page 35. Now, although we've already talked a bit about the six characteristics, let's go over each one in a little more detail.</p>
+<h3 id="agility" tabindex="-1">Agility</h3>
+<p>The Agility characteristic measures your character's manual dexterity, hand-eye coordination, and body control. Characters with a high Agility have flexibility, a good sense of balance, and deft hands. Agility is used for a number of physical skills, such as Coordination, and it is key in ranged combat.</p>
+<h3 id="brawn" tabindex="-1">Brawn</h3>
+<p>A character's Brawn represents a blend of brute power, strength, and overall toughness, as well as the ability to apply those attributes as needed. Characters with a high Brawn are physically fit and hardy, rarely get sick, and have strong constitutions. Brawn is used for a number of physical skills, such as Athletics and Melee. Brawn is also used to determine your character's starting wound threshold.</p>
+<p>&lt;Page 15&gt;</p>
+<blockquote>
+<p><strong>Infobox: Why Limit Characteristics to 5?</strong></p>
+<p>You may be wondering why we have a soft cap on characteristics that keeps them limited to a maximum rating of 5. After all, shouldn't a huge creature such as a dragon have a higher Brawn, or a sentient AI supercomputer have a higher Intellect?</p>
+<p>One reason is that characteristics directly influence the size of the dice pool. The higher the characteristic rating, the more dice you roll. So, we try to keep characteristics maxed out at 5 to limit the overall number of dice in the pool and keep the physical act of rolling them from being too awkward.</p>
+<p>The other reason has to do with probability of success. A pool with a mix of five Ability [A] and Proficiency [P] dice has a very good chance of generating success on most checks you'll encounter in the game, and the probability only increases the more positive dice you add. Since most difficulties in this game are set values, setting a soft cap for characteristics keeps checks from becoming a guaranteed success—which can get boring or terrifying for you, depending on whether your character or your character's adversaries are the ones with the oversized dice pools!</p>
+<p>When dealing with creatures that feel like they should break the mold (like the dragon or artificial intelligence mentioned earlier), the important thing is to remember that there are many ways to model inhuman strength, speed, intelligence, and the like without increasing the creature's characteristics. We go into these details more on page 202, where we talk about how to build adversaries.</p>
+</blockquote>
+<h3 id="cunning" tabindex="-1">Cunning</h3>
+<p>Cunning reflects how crafty, devious, clever, and creative your character can be. Characters with a high Cunning are savvy, quickly pick up on vital social and environmental clues, and can more readily come up with short-term plans and tactics. Cunning is used for a number of mental skills, including Deception, Perception, and Survival.</p>
+<h3 id="intellect" tabindex="-1">Intellect</h3>
+<p>The Intellect characteristic measures your character's intelligence, education, mental acuity, and ability to reason and rationalize. Characters with a high Intellect can extrapolate and interpolate data, can recall details and draw from previous experience, and can think of long-term strategies and envision the ramifications of present actions. Intellect is used for a number of mental skills, including Knowledge, Medicine, Mechanics, and Computers (if these are skills included in your setting).</p>
+<h3 id="presence" tabindex="-1">Presence</h3>
+<p>A character's Presence characteristic represents their moxie, charisma, confidence, and force of personality. Characters with a high Presence make natural leaders, draw attention when they enter a room, can easily strike up a conversation with nearly anyone, and are quick to adapt to social situations. Presence is the key characteristic for interpersonal skills such as Charm and Leadership.</p>
+<h3 id="willpower" tabindex="-1">Willpower</h3>
+<p>The Willpower characteristic reflects your character's discipline, self-control, mental fortitude, and faith. Characters with a high Willpower can withstand stress and fatigue, remain composed during chaotic situations, and exert influence over the weaker willed. Willpower is used for skills such as Coercion and Vigilance. Willpower is also used to determine your character's starting strain threshold.</p>
+<p><strong>In this chapter:</strong></p>
+<ul>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/characteristics-in-play-characteristic-ratings/">Characteristics in Play</a></li>
+</ul>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 14-15</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

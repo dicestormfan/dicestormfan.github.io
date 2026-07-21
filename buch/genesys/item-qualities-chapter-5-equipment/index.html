@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Item Qualities (Chapter 5 - Equipment)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 86&gt;</p>
+<h1 id="item-qualities" tabindex="-1">Item Qualities</h1>
+<p>Some equipment features special qualities that add variety and depth to the weapons, armor, and items your character may encounter. In our game, item qualities are special rules that can change how the item acts. They let us add more variety to an item than we could by only manipulating its raw characteristics. They also make the items more interesting for you, since many qualities may require you to think about your character using that item differently.</p>
+<p>Special qualities are generally either passive or active. Passive qualities are always &quot;on&quot; and require no activation on the part of the user. Active qualities must be triggered by the user, often by spending one or more {A} to activate the effect.</p>
+<p>Item qualities usually have a number associated with them. This is their rating. Ratings affect qualities in different ways, depending on the quality in question.</p>
+<p>Active qualities require {A}{A} to activate unless otherwise stated in their description. Active item qualities on weapons can only trigger on a successful attack, unless specified otherwise.</p>
+<p>Finally, we should note that not all of these qualities are appropriate for all settings. However, we have included the complete list of item qualities here, partially because it's not all that long, and partially because most of the qualities are general enough that with the right tweaks to their flavor, you could actually justify them in more settings than you would expect.</p>
+<h4 id="accurate-passive" tabindex="-1">Accurate (Passive)</h4>
+<p>Accurate weapons are easier to aim or wield, whether through design or technology. For each level of this quality, the attacker adds [B] to their combat checks while using this weapon.</p>
+<h4 id="auto-fire-active" tabindex="-1">Auto-Fire (Active)</h4>
+<p>A weapon with Auto-fire can be set to shoot in rapid succession and potentially spray an area with bolts, flechettes, slugs, or other types of projectiles. The advantage in using Auto-fire is that it has the chance to hit multiple targets or to hit a single target multiple times.</p>
+<p>As attacking with a weapon on Auto-fire is generally less accurate, the attacker must increase the difficulty of the combat check by [D]. The user may choose not to use the Auto-fire quality on a weapon; in this case, they cannot trigger the quality but also do not suffer the aforementioned penalty.</p>
+<p>If the attack hits, the attacker can trigger Auto-fire by spending {A}{A}. Auto-fire can be triggered multiple times. Each time the attacker triggers Auto-fire, it deals an additional hit to the target. Each of these counts as an additional hit from that weapon, and each hit deals base damage plus the number of {S} on the check.</p>
+<p>These additional hits can be allocated to the original target, or to other targets within range of the weapon. If the attacker wishes to hit multiple targets, they must decide to do so before making the check. Furthermore, if they wish to hit multiple targets, their initial target must always be the target with the highest difficulty and highest defense (if this is two separate targets, the GM chooses which is the initial target). The initial hit must always be against the initial target. Subsequent hits generated can be allocated to any of the other designated targets.</p>
+<p>Auto-fire weapons can also activate one Critical Injury for each hit generated on the attack, per the normal rules; the Critical Injury must be applied to the target of the specific hit.</p>
+<h4 id="blast-active" tabindex="-1">Blast (Active)</h4>
+<p>The weapon has a large spread, an explosive blast, or a similar area of effect, like a detonated grenade or a warhead fired from a missile launcher. If the attack is successful and Blast activates, each character (friend or foe) engaged with the original target suffers a hit dealing damage equal to the Blast quality's rating, plus damage equal to the total {S} scored on the check.</p>
+<p>In a relatively small and enclosed area, the Game Master might decide that everyone in the room suffers damage.</p>
+<p>If the Blast quality doesn't activate, the ordnance still detonates, but bad luck or poor aim on the part of the firer (or quick reactions on the part of the targets) means</p>
+<p>&lt;Page 87&gt;</p>
+<p>the explosion may not catch anyone else in its radius. However, the user may also trigger Blast if the attack misses by spending {A}{A}{A}. In this case, the original target and every target engaged with the original target suffers a hit dealing damage equal to the Blast rating of the weapon.</p>
+<h4 id="breach-passive" tabindex="-1">Breach (Passive)</h4>
+<p>Weapons with Breach burn through the toughest armor; they are often heavy weapons or weapons mounted on some sort of vehicle.</p>
+<p>Hits from weapons with the Breach quality ignore one point of vehicle armor for every rating of Breach (meaning they also ignore 10 soak for every rating of Breach).</p>
+<h4 id="burn-active" tabindex="-1">Burn (Active)</h4>
+<p>Weapons with Burn inflict damage over time. When Burn is triggered, one target hit by the attack continues to suffer the weapon's base damage each round for a number of rounds equal to the weapon's Burn rating. Apply damage at the start of each of the target's turns. If multiple targets suffer hits from a weapon with Burn, the quality may be triggered multiple times, affecting a different target each time.</p>
+<p>A victim might be able to stop the damage by performing an action to roll around and make a Coordination check. The difficulty is <strong>Average ([D][D])</strong> on hard surfaces such as the floor of a building, or an <strong>Easy ([D])</strong> on grass or soft ground. Jumping into a body of water stops the damage immediately. Both situations assume the flame is from actual combustion rather than a chemical reaction. With the latter, there is usually little the victim can do.</p>
+<h4 id="concussive-active" tabindex="-1">Concussive (Active)</h4>
+<p>The weapon's attack can leave the target shell-shocked from mighty blows or punishing shock waves, unable to perform any but the most basic actions. When Concussive is triggered, one target hit by the attack is staggered (see page 114) for a number of rounds equal to the weapon's Concussive rating. A staggered target cannot perform actions. If multiple targets suffer hits from a weapon with Concussive, the quality may be triggered multiple times, affecting a different target each time.</p>
+<h4 id="cumbersome-passive" tabindex="-1">Cumbersome (Passive)</h4>
+<p>A Cumbersome weapon is large, unwieldy, awkward, or heavy. To wield a Cumbersome weapon properly, the character needs a Brawn characteristic equal to or greater than the weapon's Cumbersome rating. For each point of Brawn by which the character is deficient, they must increase the difficulty of all checks made while using the weapon by one.</p>
+<h4 id="defensive-passive" tabindex="-1">Defensive (Passive)</h4>
+<p>An item with the Defensive quality increases the user's melee defense by its Defensive rating.</p>
+<h4 id="deflection-passive" tabindex="-1">Deflection (Passive)</h4>
+<p>An item with the Deflection quality increases the user's ranged defense by its Deflection rating.</p>
+<h4 id="disorient-active" tabindex="-1">Disorient (Active)</h4>
+<p>A weapon with Disorient can daze an opponent. When Disorient is triggered, one target hit by the attack is disoriented (see page 114) for a number of rounds equal to the weapon's Disorient rating. A disoriented target adds [S] to all skill checks they perform. If multiple targets suffer hits from a weapon with Disorient, the quality may be triggered multiple times, affecting a different target each time.</p>
+<h4 id="ensnare-active" tabindex="-1">Ensnare (Active)</h4>
+<p>A weapon with Ensnare binds a foe and restricts their movements. When Ensnare is triggered, one target hit by the attack becomes immobilized (see page 114) for a number of rounds equal to the weapon's Ensnare rating. An immobilized target cannot perform maneuvers. If multiple targets suffer hits from a weapon with Ensnare, the quality may be triggered multiple times, affecting a different target each time.</p>
+<p>An Ensnared target may perform an action to attempt a <strong>Hard ([D][D][D]) Athletics check</strong> on their turn to break free from the effect.</p>
+<h4 id="guided-active" tabindex="-1">Guided (Active)</h4>
+<p>A weapon with the Guided quality can track opponents. The Guided quality can only be triggered if an attack misses. If Guided is triggered, the controlling character may make a combat check at the end of the round as an out-of-turn incidental. The difficulty of this combat check is <strong>Average ([D][D])</strong>; instead of building the ability of the pool normally, add [A] equal to the weapon's Guided rating. If the check is successful, the weapon strikes the target, and the attack is resolved normally.</p>
+<p>Guided requires {A}{A}{A} to activate, unless otherwise specified in the weapon's description. The Guided quality can activate on any subsequent combat check it makes, representing the projectile continuing to track the target.</p>
+<h4 id="inaccurate-passive" tabindex="-1">Inaccurate (Passive)</h4>
+<p>Inaccurate weapons are less likely to be accurate or precise. When making an attack with an Inaccurate weapon, add [S] to the check equal to the Inaccurate rating.</p>
+<p>&lt;Page 88&gt;</p>
+<h4 id="inferior-passive" tabindex="-1">Inferior (Passive)</h4>
+<p>An Inferior item is a lackluster example of its kind, representing shoddy and poor craftsmanship. An Inferior item generates automatic {Th} on all checks related to its use.</p>
+<h4 id="knockdown-active" tabindex="-1">Knockdown (Active)</h4>
+<p>When Knockdown is triggered, one target hit by the attack is knocked prone. If multiple targets suffer hits from a weapon with Knockdown, the quality may be triggered multiple times, affecting a different target each time.</p>
+<p>Unless specified otherwise, Knockdown requires {A}{A} to trigger, plus one additional {A} per silhouette of the target beyond 1.</p>
+<h4 id="limited-ammo-passive" tabindex="-1">Limited Ammo (Passive)</h4>
+<p>Some weapons fire particularly large or complex projectiles that cost lots of money. Other weapons are expendable weapons like grenades that, once used, are destroyed. A weapon with the Limited Ammo quality may be used to make a number of attacks equal to its Limited Ammo rating before it must be reloaded with a maneuver. In addition, each shot expends one of a limited number of rounds of ammo; more ammo must be purchased or obtained before anyone fires the weapon again. This also applies to grenades and other &quot;one-use&quot; weapons that have the Limited Ammo 1 quality (here, your character is not &quot;reloading&quot; the grenade, but drawing another to use—mechanically, they are equivalent).</p>
+<h4 id="linked-active" tabindex="-1">Linked (Active)</h4>
+<p>Some weapons are designed to fire together at the same target (turrets housing multiple guns are a good example of this). When a character fires a linked weapon, on a successful attack, the weapon deals one hit. The wielder may spend {A}{A} to gain an additional hit, and may do so a number of times equal to the weapon's Linked rating. Additional hits from the Linked weapon may only be applied against the original target. Each hit deals the weapon's base damage plus damage equal to the {S} scored on the check.</p>
+<h4 id="pierce-passive" tabindex="-1">Pierce (Passive)</h4>
+<p>Any hits from this weapon ignore a number of points of soak equal to the weapon's Pierce rating. If the weapon has more ranks of Pierce than the target's total soak, it completely ignores the target's soak. For example, Pierce 3 against a soak of 2 ignores two points of soak, but the extra point of Pierce has no further effect.</p>
+<h4 id="prepare-passive" tabindex="-1">Prepare (Passive)</h4>
+<p>Items with this quality require time to set up before being used. The user must perform a number of preparation maneuvers equal to the item's Prepare rating before using the item (if the item is a weapon, &quot;using&quot; it would be making attacks with the weapon). At your GM's discretion, moving with the item, being knocked prone with the item, or other disruptions may require the user to perform the preparation maneuvers again before using the item.</p>
+<h4 id="reinforced-passive" tabindex="-1">Reinforced (Passive)</h4>
+<p>Weapons or items with the Reinforced quality are immune to the Sunder quality. Armor with the Reinforced quality make the wearer's soak immune to the Pierce and Breach qualities.</p>
+<h4 id="slow-firing-passive" tabindex="-1">Slow-Firing (Passive)</h4>
+<p>Slow-Firing weapons tend to deal incredible damage, but need time to recharge or cool down between shots. A weapon's Slow-Firing rating dictates the number of rounds that must pass before the weapon can be fired again after attacking. For example, a heavy laser cannon with Slow-Firing 2 must wait two rounds after being fired before it can be fired again.</p>
+<h4 id="stun-active" tabindex="-1">Stun (Active)</h4>
+<p>A weapon with Stun can deal strain to the target. When the Stun quality is activated, it inflicts strain equal to the weapon's Stun rating. Since this is strain, and not strain <em>damage,</em> it is not reduced by the target's soak.</p>
+<h4 id="stun-damage-passive" tabindex="-1">Stun Damage (Passive)</h4>
+<p>A weapon with this quality can only deal strain damage (damage applied to the target's strain threshold). Because this is strain <em>damage,</em> not strain, it is still reduced by a target's soak.</p>
+<h4 id="sunder-active" tabindex="-1">Sunder (Active)</h4>
+<p>When activating Sunder, the attacker chooses one item openly wielded by the target (such as a weapon, shield, or item on a belt). That item is damaged one step: to minor if undamaged, from minor to moderate, or from moderate to major. If an item already suffering major damage is the target of a successful Sunder, it is destroyed.</p>
+<p>Sunder requires {A} to activate, and may be activated even if the attack is unsuccessful. Sunder may be activated multiple times in the same attack, but each activation must be applied to the same item, potentially taking it from undamaged to destroyed in a single attack.</p>
+<h4 id="superior-passive" tabindex="-1">Superior (Passive)</h4>
+<p>A Superior item is a sterling example of its kind, representing masterful craftsmanship. A Superior item generates automatic {A} on all checks related to its use.</p>
+<p>&lt;Page 89&gt;</p>
+<blockquote>
+<p><strong>TABLE I.5–4: REPAIRING GEAR</strong></p>
+<table>
+<thead>
+<tr>
+<th>REPAIR REQUIRED</th>
+<th>DIFFICULTY</th>
+<th>PENALTY FOR USE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minor</td>
+<td><strong>Easy ([D])</strong></td>
+<td>Add [S]</td>
+</tr>
+<tr>
+<td>Moderate</td>
+<td><strong>Average ([D][D])</strong></td>
+<td>Increase difficulty once</td>
+</tr>
+<tr>
+<td>Major</td>
+<td><strong>Hard ([D][D][D])</strong></td>
+<td>Unusable</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Tracking Ammo</strong></p>
+<p>Combat in our game tends to be fast-paced and narrative based, with rounds lasting an unspecified amount of &quot;game-world&quot; time and combat encounters usually wrapping up in a few total rounds. That narrative-driven approach also means that when your character attacks with a ranged weapon, one attack could represent a single, carefully lined up shot, or a few shots snapped off with a pistol.</p>
+<p>All this means that we really encourage you and your GM not to worry too much about ammunition. Carefully tallying how many bullets your character has in the clip goes against the <strong>Genesys</strong> game experience (and the longstanding traditions of most action movies).</p>
+<p>A better way to approach the issue of ammo is to use any {D} generated on a combat check to make the character's ammo run out (something we suggest on page 104). It's more cinematically exciting, and certainly feels like something that would come from rolling a {D}!</p>
+<p>The only exception is when a weapon has the Limited Ammo quality. We reserve that quality for weapons like rocket launchers, grenades, or other weapons that very obviously can only fire once before reloading!</p>
+</blockquote>
+<h4 id="tractor-passive" tabindex="-1">Tractor (Passive)</h4>
+<p>Instead of firing searing beams of laser fire or crackling ion discharges, this weapon fires relatively harmless electromagnetic beams that ensnare ships and hold them fast in space. Tractor beams, like all weapons, are fired at their target using the appropriate skill check with all suitable modifiers. Once the weapon hits its target, the target may not move unless its pilot makes a successful Piloting check with a difficulty equal to the tractor beam's rating. If the target is an individual character, the character is immobilized while the beam is active.</p>
+<p>(Weapons with the Tractor quality are only going to show up in sci-fi settings, and probably only the more fanciful sci-fi settings! However, they are such a staple in those settings that we included the quality here.)</p>
+<h4 id="unwieldy-passive" tabindex="-1">Unwieldy (Passive)</h4>
+<p>An Unwieldy weapon is a weapon that can be particularly awkward to use for those without impressive dexterity and hand-eye coordination. To wield an Unwieldy weapon properly, the character needs an Agility characteristic equal to or greater than the weapon's Unwieldy rating. For each point of Agility by which the character is deficient, they must increase the difficulty of all checks made while using the weapon by one.</p>
+<h4 id="vicious-passive" tabindex="-1">Vicious (Passive)</h4>
+<p>When an attack with this weapon results in a Critical Injury or Hit, the character adds ten times the Vicious rating to the Critical roll. With Vicious 3, for example, you would add +30 to the resulting Critical Injury or Hit result.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 86-89</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

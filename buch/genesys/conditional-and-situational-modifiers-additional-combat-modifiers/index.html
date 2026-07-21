@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Conditional and Situational Modifiers (Additional Combat Modifiers)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 107&gt;</p>
+<h1 id="conditional-and-situational-modifiers" tabindex="-1">Conditional and Situational Modifiers</h1>
+<p>Character choices can modify combat checks in many ways, some good and some bad. These choices often provide additional benefits as well.</p>
+<h3 id="making-ranged-attacks-at-engaged-targets" tabindex="-1">Making Ranged Attacks at Engaged Targets</h3>
+<p>Sometimes, characters may want to attack a target engaged with another character. If the target and the character with whom they are engaged are both enemies of the attacker, the attacker may not worry about whom they might hit. However, if one of the characters is an ally, then things become more dangerous.</p>
+<p>When attacking a target engaged with an ally, the attacker upgrades the difficulty of the check once (for more on upgrading difficulty, see page 22). In addition, if the attacker's check succeeds but generates at least one {D}, that {D} is automatically spent to make the attacker hit one of the individuals engaged with the target (of the GM's choice), instead of hitting the target.</p>
+<h3 id="making-ranged-attacks-while-engaged" tabindex="-1">Making Ranged Attacks While Engaged</h3>
+<p>Sometimes, a character may want to make a ranged attack even though they're locked in hand-to-hand combat with an enemy. Such an action can be risky; a character may find it hard to take the time to line up a shot while an opponent is swinging an axe at them!</p>
+<p>Any opponent engaged with a character when the character makes a ranged attack (no matter who the target is) may add [B] to their next Brawl or Melee check against that character. They automatically lose this bonus if they and the character are no longer engaged with each other.</p>
+<p>In addition, the difficulty of some ranged attacks increases while the attacker and an enemy are engaged,</p>
+<p>&lt;Page 108&gt;</p>
+<blockquote>
+<p><strong>TABLE I.6–4: RANGED MODIFIERS</strong></p>
+<table>
+<thead>
+<tr>
+<th>SCENARIO</th>
+<th>DIFFICULTY INCREASE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engaged with opponent while armed with a one-handed ranged weapon (like a pistol or a throwing knife)</td>
+<td>+1 difficulty (+ [D])</td>
+</tr>
+<tr>
+<td>Engaged with opponent while armed with a two-handed ranged weapon (like a rifle or bow)</td>
+<td>+2 difficulty (+ [D][D])</td>
+</tr>
+<tr>
+<td>Engaged with opponent while armed with a heavy ranged weapon (like a cannon or ballista)</td>
+<td>May not make combat checks when engaged with an opponent</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>and other ranged attacks become impossible. See <strong>Table I.6–4: Ranged Modifiers</strong> for more information. You should note that this chart differentiates based on types of weapons, because in the core rules, there is only one kind of combat skill that lets you attack at range. If your setting has multiple ranged combat skills (such as separate skills for &quot;light&quot; and &quot;heavy&quot; ranged weapons), then the ranged modifiers can be determined by skill, rather than weapon size. Generally, it should be obvious which of your combat skills match up with which ranged modifiers.</p>
+<h3 id="attacking-prone-targets-and-attacking-while-prone" tabindex="-1">Attacking Prone Targets and Attacking While Prone</h3>
+<p>A character who is knocked down, unconscious, or willingly drops prone is considered prone.</p>
+<p>Prone characters are easier to hit with certain combat checks and find it harder to use certain combat skills. A character gains [B] when attacking a prone target with a Melee check (or any other close combat check). A prone character suffers [S] when making a melee attack from a prone position.</p>
+<p>Prone characters are harder to hit with ranged attacks but suffer no penalties when making ranged attacks. When a character attacks a prone target with a ranged attack, they suffer [S].</p>
+<p>Some attacks or weapons may cause a character to become prone. This is indicated in the individual weapon, talent, or creature attack entry. Getting knocked prone may be the result of a failed Coordination check or of the activation of a weapon's item quality.</p>
+<h3 id="two-weapon-combat" tabindex="-1">Two-weapon Combat</h3>
+<p>A character may opt to carry a pistol or a one-handed Melee weapon in each hand, increasing their volume of attacks at the expense of accuracy.</p>
+<p>When attacking with two weapons, the character must be using weapons that can each be reasonably held and wielded in one hand. Generally, these weapons are Ranged (Light) weapons—such as pistols and grenades—and one-handed Melee weapons or Brawl weapons. If it's unclear whether or not a weapon can be wielded one-handed, the GM makes the final determination.</p>
+<p>To make the attack, the player performs a combined check. First, the player designates one weapon as the primary weapon. When making the combined check, the character attacks with this weapon. The player then determines which skills and characteristics the character uses when making attacks with the primary weapon and which are used with the secondary weapon (the other weapon wielded). Finally, they determine the target.</p>
+<p>To assemble the dice pool for this check, the player compares the skills that would be used to make an attack with each weapon by itself, and then compares the characteristics that would be used to make an attack with each weapon by itself. They then take the skill that they have fewer ranks in, and the characteristic that they have fewer ranks in, and use this skill and characteristic to assemble their dice pool. It's very possible that the ranks in either the skills or characteristics are equal, in which case they can use either. If both checks would use the same skill or characteristic, they simply use that skill or characteristic.</p>
+<p>They then compare the difficulty of the two combat checks they would make with each of their two weapons to hit their target, and select the check with the higher difficulty. Then, they increase the difficulty of the combat check by one. Finally, they make the check.</p>
+<p>If they succeed, they hit with their primary weapon in the normal manner. They may spend {A}{A} or {Tr} to hit with their secondary weapon as well. If both weapons hit, they may spend additional {A} or {Tr} to activate item qualities from either weapon. Each hit deals its weapon's base damage plus one point of damage per uncanceled success.</p>
+<h3 id="unarmed-combat" tabindex="-1">Unarmed Combat</h3>
+<p>Although most characters probably feel more comfortable going into a fight with a good gun in their hand, there are times they must rely on their fists, feet, or other appendages.</p>
+<p>Characters fighting unarmed generally use the Brawl skill. Unlike other combat skills, the Brawl skill is designed to be used independently of any weapon (although some weapons can be used in conjunction with the Brawl skill).</p>
+<p>&lt;Page 109&gt;</p>
+<blockquote>
+<p><strong>TABLE I.6–5: IMPROVISED WEAPONS</strong></p>
+<table>
+<thead>
+<tr>
+<th>SIZE</th>
+<th>DAM</th>
+<th>CRIT</th>
+<th>RANGE</th>
+<th>ENCUM</th>
+<th>SPECIAL</th>
+<th>EXAMPLES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small</td>
+<td>+1</td>
+<td>5</td>
+<td>Engaged</td>
+<td>1</td>
+<td>–</td>
+<td>Bottle, fist-sized rock</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>+2</td>
+<td>5</td>
+<td>Engaged</td>
+<td>3</td>
+<td>Cumbersome 2</td>
+<td>Two-handed rock, chair</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>+3</td>
+<td>5</td>
+<td>Engaged</td>
+<td>4</td>
+<td>Cumbersome 4</td>
+<td>Shovel, large tree branch, table, crate</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE I.6–6: SILHOUETTES AND CHARACTERS</strong></p>
+<table>
+<thead>
+<tr>
+<th>SILHOUETTE</th>
+<th>EXAMPLES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Gnomes, cats, dogs</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Humans, dwarves, elves, motorcycles, and everything else that's roughly human-sized</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Most riding animals, bears, trolls, cars, trucks, civilian single-engined aircraft</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Drakes, giants, tractor-trailers, dirigibles, jet fighters, starfighters</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Dragons, zeppelins, three-masted sailing frigates, long-range space-going patrol craft</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A sailing &quot;ship of the line,&quot; modern destroyers, space-going transport ships</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Modern <em>Aegis</em> cruisers, space-going star-frigates</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Oil tankers, ocean-going battleships, aircraft carriers, space battleships</td>
+</tr>
+<tr>
+<td>8+</td>
+<td>Star-dreadnoughts, orbital defense platforms</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>When a character makes an unarmed combat check using Brawl, the attack has a base damage of their Brawn rating, a range of engaged, a Critical rating of 5, and the Knockdown item quality. Finally, when making a Brawl attack, the attacker can choose to deal damage to the target's strain threshold instead of its wound threshold, still reducing the damage by the target's soak.</p>
+<p>Unlike other weapons, Brawl weapons augment this basic attack. Brawl weapons can add damage to the attack (as indicated in the <strong>Brawl</strong> profile, on page 67) and may have an improved Critical rating and additional item qualities. When using a Brawl weapon, the user can choose to use its Critical rating instead of the standard Brawl Critical rating. They also add any additional item qualities to the qualities already provided by the Brawl attack. If the weapon provides an improved version of an existing quality, the character uses the improved version.</p>
+<h3 id="improvised-weapons" tabindex="-1">Improvised Weapons</h3>
+<p>Sometimes a character doesn't have a real weapon available and must make do with anything that is on hand. Swinging a broken bottle, heavy tool, large rock, or tree branch at a target are all examples of using an improvised weapon.</p>
+<p>Improvised weapons use the Melee skill, and as with all Melee weapons, the attacker adds their Brawn to the damage dealt. Just like weapons with the Inferior quality, improvised weapons generate one automatic {Th} on any check. Improvised weapons deal damage based on their size and general weight, as described in <strong>Table I.6–5: Improvised Weapons.</strong> Any attack roll that results in a {D} or {Th}{Th} indicates that the improvised weapon breaks and is useless in further rounds of combat. Large improvised weapons require two hands to use if the user is silhouette 1 or smaller.</p>
+<h3 id="size-differences-silhouettes" tabindex="-1">Size Differences (Silhouettes)</h3>
+<p>Generally, it's a character's skill that governs their chances of hitting a target. However, some targets are easier to hit than others, usually because of their size. Size, or silhouette, is important in the alternate rules for vehicles (see page 220). However, silhouettes can affect attack difficulties in standard combat as well.</p>
+<p>When a character makes an attack against a target with a silhouette two or more points larger than they are, they decrease the difficulty of the check by one. When a character makes an attack against a target with a silhouette two or more points smaller than they are, they increase the difficulty of the check by one.</p>
+<p><strong>Table I.6–6: Silhouettes and Characters</strong> has a list of example silhouettes that covers the size of most creatures the PCs may encounter. The most important thing to remember is that most characters are silhouette 1.</p>
+<p>&lt;Page 110&gt;</p>
+<blockquote>
+<p><strong>TABLE I.6–7: CONCEALMENT</strong></p>
+<table>
+<thead>
+<tr>
+<th>DICE ADDED</th>
+<th>EXAMPLES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+1</td>
+<td>Mist, shadow, waist-high grass</td>
+</tr>
+<tr>
+<td>+2</td>
+<td>Fog, the darkness of early morning or late evening, thick, shoulder-high grass</td>
+</tr>
+<tr>
+<td>+3</td>
+<td>Heavy fog; thick and choking smoke; the darkness of night; dense, head-high underbrush; thick grass</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 107-110</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

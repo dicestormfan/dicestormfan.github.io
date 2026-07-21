@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Combat Turns (Vehicle Combat)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 226&gt;</p>
+<h1 id="combat-turns" tabindex="-1">Combat Turns</h1>
+<p>Much like personal combat, combat between vehicles in <strong>Genesys</strong> is largely an abstract, narrative-driven activity designed for quickness and ease of use. As such, the maneuvers a vehicle performs are open to narration and the interpretation of you and your players.</p>
+<p>Player character pilots follow the same rules of combat as detailed on page 95. This means they can perform one action and one maneuver during their turn. They may also be able to perform a second maneuver by either suffering strain or spending {A}, although they cannot take more than two maneuvers during their turn.</p>
+<h3 id="maneuvers" tabindex="-1">Maneuvers</h3>
+<p>Less involved than actions, maneuvers are simple activities that do not typically require a skill check. Beyond all the maneuvers in personal combat, there are several maneuvers that apply specifically to vehicles. These additional maneuvers follow the usual rules governing maneuvers (see page 97). In addition (and especially in larger vehicles), characters are assumed to be able to perform any personal maneuvers such as dropping prone, managing gear, interacting with the environment, or aiming with vehicle or personal weapons (although you should use common sense as to what a character can and cannot do given the situation).</p>
+<p>All maneuvers have a current speed, which is how fast the vehicle has to be going to perform the maneuver.</p>
+<h4 id="accelerate" tabindex="-1">Accelerate</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Current Speed:</strong> Any</p>
+<p>The pilot may increase the vehicle's current speed by one or more, to a maximum of the vehicle's maximum speed. The vehicle suffers a number of system strain equal to the amount its speed increased minus 1, to a minimum of 0.</p>
+<p>&lt;Page 227&gt;</p>
+<blockquote>
+<p><strong>Infobox: Hazards and Difficult Terrain</strong></p>
+<p>Dangerous obstacles can make a stunt even more hazardous to perform. You should add [S] to checks based on the obstacles involved. See the table below for suggestions.</p>
+<p><strong>TABLE III.2–15: NAVIGATION HAZARD SETBACK DICE</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>NUMBER OF</strong> [S]</th>
+<th><strong>GROUND DESCRIPTION</strong></th>
+<th><strong>SPACE DESCRIPTION</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>–</td>
+<td>Flat, clear terrain. Roads, firm fields, grassy plains, or (if flying) clear skies and good weather.</td>
+<td>A relatively unchallenging navigational situation. A broad, loosely packed asteroid field, for example, or a thin, calm nebula.</td>
+</tr>
+<tr>
+<td>+ [S]</td>
+<td>Somewhat trickier terrain. Scattered trees, dense brush, rolling hills, sand dunes, or windy weather.</td>
+<td>More challenging but not seriously daunting obstacles. Flying over mountains on a moon, or a thick asteroid field or nebula.</td>
+</tr>
+<tr>
+<td>+ [S][S]</td>
+<td>Dangerous terrain. A thick forest, steep and rock-covered hills, or flying during a violent storm.</td>
+<td>A dangerous astronomical feature. Flying around a fracturing comet, or navigating a dense and turbulent asteroid field.</td>
+</tr>
+<tr>
+<td>+ [S][S][S]</td>
+<td>Very risky terrain. Sheer cliff faces, deep swamps, or a canyon only just wide enough for the vehicle to fit through are good examples of this.</td>
+<td>An extremely dangerous situation, such as approaching gravitational anomalies, flying through asteroid tunnels, or other dangerous and foolhardy pursuits.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h4 id="brace-for-impact" tabindex="-1">Brace for Impact</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Speed:</strong> Any</p>
+<p>Once per round, the pilot may use this maneuver to adjust the vehicle's position to minimize incoming damage. Until the beginning of the pilot's next turn, whenever the vehicle is dealt damage, the pilot may have the vehicle suffer system strain up to its silhouette to reduce the damage it suffers by that amount, to a minimum of 0.</p>
+<p>Additionally, until the beginning of the pilot's next turn, whenever the vehicle suffers a Critical Hit, the pilot may have the vehicle suffer system strain up to its silhouette to reduce the Critical Hit result by ten per point of strain it gains this way, to a minimum of 0. If the result is reduced to 0 this way, the Critical Hit is canceled.</p>
+<h4 id="decelerate" tabindex="-1">Decelerate</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Current Speed:</strong> 1+</p>
+<p>The pilot may decrease the vehicle's current speed by one or more, to a minimum of 0. The vehicle suffers a number of system strain equal to the amount its speed decreased minus 1, to a minimum of 0.</p>
+<h4 id="evade" tabindex="-1">Evade</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> 0–4</p>
+<p><strong>Current Speed:</strong> 3+</p>
+<p>Once per round, the pilot may perform this maneuver to dodge incoming fire. Until the beginning of the pilot's next turn, upgrade the difficulty of all attacks made against the vehicle and by characters in the vehicle.</p>
+<h4 id="reposition" tabindex="-1">Reposition</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Current Speed:</strong> 1+</p>
+<p>The pilot may move the vehicle up to one range band. This maneuver reflects minor repositioning to avoid obstacles, close or widen distance in a chase, or otherwise shift within the environment in small ways.</p>
+<h3 id="actions" tabindex="-1">Actions</h3>
+<p>In combat involving vehicles, your character can perform some actions that specifically apply to their vehicle. Some of these actions are labeled as Pilot Only actions. A vehicle may benefit from only one Pilot Only action per round (see <strong>Pilot Only Maneuvers and Actions,</strong> on page 226). Pilot Only actions are actions that affect the movement of the vehicle itself, which may only move so fast and so far.</p>
+<p>Like vehicle maneuvers, vehicle actions have a current speed requirement that the vehicle has to be traveling at to perform the action. Also remember that any of the actions listed starting on page 101 of <strong>Part I–Chapter 6: Combat Encounters</strong> can also be performed in combats involving vehicles, within the bounds of common sense.</p>
+<h4 id="dangerous-driving" tabindex="-1">Dangerous Driving</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Speed:</strong> 1+</p>
+<p>The pilot attempts to control the vehicle as it takes a sharp turn, tries to coax the vehicle through a series</p>
+<p>&lt;Page 228&gt;</p>
+<blockquote>
+<p><strong>Infobox: Dangerous Driving in Narrative Encounters</strong></p>
+<p>If a character attempts a particularly difficult or foolhardy trick with a vehicle in narrative encounters, you should have that character make a check as if they were performing the dangerous driving action, determining the speed of the vehicle based on the player's description and the circumstances of the scene.</p>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–16: DAMAGE CONTROL DIFFICULTY</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>TOTAL SYSTEM STRAIN</strong></th>
+<th><strong>TOTAL HULL TRAUMA</strong></th>
+<th><strong>DIFFICULTY</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System strain less than half system strain threshold</td>
+<td>Hull trauma less than half hull trauma threshold</td>
+<td><strong>Easy ([D])</strong></td>
+</tr>
+<tr>
+<td>System strain equal to or more than half system strain threshold</td>
+<td>Hull trauma equal to or more than half hull trauma threshold</td>
+<td><strong>Average ([D][D])</strong></td>
+</tr>
+<tr>
+<td>System strain exceeds system strain threshold</td>
+<td>Hull trauma exceeds hull trauma threshold</td>
+<td><strong>Hard ([D][D][D])</strong></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>of narrowly placed obstacles, or otherwise performs an improbable feat of operating prowess.</p>
+<p>When performing the Dangerous Driving action, the character makes a Piloting check with a difficulty equal to the silhouette of the vehicle. Keep in mind that the current speed of the vehicle can alter the difficulty of such checks—and amplify the consequences of failure!</p>
+<h4 id="blanket-barrage" tabindex="-1">Blanket Barrage</h4>
+<p><strong>Pilot Only:</strong> No</p>
+<p><strong>Silhouette:</strong> 5+</p>
+<p><strong>Speed:</strong> 0–3</p>
+<p>The gunner uses the ship's weapons to raise a curtain of fire around the ship, protecting it from smaller vehicles. Any smaller vehicle attempting an attack run will brave a hurricane of heavy weaponry. This action also speeds up combat when your vehicle has lots of guns.</p>
+<p>When performing the Blanket Barrage action, your character makes an <strong>Average ([D][D]) Gunnery check</strong> and selects all weapons of a single type that share a firing arc. Those weapons count as firing that round. This action requires at least two weapons to use, and it cannot be used if there are not two weapons of a single type that share a firing arc. Until the end of their next turn, all vehicles of silhouette 4 or smaller upgrade the difficulty of any combat checks made against your character's vehicle once, plus one additional time per {A}{A} on the check. If their combat check generates {Th}{Th}, they suffer one automatic hit, which deals half the base damage (rounding up) of the type of weapon used in the Blanket Barrage action. If their combat check generates {D}, they suffer one automatic hit dealing the full base damage instead.</p>
+<p>At your discretion, the Blanket Barrage might not cover all arcs of the vehicle, leaving some areas open.</p>
+<h4 id="concentrated-barrage" tabindex="-1">Concentrated Barrage</h4>
+<p><strong>Pilot Only:</strong> No</p>
+<p><strong>Silhouette:</strong> 5+</p>
+<p><strong>Speed:</strong> 0–3</p>
+<p>The gunner directs the vehicle's fire to focus on a precise point on the opponent's hull. Focusing fire in this way has the potential to deal significant damage. This action also speeds up combat when your vehicle has lots of guns.</p>
+<p>When performing the Concentrated Barrage action, the character selects all weapons of a single type (such as 24-pounder cannons aboard a seagoing craft, or railguns aboard a starship) that share a firing arc. This action requires at least two weapons to use, and it cannot be used if there are not two weapons of a single type that share a firing arc. Although the character is firing multiple weapons, the character makes a single combat check, as per the rules for the Perform a Combat Check with Vehicle Weapons action. If the attack succeeds, the character may spend {A} once to add damage equal to the number of weapons involved in the attack to one hit of the attack.</p>
+<p>The Concentrated Barrage action can only be used to target vehicles with a silhouette of 5 or higher.</p>
+<h4 id="damage-control" tabindex="-1">Damage Control</h4>
+<p><strong>Pilot Only:</strong> No</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Speed:</strong> Any</p>
+<p>As a vehicle takes damage, sparks fly and systems begin to fail. The Damage Control action can mitigate this stress. When performing the Damage Control action, choose whether you want your character to repair system strain or hull trauma. Then, make a Mechanics check, with the difficulty determined by <strong>Table III.2–16: Damage Control Difficulty.</strong> If the check is successful, reduce the vehicle's system strain or hull trauma by one per uncanceled {S}.</p>
+<p>Characters can use the Damage Control action to repair system strain multiple times during an encounter. However, only one Damage Control action can be made to repair hull trauma during an encounter—no matter how many characters are on the vehicle. In both cases, you decide whether your players' characters can use the Damage Control action, depending on the current situation (a fighter pilot probably couldn't climb out of their plane to patch their wing, after all).</p>
+<p>Characters can also use this action to repair Critical Hits the vehicle is suffering from. The difficulty of</p>
+<p>&lt;Page 229&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–17: ADDITIONAL VEHICLE ACTIONS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>ACTION</strong></th>
+<th><strong>SKILL AND DIFFICULTY</strong></th>
+<th><strong>RESULTS</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plot Course</td>
+<td><strong>Average ([D][D]) Piloting check</strong> or <strong>Hard ([D][D][D]) Perception check</strong></td>
+<td>The crew member studies the terrain ahead and plots a course that should take the vehicle safely through it. On a successful check, each uncanceled {S} reduces the [S] suffered for difficult terrain by one.</td>
+</tr>
+<tr>
+<td>Copilot</td>
+<td><strong>Average ([D][D]) Driving, Piloting,</strong> or <strong>Operating check</strong></td>
+<td>The crew member serves as the vehicle's copilot, managing systems and auxiliary equipment to allow the pilot to focus on flying or driving. On a successful check, each uncancelled {S} downgrades the difficulty of the pilot's next Driving, Piloting, or Operating check once.</td>
+</tr>
+<tr>
+<td>Jamming</td>
+<td><strong>Average ([D][D]) Computers check</strong></td>
+<td>The crew member uses the vehicle's systems to jam the communications of enemy vehicles. On a successful check, the enemy must make an <strong>Average ([D][D]) Computers check</strong> to use its own communication systems. The difficulty increases by one for each additional {S}{S}, and the jamming affects an additional target for each {A} spent.</td>
+</tr>
+<tr>
+<td>Boost Defenses</td>
+<td><strong>Hard ([D][D][D]) Mechanics check</strong></td>
+<td>The crew member reroutes power from other systems to boost the defensive systems of a vehicle. This only works if the vehicle already has a defense of 1 or greater. On a successful check, the vehicle suffers 1 system strain and increases its defense by one until the beginning of the character's next turn. Each additional {S} increases the duration by one round.</td>
+</tr>
+<tr>
+<td>Manual Repairs</td>
+<td><strong>Hard ([D][D][D]) Athletics check</strong></td>
+<td>In some cases, repairs can be as simple as welding a sturdy metal plate over a damaged system. If the character has the proper tools for the job, they can attempt to use the Damage Control action with Athletics rather than Mechanics. If successful, the character removes one point of hull trauma from the vehicle, plus one additional point for each additional {S}{S}. This follows the limitations of the Damage Control action, and thus may only be attempted once per encounter.</td>
+</tr>
+<tr>
+<td>Fire Discipline</td>
+<td><strong>Hard ([D][D][D]) Leadership</strong> or <strong>Discipline check</strong></td>
+<td>The character forgoes fighting to analyze the opponents' tactics and direct their comrades in achieving greater accuracy with weapons fire. If the check is successful, the next crew member firing a weapon on the vehicle adds [B] to their check (plus an additional crew member for every additional {S}{S}). The character may also spend {A}{A}{A} to allow every hit from shipboard weapons to inflict 1 system strain on their target as well as regular damage until the beginning of the character's next turn, as the carefully timed shots pummel shields and overload systems.</td>
+</tr>
+<tr>
+<td>Scan the Enemy</td>
+<td><strong>Hard ([D][D][D]) Perception check</strong></td>
+<td>The character uses the vehicle's scanners to study the enemy. If successful, the character learns what weapons the targeted vehicle has, its modifications, and its system strain and hull trauma thresholds. The character can also spend {A}{A} to learn its current system strain and hull trauma levels.</td>
+</tr>
+<tr>
+<td>Hack Enemy's Systems</td>
+<td><strong>Hard ([D][D][D]) Computers check</strong></td>
+<td>The character uses computers to attempt to disrupt the systems of an enemy vehicle. If successful, the character compromises the defenses of the target vehicle for one round per {S} (see the <strong>Vehicle Components</strong> sidebar, on page 221). A {Tr} may be spent to compromise one enemy weapon of the character's choice, and {A}{A} may be spent to inflict 1 system strain on the target vehicle.</td>
+</tr>
+<tr>
+<td>Intercept Projectiles</td>
+<td><strong>Hard ([D][D][D]) Computers</strong> or <strong>Gunnery check</strong> or <strong>Average ([D][D]) Vigilance check</strong></td>
+<td>The character tracks incoming attacks and uses vehicle systems to disrupt guided projectiles such as missiles, or drops flares and chaff at an opportune moment. If the check is successful, any attacks against their vehicle using weapons with the Guided quality upgrade their difficulty once (plus an additional upgrade for every additional {S}{S}) until the start of the character's next turn.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–18: SPEED ADVANTAGE DIFFICULTY</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>DIFFERENCE IN SPEED</strong></th>
+<th><strong>DIFFICULTY</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initiating vehicle is traveling at the same speed as the target vehicle</td>
+<td><strong>Easy ([D])</strong></td>
+</tr>
+<tr>
+<td>Initiating vehicle's speed is one or more higher than target vehicle</td>
+<td><strong>Average ([D][D])</strong></td>
+</tr>
+<tr>
+<td>Initiating vehicle's speed is one lower than target vehicle</td>
+<td><strong>Hard ([D][D][D])</strong></td>
+</tr>
+<tr>
+<td>Initiating vehicle's speed is two or more lower than target vehicle</td>
+<td><strong>Daunting ([D][D][D][D])</strong></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>repairing a Critical Hit is listed in the Severity column of <strong>Table III.2–19: Critical Hit Result,</strong> on page 230. Checks to repair Critical Hits can be attempted multiple times, until the Critical Hit is repaired.</p>
+<h4 id="gain-the-advantage" tabindex="-1">Gain the Advantage</h4>
+<p><strong>Pilot Only:</strong> Yes</p>
+<p><strong>Silhouette:</strong> 1–4</p>
+<p><strong>Speed:</strong> 4+</p>
+<p>This action reflects the frantic give-and-take of a dogfight between small vehicles. It allows a pilot to gain the upper hand against a single enemy vehicle, maneuvering to deny that foe shots while setting up attacks of their own.</p>
+<p>To execute this action, the pilot chooses one enemy vehicle and makes a Driving or Piloting check, the difficulty of which is determined by the relative speeds of the vehicles involved in the attack (see <strong>Table III.2–18: Speed Advantage Difficulty).</strong> If the pilot succeeds, they gain the advantage. While a pilot has the advantage, upgrade the ability of all combat checks made from the pilot's vehicle against the target vehicle <strong>twice,</strong> and upgrade the difficulty of all combat checks made by the target vehicle against the pilot's vehicle <strong>twice.</strong></p>
+<p>&lt;Page 230&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–19: CRITICAL HIT RESULT</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>D100</strong></th>
+<th><strong>SEVERITY</strong></th>
+<th><strong>RESULT</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01–18</td>
+<td><strong>Easy ([D])</strong></td>
+<td><strong>Rattled:</strong> The vehicle suffers 3 system strain, and its pilot and each occupant suffer 3 strain.</td>
+</tr>
+<tr>
+<td>19–36</td>
+<td><strong>Easy ([D])</strong></td>
+<td><strong>Shrapnel Spray:</strong> Chunks of metal or wood are hurled at the occupants at deadly velocity. The pilot and occupants must each make a <strong>Hard ([D][D][D]) Resilience</strong> or <strong>Vigilance check</strong> or suffer 1 wound, plus 1 additional wound per {F} on the check; you may spend {Th}{Th}{Th} or {D} from this check to inflict a Critical Injury on the character.</td>
+</tr>
+<tr>
+<td>37–54</td>
+<td><strong>Easy ([D])</strong></td>
+<td><strong>Hull Damaged:</strong> The vehicle's hull is compromised (see <strong>Vehicle Components</strong> on page 221).</td>
+</tr>
+<tr>
+<td>55–63</td>
+<td><strong>Average ([D][D])</strong></td>
+<td><strong>Navigation Damaged:</strong> The vehicle's navigation is compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>64–72</td>
+<td><strong>Average ([D][D])</strong></td>
+<td><strong>Propulsion Damaged:</strong> The vehicle's propulsion is compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>73–81</td>
+<td><strong>Average ([D][D])</strong></td>
+<td><strong>Defenses Damaged:</strong> The vehicle's defenses are compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>82–108</td>
+<td><strong>Hard ([D][D][D])</strong></td>
+<td><strong>Weapons Damaged:</strong> One of the vehicle's weapons of the attacker's choice is compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>109–126</td>
+<td><strong>Hard ([D][D][D])</strong></td>
+<td><strong>Brakes Damaged:</strong> The vehicle's brakes are compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>127–138</td>
+<td><strong>Daunting ([D][D][D][D])</strong></td>
+<td><strong>All Systems Down:</strong> All of the vehicle's components are compromised (see <strong>Vehicle Components,</strong> on page 221).</td>
+</tr>
+<tr>
+<td>139–144</td>
+<td><strong>Daunting ([D][D][D][D])</strong></td>
+<td><strong>Fire!:</strong> The vehicle catches on fire. While the vehicle is on fire, each occupant suffers damage as discussed on page 111. A fire can be put out with a <strong>Hard ([D][D][D]) Cool</strong> or <strong>Athletics check</strong> (or multiple checks for big vehicles).</td>
+</tr>
+<tr>
+<td>145–153</td>
+<td><strong>Daunting ([D][D][D][D])</strong></td>
+<td><strong>Breaking Up:</strong> The vehicle begins to come apart at its seams, disintegrating around the occupants. At the end of the following round, it is completely destroyed, and the surrounding environment is littered with debris. Anyone aboard the vehicle has one round to dive for the nearest door before they are lost.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Once one pilot gains the advantage, on the following turn, the opponent may attempt to cancel out the advantage by using Gain the Advantage as well. This works as described earlier, but the difficulty of the Piloting check is increased by one. After all, it is harder to maneuver to get on an opponent's tail if that opponent is already on your tail!</p>
+<h4 id="additional-vehicle-actions" tabindex="-1">Additional Vehicle Actions</h4>
+<p><strong>Pilot Only:</strong> No</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Speed:</strong> Any</p>
+<p>When aboard a vehicle in combat, those who are not piloting or firing weapons may still want to contribute to the encounter. Although the number of options open to them is limited only by a player's creativity, <strong>Table III.2–17: Additional Vehicle Actions</strong> has a list of actions passengers can attempt during encounters. The table lists the actions, the skill required, the check's attendant difficulty, and the results of a success. These actions are all covered by the perform a skill check action (on page 101), and are by no means an exhaustive list—and obviously, not all of these actions are appropriate for all vehicles or settings, so you should be sure to use common sense when choosing actions. However, they do serve to provide a range of ideas.</p>
+<h4 id="perform-a-combat-check-with-vehicle-weapons" tabindex="-1">Perform a Combat Check With Vehicle Weapons</h4>
+<p><strong>Pilot Only:</strong> No</p>
+<p><strong>Silhouette:</strong> Any</p>
+<p><strong>Speed:</strong> Any</p>
+<p>This is similar to the perform a combat check action, on page 101, with some minor differences in implementation due to the differences between vehicles and individuals. These differences are described below:</p>
+<ul>
+<li>
+<p>Each weapon on a vehicle may be fired a maximum of once per round.</p>
+</li>
+<li>
+<p>Targets must be within the firing arc of the weapon, as determined by the relative position of vehicles (and the GM's discretion).</p>
+</li>
+<li>
+<p>Although the attack difficulty is still based on the range to the target (see page 102 and <strong>Table I.6–1: Ranged Attack Difficulties),</strong> vehicle rules do add the sixth—strategic—range band. Attacks made at strategic range have a difficulty of <strong>Formidable ([D][D][D][D][D])</strong>. Also, vehicles have wide variance in silhouettes, so you should be sure to use the <strong>Size Differences (Silhouettes)</strong> rules on page 109.</p>
+</li>
+<li>
+<p>Most weapons on vehicles deal damage on planetary scale, meaning each point of damage is the equivalent of ten points of damage on a personal scale.</p>
+</li>
+<li>
+<p>When a vehicle suffers damage, it reduces that damage by its armor, to a minimum of 0. Any remaining damage is applied to the vehicle as hull trauma.</p>
+</li>
+</ul>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 226-230</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

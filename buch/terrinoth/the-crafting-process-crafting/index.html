@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>The Crafting Process (Crafting)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 112&gt;</p>
+<h1 id="the-crafting-process" tabindex="-1">The Crafting Process</h1>
+<p>To craft an item, your character must have appropriate tools and components. For instance, to craft a sword, your character must have access to a forge, smiths' tools, and a supply of iron or steel. Typically, the cost of raw materials to craft an item is equal to half of the cost of the item. These materials are consumed in the process, whether the crafting check succeeds or fails. Tools can generally be used multiple times before wearing out, but are often quite expensive.</p>
+<p>The process of crafting an item takes one day, plus a number of days equal to the rarity of the item. This does not include any time spent gathering tools or supplies. Your GM may decide that some items take significantly more or less time, depending on the nature of the item and its construction.</p>
+<p>To undertake the actual process crafting the item, your character makes a Mechanics check with a difficulty based on the rarity of the item; to determine the number of [D] in the pool, divide the rarity of the item by 2 and round up. For instance, a Mechanics check to craft a steel sword (rarity 2) is <strong>Easy ([D])</strong>. Your GM might further modify this difficulty or add [B] or [S] to represent the particular circumstances.</p>
+<p>&lt;Page 113&gt;</p>
+<blockquote>
+<p><strong>TABLE 2-16: SPENDING</strong> {A}<strong>,</strong> {Tr}<strong>,</strong> {Th}<strong>, AND</strong> {D} <strong>ON CRAFTING CHECKS</strong></p>
+<table>
+<thead>
+<tr>
+<th>COST</th>
+<th>EFFECT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td tr="">{A} or</td>
+<td>Reduce the time to craft the item by one day, to a minimum of one. (You may select this option multiple times.) Your character adds [B] to their next check using the same skill.</td>
+</tr>
+<tr>
+<td tr="">{A}{A} or</td>
+<td>Your character saves enough materials to reduce the cost of the next similar item they craft by half. Decrease the item's encumbrance by one, to a minimum of 0. If the item has the Limited Ammo 1 quality or is otherwise limited to a single use, craft one additional identical item. (You may select this option multiple times.)</td>
+</tr>
+<tr>
+<td tr="">{A}{A}{A} or</td>
+<td>Increase the item's hard points by one. Reduce the difficulty of future checks to craft the item by one (to a minimum of <strong>Simple (–)).</strong></td>
+</tr>
+<tr>
+<td tr=""></td>
+<td>The item gains the Superior quality. Increase the value of one numerical benefit of the item by one or increase the rating of one quality the item possesses by one, excluding damage, critical rating, soak, and defense (e.g., the extra encumbrance capacity a backpack adds). Increase the narrative benefit of the item, or add a new narrative effect, as approved by your GM.</td>
+</tr>
+<tr>
+<td tr="">{Tr}</td>
+<td>The item gains one other item quality, subject to your GM's approval. (You may only select this option once.)</td>
+</tr>
+<tr>
+<td d="">{Th} or</td>
+<td>Increase the time to craft the item by one day. (You may select this option multiple times.) Add [S] to the next crafting check the character makes.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th} or</td>
+<td>Increase the item's encumbrance by one. Your character must purchase additional materials worth half of the original component cost.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th}{Th} or</td>
+<td>If the item is a weapon, it gains the Inaccurate 1 quality. Decrease the item's hard points by one, to a minimum of 0. Your character's tools are ruined in the process and must be replaced.</td>
+</tr>
+<tr>
+<td d=""></td>
+<td>The item gains the Inferior quality. Whenever the item is damaged, it is damaged one additional step.</td>
+</tr>
+<tr>
+<td d="">{D}</td>
+<td>There is a terrible accident, and your character suffers a Critical Injury or, at the GM's discretion, some related narrative event can occur of equal distress (your character's anvil explodes, the smithy catches on fire, poison gases spread into the village, etc.).</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Roughing It</strong></p>
+<p>Your Game Master may allow characters to use the Survival skill to craft certain simple items, such as crude spears and traps. This follows the normal rules for crafting, but such items are not made to last, and generally wear out quickly. The GM may spend {D} on any check involving an item crafted using Survival to cause the item to break and become unusable.</p>
+</blockquote>
+<p>If the crafting check is successful, your character creates the item. Additionally, you and the GM may spend dice symbols for additional effects, as shown in <strong>Table 2–16: Spending</strong> {A}, {Tr}, {Th}, <strong>and</strong> {D} <strong>on Crafting Checks.</strong> Of course, these effects are only examples, and you and the GM might come up with additional results.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Realms of Terrinoth, pp. 112-113</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

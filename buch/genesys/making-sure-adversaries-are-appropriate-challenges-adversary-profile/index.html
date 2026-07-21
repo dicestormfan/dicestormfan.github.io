@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Making Sure Adversaries are Appropriate Challenges (Adversary Profile)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 135&gt;</p>
+<h1 id="making-sure-adversaries-are-appropriate-challenges" tabindex="-1">Making Sure Adversaries are Appropriate Challenges</h1>
+<p>When designing challenges for your party, your goal is almost always going to be a &quot;reasonable&quot; threat. This is a threat that makes your group feel challenged but is unlikely to incapacitate anyone and is very unlikely to defeat the entire group.</p>
+<p>However, since <strong>Genesys</strong> uses a free-form character leveling system, determining what is a reasonable threat can be tricky. We have some advice that can make figuring that out easier and applies to both social and combat encounters.</p>
+<h3 id="the-golden-rule-err-on-the-side-of-caution" tabindex="-1">The Golden Rule: Err on the Side of Caution</h3>
+<p>One thing to remember as the GM: it's always better for your PCs succeed with a crushing victory than to be overwhelmed in a bitter defeat. To put it another way, your players probably won't care if they defeat an opponent without much effort, but they are going to care if you wipe out all their characters.</p>
+<p>So, when building encounters (especially before you have a good idea of your group's capabilities), don't be afraid to make the first couple fairly easy. If they are combat encounters, put your group up against a single minion group or a number of rivals less than the number of PCs in your party. If the encounter is a social encounter, have it be against an adversary with no ranks in any social skills, and then use Story Points to upgrade the ability of the adversary's checks if things seem to be going well for your PCs.</p>
+<h3 id="comparing-skills-and-characteristics" tabindex="-1">Comparing Skills and Characteristics</h3>
+<p>A good way to gauge an adversary's strength versus your characters' is to compare the ranks they have in skills and characteristics. For example, a starting character likely has only one characteristic at rank 4, and the rest at rank 3 or 2. Likewise, they probably have a couple of skills at rank 2 and a couple more at rank 1. When you choose an adversary for these characters, select one with equal or lower characteristics and equal or lower skills.</p>
+<p>This is especially important in social encounters, where your PCs are often going to be making opposed skill checks against the adversaries. This means that if an adversary has high skills and characteristics, it doesn't just make them good at succeeding at their own skill checks. It also means that any opposed checks targeting them have a higher difficulty, too.</p>
+<h3 id="minion-group-sizes" tabindex="-1">Minion Group Sizes</h3>
+<p>When putting minions in an encounter, keep in mind that the size of their group goes a long way toward determining how dangerous the group is to your PCs. This is most obvious in light of a minion group's combined wound threshold, but it's probably more important with regard to the skill checks they'll be rolling.</p>
+<p>First, let's look at wound thresholds. Minions with wound thresholds of 2–4 are the least dangerous, because a single hit from a weapon with low damage can eliminate a minion from the group, and every minion eliminated makes the group less dangerous. Minions with wound thresholds of 5–7 are more dangerous, because unless your PCs have a weapon that does at least 9 damage, it is often going to take two hits to eliminate a minion from the group. Minions seldom have a wound threshold higher than 7, and one that does probably should be a rival instead.</p>
+<p>Now, let's look at group sizes and skill checks. Remember, a group's size effectively determines its ranks in a skill. To gauge how dangerous this makes it, determine how many minions it will take to get the dice pool for a particular skill to at least three [A] and/ or [P]. Once they have three Ability or Proficiency dice in their pool, minion groups are much more likely to succeed than fail when attacking a PC.</p>
+<p>Finally, keep minion group sizes around two to four individuals, and never more than five.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, p. 135</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

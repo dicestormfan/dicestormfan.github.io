@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Modifying the Basic Species Profile (Create a Species or Archetype)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 192&gt;</p>
+<h1 id="modifying-the-basic-species-profile" tabindex="-1">Modifying the Basic Species Profile</h1>
+<p>When modifying the profile, keep in mind how many experience points each modification would cost (think about <strong>Step 4: Invest Experience Points</strong> during character creation). Then adjust the starting XP appropriately.</p>
+<p>Let's say you wanted to make the average human archetype on page 36. All of that archetype's characteristics start with a value of 2. If you lowered the 3 in our framework to a 2, the species would now be missing 30 XP (the cost to raise a 2 to a 3 when purchasing ranks in characteristics). On the other hand, you are raising the 1 in the framework to a 2, but that's only the equivalent of giving our new species 20 XP (again, the cost to raise a 1 to a 2). The species loses 30 XP and gains 20, for a net loss of 10 XP. To compensate, you increase the species' starting XP from 100 to 110.</p>
+<p>Likewise, increasing or decreasing a wound threshold by two or a strain threshold by one is worth about 5 XP. If you increase a wound threshold by four or more, or a strain threshold by two or more, it's worth about 15 XP instead. We say &quot;about&quot; because these modifications don't have to be an exact science. Sometimes, you can make some minor adjustments (such as changing</p>
+<p>&lt;Page 193&gt;</p>
+<p>the wound threshold by only one) without changing the starting XP total at all.</p>
+<p>Special abilities (as long as they're ranks in skills) are easy to price. A single rank in a skill is worth 5 XP, unless that skill synergizes well with the species' starting characteristics. If the skill is linked to a characteristic that starts as a 3 or higher, it's worth 10 XP.</p>
+<p>Other unique rules are the hardest to price out. Generally, they should be about the power level of a Tier 1 talent (see page 196). If they feel more powerful than that, decrease starting XP by 5 or 10 XP to compensate.</p>
+<h3 id="other-guidelines-to-keep-in-mind" tabindex="-1">Other Guidelines to Keep in Mind</h3>
+<p>Here are a few other things you should keep in mind as you're designing your species. These aren't rules, but rather guidelines that will help you create a species that people are going to want to use, but won't break your game.</p>
+<h4 id="what-is-your-species-focus" tabindex="-1">What Is Your Species' Focus?</h4>
+<p>Keep this question in mind as you're designing your species. Do you see this species being better in melee or ranged combat? Social encounters? Exploration? Certain skills, characteristics, and abilities are going to be better for different focuses. That doesn't mean you must make everything about your species optimized, however. Generally, we recommend you make most of the options mesh up with the species' focus, but include one or two elements that go against type. This makes a species a lot more interesting than if it's ruthlessly optimized.</p>
+<h4 id="wound-and-strain-thresholds" tabindex="-1">Wound and Strain Thresholds</h4>
+<p>When determining wound and strain thresholds, don't forget that you add Brawn and Willpower to those values! If your species has a starting Brawn of 3, their wound threshold is going to be a minimum of three higher than the listed value.</p>
+<p>When you're making a species, you want to keep wound and strain thresholds (with Brawn and Willpower) somewhere between 10 and 15 for most species. If you go slightly lower or higher for some species, you may want to lower or raise their starting XP accordingly.</p>
+<p>Also, we recommend only having one of the two thresholds be high while the other is lower, or have both of them at an average final value of 12 or 13. Having both thresholds high would make the species seem overpowered, while having both thresholds low would make it seem weak.</p>
+<h4 id="what-makes-a-good-unique-ability" tabindex="-1">What Makes a Good Unique Ability?</h4>
+<p>The best unique abilities are those that define a physiological element of a species that can't be defined through skills or talents. This includes things like the ability to fly, breathe underwater, or not breathe the same atmosphere as the rest of us. Most of these are benefits, but not all, and while benefits decrease starting XP, drawbacks can increase starting XP.</p>
+<p>Here are a few example unique abilities to help you create your own, as well as how much you should increase or decrease starting XP by.</p>
+<ul>
+<li>
+<p><strong>Amphibious:</strong> This species can breathe underwater without penalty and never suffers movement penalties for traveling through water (–10 XP).</p>
+</li>
+<li>
+<p><strong>Exotic-Atmosphere Breather:</strong> This species does not breathe oxygen, but some other gas instead. This means its members must always wear some sort of respirator when not on their home planet. Characters of this species start with a respirator, and treat oxygen as a corrosive atmosphere with rating 8 (as per page 111) (+10 XP).</p>
+</li>
+<li>
+<p><strong>Regeneration:</strong> Whenever this species heals wounds due to natural rest, they heal 1 additional wound. They do not recover 1 additional wound when receiving first aid or medical treatment. This species can also regrow lost limbs, which takes roughly a month before the limb is usable (–15 XP).</p>
+</li>
+<li>
+<p><strong>Environmentally Adapted:</strong> This species has adapted to living in a particular climate. When making skill checks, they may remove [S] imposed by conditions matching their native climate (–5 XP).</p>
+</li>
+<li>
+<p><strong>Artificial:</strong> This species is an artificial construct. It does not need to eat, sleep, or breathe, and is unaffected by toxins and poisons. If you are using the <strong>Cybernetics</strong> rules from the science fiction setting (see page 177), the first six cybernetics this species receives do not reduce its strain threshold (the cybernetics can represent upgraded mechanical components instead of true cybernetics) (–10 XP).</p>
+</li>
+<li>
+<p><strong>Dark Vision:</strong> This species has excellent night vision. When making skill checks, it removes up to [S][S] imposed due to darkness (–5 XP).</p>
+</li>
+<li>
+<p><strong>Fearsome:</strong> This species is feared in societies other than its own. Its members add [S] to Charm, Deception, Leadership, and Negotiation checks they make, but they add [B] to Coercion checks they make. This does not apply when interacting with others of their own species (+5 XP).</p>
+</li>
+<li>
+<p><strong>Claws:</strong> This species has claws. When making an unarmed combat check, its members add +1 to their base damage and have a Critical rating of 3. (–5 XP).</p>
+</li>
+</ul>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 192-193</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

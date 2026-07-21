@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Alchemy (Crafting)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 113&gt;</p>
+<h1 id="alchemy" tabindex="-1">Alchemy</h1>
+<p>Characters can use the Alchemy skill to prepare elixirs, poisons, salves, unguents, and other concoctions, including those listed on page 102 to 104. For simplicity, these various concoctions are referred to as potions. Preparing a potion follows the normal rules for crafting, with the exceptions noted in this section.</p>
+<p>The process of brewing a potion takes one hour, plus a number of hours equal to the rarity of the potion. If the check is successful, the character creates enough of the potion for a single dose or application. The player and GM may spend dice symbols for additional effects, as per the examples in <strong>Table 2–17: Spending</strong> {A}, {Tr}, {Th}, <strong>and</strong> {D} <strong>on Alchemy Checks</strong> (see page 114).</p>
+<p>Normally, an alchemist's lab or kit (see page 100) is required in order to prepare a potion. In some cases, your GM might allow a character to make a check at an increased difficulty to prepare certain concoctions without access to the proper tools. Likewise, your character needs access to suitable ingredients (see page 114).</p>
+<p>&lt;Page 114&gt;</p>
+<blockquote>
+<p><strong>TABLE 2-17: SPENDING</strong> {A}<strong>,</strong> {Tr}<strong>,</strong> {Th}<strong>, AND</strong> {D} <strong>ON ALCHEMY CHECKS</strong></p>
+<table>
+<thead>
+<tr>
+<th>COST</th>
+<th>EFFECT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td tr="">{A} or</td>
+<td>A character who uses the potion heals 1 strain or 1 wound (as determined by your character) in addition to its normal effects. Your character adds [B] to their next Alchemy check.</td>
+</tr>
+<tr>
+<td tr="">{A}{A} or</td>
+<td>Your character prepares one additional dose of the potion. (You may select this option multiple times.) Reduce the time to prepare the potion by half.</td>
+</tr>
+<tr>
+<td tr="">{A}{A}{A} or</td>
+<td>Your character has enough ingredients left to craft another batch of the potion. Increase the duration of the potion's effects by one round (if applicable).</td>
+</tr>
+<tr>
+<td tr=""></td>
+<td>Upgrade the difficulty of checks to resist the poison's effects once (poison only.) The potion is more effective than normal, as determined by your GM, when a character uses the potion.</td>
+</tr>
+<tr>
+<td tr="">{Tr}</td>
+<td>Choose one other potion of lower rarity and add its effects to this potion.</td>
+</tr>
+<tr>
+<td d="">{Th} or</td>
+<td>If the potion is beneficial, a character suffers 2 strain after using the potion and benefiting from its effects. The potion (or poison) has a strong smell that adds [B] to all checks made to detect its presence, including in food or drink.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th} or</td>
+<td>When used, the potion doesn't take effect for one minute, or one round in structured time. Your character must purchase additional ingredients worth half of the original component cost.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th}{Th} or</td>
+<td>If the potion is beneficial, a character suffers 1 wound after using the potion and benefiting from its effects. Reduce the duration of the potion's effects by one round, to a minimum of one round (if applicable). If the effects would last until the end of the encounter, they last for two rounds instead.</td>
+</tr>
+<tr>
+<td d=""></td>
+<td>A character who uses the potion is disoriented for two rounds. A character who uses the potion must succeed on an <strong>Average ([D][D]) Resilience check;</strong> if they fail, their body rejects the potion and it doesn't take effect.</td>
+</tr>
+<tr>
+<td d="">{D}</td>
+<td>If the potion is beneficial, the user also suffers the effects of poison (see page 102) after resolving the normal effects of the potion.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="other-potions-and-elixirs" tabindex="-1">Other Potions and Elixirs</h3>
+<p>Your character is not restricted to those potions listed on page 102 to 104. If you wish to craft a new potion, talk to your GM about your idea and work with them to determine the potion's effects. The potions in this book are a good guideline for the kinds of effects a potion might have, as well as an appropriate rarity (and therefore crafting difficulty). Your GM has the final say on the effects of the potion and the difficulty of the check to prepare it.</p>
+<p>Most poisons should function similarly to the basic poison on page 102, requiring the target to make a Resilience check, with the result of the check determining the severity of the poison's effects. For instance, a poison intended to render the target unconscious might function just like the basic poison, except that it inflicts strain instead of wounds if the target fails their check.</p>
+<h3 id="alchemy-ingredients" tabindex="-1">Alchemy Ingredients</h3>
+<p>Before your character can brew a potion or prepare another alchemical concoction, they must, of course, have suitable ingredients. For most potions, your character can either simply purchase the ingredients, or gather them personally.</p>
+<p>As a guideline, the ingredients for a potion cost half the price of the final product, with a rarity half that of the desired potion or elixir (rounded up). Of course, things aren't always so simple, and your GM may determine that certain key ingredients are not available for purchase, and require your character to track them down by other means. This is particularly appropriate for rare and fantastical potions, such as invisibility potions.</p>
+<p>Most ingredients, whether available for purchase or not, can be gathered in the wilderness. To gather the necessary ingredients for a potion, your character (or perhaps an ally) must travel to an appropriate location and spend some time—probably at least the better part of a day—finding and obtaining the ingredients. The character makes a Survival check, with a difficulty equal to half the rarity of the potion, rounded up. If the check is successful, the character gathers enough ingredients to prepare one batch of the potion.</p>
+<p>Rare or singular ingredients, or those that by necessity are dangerous to acquire, may require more than a single Survival check to obtain. The acquisition of such components could become the basis of an encounter or even an entire adventure.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Realms of Terrinoth, pp. 113-114</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

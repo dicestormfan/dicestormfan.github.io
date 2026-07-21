@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Vehicle Characteristics (Vehicle Rules)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 220&gt;</p>
+<h1 id="vehicle-characteristics" tabindex="-1">Vehicle Characteristics</h1>
+<p>All vehicles are defined through a number of characteristics. These characteristics delineate such attributes as the strength of a starship's shields or how quickly a race car accelerates off the line. The characteristics described here cover the bulk of important mechanical information about vehicles.</p>
+<ul>
+<li>
+<p><strong>Handling:</strong> The measure of a vehicle's agility and how well it responds to its pilot.</p>
+</li>
+<li>
+<p><strong>Maximum Speed:</strong> A vehicle's top speed.</p>
+</li>
+<li>
+<p><strong>Silhouette:</strong> An abstract of the vehicle's size.</p>
+</li>
+<li>
+<p><strong>Defense:</strong> A vehicle's first line of defense against attack and accident. Typically representative of a starship's ray shields and particle shields, defense also represents any factors, technological or otherwise, that prevent damage from reaching a vehicle's armor.</p>
+</li>
+<li>
+<p><strong>Armor:</strong> The measure of a vehicle's armor, similar to soak on the personal scale.</p>
+</li>
+<li>
+<p><strong>Hull Trauma Threshold:</strong> A reflection of the sturdiness of a vehicle's construction and its ability to sustain damage and keep operating.</p>
+</li>
+<li>
+<p><strong>System Strain Threshold:</strong> The limit to which a vehicle can be pushed or knocked about before important systems overload or shut down.</p>
+</li>
+</ul>
+<h3 id="handling" tabindex="-1">Handling</h3>
+<p>Handling reflects a vehicle's inherent agility and the ways in which it responds to its pilot and crew. Enormous sailing ships might require incredible effort on the part of many crew members to turn, while advanced starships might have automated assistance to help pilots avoid obstacles and maneuver optimally. Factors such as shape, control systems, mass, or just general awkwardness all contribute to handling.</p>
+<p>Mechanically, a vehicle's handling characteristic dictates the number of [B] or [S] added to your PC's dice pool when making Piloting checks. Pilots add [S] equal to a vehicle's negative handling value or [B] equal to a vehicle's positive handling value. See <strong>Table III.2–13: Handling Examples</strong> for types of vehicles and their handling.</p>
+<h3 id="maximum-speed" tabindex="-1">Maximum Speed</h3>
+<p>An abstraction of both speed and acceleration, a vehicle's speed characteristic dictates how fast it moves relative to its environment and what maneuvers are available to the pilot. The listed speed is the maximum value at which the vehicle can travel. Vehicles can travel at speeds lower than their maximum listed value.</p>
+<p>&lt;Page 221&gt;</p>
+<blockquote>
+<p><strong>Infobox: Vehicle Components</strong></p>
+<p>Most vehicles have a number of components, and these components can be damaged. We list the components and describe what happens when they become damaged (generally from a Critical Hit) here:</p>
+<p><strong>Brakes:</strong> If a vehicle's brakes are compromised, its pilot cannot perform the decelerate maneuver. The vehicle can still coast to a stop over a long distance, or stop by colliding with something.</p>
+<p><strong>Defenses:</strong> If a vehicle's defenses are compromised, reduce its defense to 0.</p>
+<p><strong>Hull:</strong> If a vehicle's hull is compromised, its armor becomes 0.</p>
+<p><strong>Navigation:</strong> If a vehicle's navigation is compromised, its handling becomes –3 (unless already lower).</p>
+<p><strong>Propulsion:</strong> Propulsion in any form is what moves a vehicle. If a vehicle's propulsion is compromised, its pilot cannot perform the accelerate maneuver, and its current speed drops by one each round, to a minimum of 0.</p>
+<p><strong>Weapons:</strong> Some vehicles are armed with one or more weapons. If a weapon is compromised, it cannot be used (see <strong>Item Maintenance,</strong> on page 89).</p>
+<p>Repairing components requires a Mechanics check. Often the difficulty is determined by the severity of the Critical Hit; otherwise, it should be <strong>Average ([D][D])</strong> or <strong>Hard ([D][D][D])</strong>, at you, the GM's, discretion.</p>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–13: HANDLING EXAMPLES</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>HANDLING</strong></th>
+<th><strong>EXAMPLE VEHICLES</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>–4</td>
+<td>Downhill sled, single-thruster rocket, train</td>
+</tr>
+<tr>
+<td>–3</td>
+<td>Aircraft carrier, dogsled, three-masted heavy frigate, space battleship</td>
+</tr>
+<tr>
+<td>–2</td>
+<td>Combat walker, heavy tank, passenger plane, sloop</td>
+</tr>
+<tr>
+<td>–1</td>
+<td>Hang glider, horse-drawn cart, light tank, motorcycle</td>
+</tr>
+<tr>
+<td>+0</td>
+<td>Consumer car, jetpack, motorboat</td>
+</tr>
+<tr>
+<td>+1</td>
+<td>Bicycle, hovercraft, trained horse</td>
+</tr>
+<tr>
+<td>+2</td>
+<td>Fancy car, fighter jet</td>
+</tr>
+<tr>
+<td>+3</td>
+<td>High-performance race car, snowmobile, stunt plane</td>
+</tr>
+<tr>
+<td>+4</td>
+<td>Neural interface exoskeleton, AI piloting-assisted space superiority fighter</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<p><strong>TABLE III.2–14: VEHICLE SPEEDS IN STRUCTURED ENCOUNTERS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>SPEED</strong></th>
+<th><strong>FORCED MOVE</strong></th>
+<th><strong>OTHER EFFECTS</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0 range bands</td>
+<td>–</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1 range bands</td>
+<td>–</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2 range bands</td>
+<td>–</td>
+</tr>
+<tr>
+<td>3–4</td>
+<td>3 range bands</td>
+<td>Upgrade the difficulty of all Piloting checks once. Add +20 to the result of any Critical Hit suffered as a result of a collision (see <strong>Collisions,</strong> on page 222).</td>
+</tr>
+<tr>
+<td>5</td>
+<td>4 range bands</td>
+<td>Upgrade the difficulty of combat checks targeting the vehicle once. Upgrade the difficulty of all Piloting checks twice. Add +40 to the result of any Critical Hit suffered as a result of a collision (see <strong>Collisions,</strong> on page 222).</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h4 id="effects-of-current-speed" tabindex="-1">Effects of Current Speed</h4>
+<p>When using vehicles, you should always track their current speed. A vehicle may be operating at any speed from zero to its maximum. Vehicle maneuvers can be used to accelerate or decelerate (see <strong>Maneuvers</strong> on page 226).</p>
+<p>Additionally, while a vehicle's current speed is 1 or higher, certain other effects apply to it (see <strong>Table III.2–14: Vehicle Speeds in Structured Encounters).</strong></p>
+<h4 id="steering" tabindex="-1">Steering</h4>
+<p>Each round, a vehicle moves a certain distance based on its current speed. The pilot's job, in theory, is to control this momentum so as to keep the occupants alive.</p>
+<p>When your character is piloting a vehicle, they must steer the craft. At the beginning or end of their turn each round, you must have the vehicle move a certain number of range bands based on its speed, as detailed in <strong>Table III.2–14: Vehicle Speeds in Structured Encounters.</strong></p>
+<p>A vehicle generally goes where the pilot wants it to as part of this movement. However, given that player characters are known for attempting to ignore such petty constraints as safety manuals, road signs, and consideration of the laws of physics, you can always require the pilot to perform the dangerous driving action (see page 227) to reach their intended destination (if doing is possible). Zigzagging through obstacles, turns harsher than ninety degrees, and anything involving safe embarkation or disembarkation without coming to a full stop should almost certainly require the pilot to use this action. If the pilot fails, you, the GM, determine the final position (and condition) of the vehicle, but at a minimum it should veer off course, and at worst, it might suffer a collision with one or more intervening objects (see <strong>Collisions,</strong> on page 222).</p>
+<p>&lt;Page 222&gt;</p>
+<blockquote>
+<p><strong>Infobox: Repairing Hull Trauma</strong></p>
+<p>While system strain and the results of some Critical Hits are temporary, hull trauma is more permanent. Repairing hull trauma requires three things: proper facilities, money, and time. Proper facilities have enough tools, light, parts, and workspace to make the repairs to the vehicle.</p>
+<p>We recommend paying 100 to repair 1 hull trauma, but the cost can fluctuate based on your characters' reputation, the scarcity of parts, and other factors at your discretion as GM. A good rule of thumb is that light damage (up to a quarter of a vehicle's total hull trauma threshold) should take an amount of time measured in days, while any damage over that takes weeks or even months to repair.</p>
+</blockquote>
+<blockquote>
+<p><strong>Infobox: Emergency Repairs</strong></p>
+<p>The pilot or crew of a vehicle with hull trauma that exceeds its hull trauma threshold may attempt emergency repairs by scavenging all available parts from the vehicle and making a <strong>Hard ([D][D][D]) Mechanics check.</strong> Success brings the vehicle back to some semblance of life. The vehicle reduces its hull trauma to one point below its hull trauma threshold, but its defenses, hull, navigation, and weapons remain compromised until it receives more time-intensive repairs.</p>
+</blockquote>
+<p>If a vehicle has more than one pilot, steering only occurs on the turn of the first pilot to act each round. If a vehicle has no pilot who can steer it, it still moves—but it does so at the end of the round, and you determine its location and any objects it might hit along the way.</p>
+<h4 id="collisions" tabindex="-1">Collisions</h4>
+<p>There are occasions when vehicles will run into the terrain around them, or into another nearby vehicle. In these cases, there are two possible types of collisions: glancing blows (minor collisions) and head-on hits (major collisions). Collisions can be mitigated by ship's or vehicle's defenses.</p>
+<p>In the case of a minor collision, all vehicles involved suffer a single Critical Hit (see <strong>Vehicle Critical Hits,</strong> on page 231). Subtract the vehicle's defense times 10 from the result rolled on <strong>Table III.2–19: Critical Hit Result,</strong> on page 230. If the result is reduced to zero or less, the vehicle's shields or other defenses have nullified the collision entirely, and the Critical Hit is canceled.</p>
+<p>In the case of a major collision, all vehicles involved suffer a single Critical Hit as well. Subtract the vehicle's defense times 5 from the Critical Hit result. If the result is reduced to zero or less, the Critical Hit is canceled.</p>
+<p>At your discretion, some particularly large vehicles might be able to ignore collisions with very small vehicles. However, larger vehicles have a harder time avoiding collisions with terrain features.</p>
+<h3 id="silhouette" tabindex="-1">Silhouette</h3>
+<p>Much like the speed characteristic, silhouette is an abstract number, used to describe a vehicle's size and mass relative to other vehicles. Silhouette factors heavily into scale and is used to calculate the difficulty of attacking targets of different sizes. Generally, large vehicles are easy to hit, and small vehicles are hard to hit.</p>
+<p>Silhouettes range from 0 to 10 (or even higher). Silhouette 0 is smaller than a human, silhouette 1 is about the size of an adult human, and silhouette 2 is the size of most cars and large animals. Fighter jets, cargo planes, and tractor-trailer trucks range from silhouette 3 to 4. Navy battleships and starships range from silhouette 5 to 10.</p>
+<h3 id="hull-trauma-threshold" tabindex="-1">Hull Trauma Threshold</h3>
+<p>Hull trauma threshold is a reflection of a vehicle's sturdiness and resistance to damage. The sturdiness of a ship's hull and mast, the quality of a bicycle's chain and gears, and the resilience of a tank's frame are all represented by hull trauma threshold. Hull trauma generally requires major body work on the vehicle to repair, which can be extremely costly.</p>
+<p>Like the wound threshold of a player character, hull trauma threshold represents the amount of physical damage that a vehicle can suffer before it is rendered inoperable or destroyed. In game terms, when a vehicle exceeds its hull trauma threshold, one of two things happen. If it is occupied only by unimportant characters, such as minion NPCs, it is simply destroyed— crashes and crumples, flips over, or explodes. If it is occupied by plot-relevant characters, such as the PCs or rival/nemesis NPCs, it suffers a Critical Hit (see <strong>Vehicle Critical Hits,</strong> on page 231) and becomes inoperable. Until its hull trauma is reduced to its hull trauma threshold or below, all of its components are compromised (see <strong>Vehicle Components,</strong> on page 221).</p>
+<p>Hull trauma threshold is measured in planetary scale (see <strong>Planetary Scale versus Personal Scale,</strong> on page 224), meaning that one point of hull trauma equals 10 wounds on an individual.</p>
+<p>&lt;Page 223&gt;</p>
+<blockquote>
+<p><strong>Infobox: Removing System Strain</strong></p>
+<p>While the situation aboard a vehicle that has exceeded its system strain threshold is indeed dire, not all is lost. Any crew member can aid the vehicle in removing system strain by performing repairs and damage control such as rebooting systems, bypassing fried circuits, and putting out electrical fires. This is accomplished through the damage control action (see page 228).</p>
+<p>Vehicles also recover from system strain slowly over time. For every full day a vehicle spends without taking more system strain, it reduces its total system strain by one.</p>
+</blockquote>
+<h3 id="system-strain-threshold" tabindex="-1">System Strain Threshold</h3>
+<p>System strain threshold represents a vehicle's ability to function under rigorous use and the point at which it overheats, depletes its power source, or otherwise ceases functioning. A sailing ship's system strain threshold might represent the quality of moving parts like the tiller and ropes, while that of a futuristic battle-suit might represent the state of its cutting-edge reactor.</p>
+<p>Most often, a vehicle suffers system strain due to the actions of its crew, as they push it to (or beyond) its breaking point. Driving a tank over rough ground or sailing a ship through a storm might well cause it system strain, as might pushing the engine of a car beyond its intended limits. You can also spend {Th} on the pilot's checks to inflict system strain on a vehicle, representing the character's haste or carelessness causing stress to the craft.</p>
+<p>Like the strain threshold of a player character, system strain represents the stress that the vehicle can tolerate before it overheats, breaks down, overloads, or generally ceases functioning temporarily. In game terms, when a vehicle exceeds its system strain threshold, the vehicle's speed drops to 0 at the beginning of the following round. Until its system strain is reduced to its system strain threshold or below, its components cease functioning, as described in the <strong>Vehicle Components</strong> sidebar, on page 221.</p>
+<p>System strain is measured in planetary scale (see page 224), meaning that one point of system strain equals 10 strain. It is important to note that, unlike personal strain, system strain cannot be recovered by spending {A}. It can only be restored through actions taken by the crew or slowly over time.</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 220-223</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>

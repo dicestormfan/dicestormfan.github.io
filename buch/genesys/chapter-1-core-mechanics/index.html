@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Chapter 1 - Core Mechanics</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.d92311c2.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">Digital Garden</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 8&gt;</p>
+<h1 id="chapter-1-core-mechanics" tabindex="-1">Chapter 1: Core Mechanics</h1>
+<p>Whether flying a fighter jet through a storm, swordfighting with an animated skeleton, or hacking into a computer network guarded by killer AIs, your characters often find themselves performing actions that require skill and no small amount of luck. To determine whether these actions succeed or fail—or if they have any other unforeseen consequences—characters in <strong>Genesys</strong> perform skill checks. Skill checks are easy to use, and we break them into two key elements:</p>
+<ol>
+<li>Roll a pool of Narrative dice.</li>
+<li>After all factors have been accounted for, if at least one Success symbol remains, the task succeeds.</li>
+</ol>
+<p>When any character attempts an action, the first step involves gathering a number of dice and assembling the dice pool. Several factors influence the number and type of dice in the pool, including the character's innate abilities, skill training, and equipment, as well as the inherent difficulty of the task being attempted. Your GM may decide that the environment or the situation warrants the addition of certain dice; fixing a car with ample time and the proper tools is one thing, but attempting repairs in the pouring rain, without tools, and under a hail of bullets is quite different. Once you have assembled all of the necessary dice, you roll all of the dice in the pool.</p>
+<p>The second step involves interpreting the results on the dice. After rolling, you look at the symbols on the face-up sides of the dice. Certain symbols work in pairs, one type canceling out another. Other types of symbols do not cancel each other out, and their effects are applied regardless of the outcome of the task. By comparing the first set of paired symbols—Success and Failure—you determine if the task succeeds. You then compare the second set of symbols—Advantage and Threat—to determine any beneficial side effects or negative consequences. Finally, you resolve any other symbols to add the last details to the outcome.</p>
+<p>This core mechanic, the skill check, forms the foundation of our game. Other rules and effects either modify or interact with one of the two fundamental elements—the assembly of the dice pool and the interpretation of the results after the dice are rolled.</p>
+<p><strong>In this chapter:</strong></p>
+<ul>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/the-dice-chapter-1-core-mechanics/">The Dice</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/dice-symbols-and-results-chapter-1-core-mechanics/">Dice Symbols and Results</a></li>
+<li><a class="internal-link is-unresolved" href="/404" target="">Lights, Camera, Action!</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/the-basic-dice-pool-chapter-1-core-mechanics/">The Basic Dice Pool</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/characteristic-ratings-chapter-1-core-mechanics/">Characteristic Ratings</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/skills-and-training-chapter-1-core-mechanics/">Skills and Training</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/difficulty-chapter-1-core-mechanics/">Difficulty</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/building-a-basic-dice-pool-chapter-1-core-mechanics/">Building a Basic Dice Pool</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/interpreting-the-pool-chapter-1-core-mechanics/">Interpreting the Pool</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/triumph-and-despair-chapter-1-core-mechanics/">Triumph and Despair</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/other-types-of-checks-chapter-1-core-mechanics/">Other Types of Checks</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/other-key-elements-chapter-1-core-mechanics/">Other Key Elements</a></li>
+<li><a class="internal-link is-unresolved" href="/404" target="">Experience and Development</a></li>
+<li><a class="internal-link" target="" data-note-icon="undefined" href="/buch/genesys/derived-attributes-chapter-1-core-mechanics/">Derived Attributes</a></li>
+</ul>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, p. 8</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>
