@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Using Magic in Narrative Encounters (Magic Rules)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script async type="module">import mermaid from"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js" integrity="sha512-hpZ5pDCF2bRCweL5WoA0/N1elet1KYL5mx3LP555Eg/0ZguaHawxNvEjF6O3rufAChs16HVNhEc6blF/rZoowQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-sv0slik/5O0JIPdLBCR2A3XDg/1U3WuDEheZfI/DI5n8Yqc3h5kjrnr46FGBNiUAJF7rE4LHKwQ/SoSLRKAxEA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script async src="https://cdn.jsdelivr.net/npm/lucide@0.115.0/dist/umd/lucide.min.js"></script>
+<script>window.addEventListener("load",(()=>{document.querySelectorAll(".callout").forEach((e=>{const t=getComputedStyle(e).getPropertyValue("--callout-icon"),l=t&&t.trim().replace(/^lucide-/,"");if(l){const t=e.querySelector(".callout-title");if(t){const e=document.createElement("div"),c=document.createElement("i");e.appendChild(c),c.setAttribute("icon-name",l),e.setAttribute("class","callout-icon"),t.insertBefore(e,t.firstChild)}}})),lucide.createIcons(),Array.from(document.querySelectorAll(".callout.is-collapsible")).forEach((e=>{e.querySelector(".callout-title").addEventListener("click",(t=>{e.classList.contains("is-collapsed")?e.classList.remove("is-collapsed"):e.classList.add("is-collapsed")}))}))}))</script>
+<script async src="https://fastly.jsdelivr.net/npm/force-graph@1.43.0/dist/force-graph.min.js"></script>
+<script async src="https://fastly.jsdelivr.net/npm/@alpinejs/persist@3.11.1/dist/cdn.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism-okaidia.min.css" integrity="sha512-mIs9kKbaw6JZFfSuo+MovjU+Ntggfoj8RwAmJbVXQ5mkAX5LlgETQEweFPI18humSPHymTb5iikEOKWF7I8ncQ==" crossorigin="anonymous" referrerpolicy="no-referrer" async>
+<script src="https://fastly.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+<link href="/styles/digital-garden-base.css" rel="stylesheet">
+<link href="/styles/obsidian-base.css" rel="stylesheet">
+<link href="/styles/_theme.ffc7bca7.css" rel="stylesheet">
+<link href="/styles/custom-style.css" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<style></style>
+</head>
+<body class="theme-dark markdown-preview-view markdown-rendered markdown-preview-section">
+<nav class="navbar">
+<div class="navbar-inner">
+<a href="/" style="text-decoration:none">
+<h1 style="margin:15px!important">GC &amp; RoT</h1>
+</a>
+</div>
+</nav>
+<main class="content cm-s-obsidian">
+<header>
+<div class="header-meta">
+</div>
+</header>
+<p>&lt;Page 210&gt;</p>
+<h1 id="using-magic-in-narrative-encounters" tabindex="-1">Using Magic in Narrative Encounters</h1>
+<p>Magic checks are fundamentally handled like any other skill check, and called for in the same circumstances. As with any other skill, you should generally only require a check when there are dramatic results or consequences for failure. For instance, a character who regularly manifests fire-based effects using their magic skill shouldn't need a check to magically light a torch or campfire. Similarly, a priest who has shown themself to be a master of the healing arts shouldn't need a check to ease the pain of a dying NPC.</p>
+<p>With magic skills being so open ended, judging and resolving magic skill checks may seem challenging, but it really doesn't need to present much more complication than using any other skill. Instead of looking at the &quot;how&quot; of the spell, focus on the end result to decide on a difficulty for the check. If the spell is basically replicating the effects of a mundane skill, assign the difficulty correspondingly, but consider increasing it by one. Magic shouldn't be a catchall skill that eliminates the need for any others. Magically levitating over a river is more difficult than swimming across from an objective view, although your character might find it easier if they aren't trained in Athletics (or don't want to get wet).</p>
+<p>Resolving a magic skill check is really no different from resolving any other check. If the check succeeds, the</p>
+<p>&lt;Page 211&gt;</p>
+<blockquote>
+<p><strong>TABLE III.2–4: SPENDING</strong> {Th} <strong>AND</strong> {D} <strong>ON MAGIC SKILL CHECKS</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>COST</strong></th>
+<th><strong>RESULT OPTIONS</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td d="">{Th} or</td>
+<td>The magical energies exhaust the character, and they suffer 2 strain or 1 wound (controlling player's choice). This character and all allied spellcasters in the encounter add [S] to any attempts to cast spells until the end of the controlling player's next turn.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th} or</td>
+<td>The spell doesn't take effect until the start of the next round, or after a minute in narrative gameplay. If the character is using a magical item, it becomes damaged one step (see <strong>Table I.5–4: Repairing Gear,</strong> on page 89). Until the end of the encounter, enemy spellcasters add [B] when casting a spell that targets this character.</td>
+</tr>
+<tr>
+<td d="">{Th}{Th}{Th} or</td>
+<td>The spell is slightly more powerful than expected. One character of the GM's choice is targeted or otherwise affected by the spell as well. All other spellcasters and creatures attuned to magical energies within a day's travel become aware of the character (and depending on their disposition, may be very interested in finding them and doing them harm).</td>
+</tr>
+<tr>
+<td d=""></td>
+<td>The character overexerts themself or loses their magical connection and is unable to cast spells for the rest of the encounter or scene. The GM picks the target of the character's spell. If the caster is an NPC, the controlling player picks the target of the spell instead.</td>
+</tr>
+<tr>
+<td d="">{D}</td>
+<td>The character completely loses control of their magical energies or draws the ire of their deity, suffering one Critical Injury (at the GM's discretion, this may instead take the form of some of terrible or hilarious misfortune, such as temporarily being turned into a small woodland creature, being struck by lightning on a clear day, swapping bodies with someone else in the encounter for the remainder of the day, or summoning an avatar of divine or infernal wrath). If the character is using a magical item, it is completely destroyed.</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>character achieves what they set out to. How exactly that happens is shown by the positive and negative symbols left in the pool, as interpreted by you and your players. <strong>One good guideline for magic, however, is that accomplishing something through the use of magic should rarely be as easy as accomplishing the same task by using the skill designed for it.</strong> Magic can be a generalist skill, but it shouldn't be a way to master everything.</p>
+<p>Magic is more taxing than other activities in one other respect. <strong>When your character casts a spell that requires a check (whether or not the check succeeds), they suffer 2 strain after resolving the check.</strong> This limit keeps magicusing characters from using magic indiscriminately. Note that magic-using characters only suffer strain when they need to make a check to cast a spell, so minor and narrative spell effects do not impose this penalty.</p>
+<p>Generally, magic also has unique requirements for use. The character may have to make certain gestures, say specific words, or just spend a few precious moments focusing on the spell. If your character can't do that, casting the spell becomes harder. See <strong>Table III.2–3: Penalties When Casting Spells,</strong> on the previous page, for some conditions that may make it harder for a character to cast a spell.</p>
+<p>Magic can also be risky, and casting it can come with consequences. <strong>Table III.2–4: Spending</strong> {Th} <strong>and</strong> {D} <strong>on Magic Skill Checks</strong> lays out some of the consequences, and the {Th} and {D} needed to trigger them. You may note that the consequences tend to be worse than the consequences characters normally suffer for {Th} and {D}. We did that deliberately, as a balance for magic's power and flexibility. After all, with great power comes the occasional risk of turning yourself into a toad.</p>
+<p>The effects of magic skill checks may be instantaneous or, rarely, permanent. Generally, spells used in structured gameplay either have an immediate effect or a persistent effect for as long as the character uses maneuvers to concentrate on the spell. At your discretion, outside of structured gameplay, some effects may last for the duration of an encounter or scene.</p>
+<h3 id="types-of-spells" tabindex="-1">Types of Spells</h3>
+<p>Since magic skills are more versatile—and thus potentially more useful—than other skills, we narrow down what is possible to accomplish with a particular magic skill by defining broad categories of actions, or <strong>spells.</strong> For structured encounters, we divide spell types up fairly rigorously. For narrative encounters, we keep things more flexible but still follow those same guidelines.</p>
+<p>In this section, we list the different types of spells and talk about how to use them in narrative encounters. Later we talk about using these spells in structured encounters.</p>
+<p>Each spell entry talks about the things a character can do with that spell—such as make themself invisible, hex a target, or heal an ally. Often, we refer to the <strong>Magic in Structured Encounters</strong> rules, starting on page 214, for particulars on how to use a spell to accomplish a goal. Those rules work equally well for narrative encounters.</p>
+<p>Also, you'll quickly note that none of the three magic skills (Arcana, Divine, and Primal) are able to accomplish all of the different types of spells. We did this deliberately; each type of magic should be better at some things than others, and this way no one character can be a master at everything. We don't recommend disregarding this rule, since it makes magic users even more powerful.</p>
+<p>&lt;Page 212&gt;</p>
+<blockquote>
+<p><strong>Infobox: Different Disciplines, Different Approaches</strong></p>
+<p>Magic skills may be treated differently depending on the setting. In some settings, Divine, Arcane, and Primal spellcasters each tap into a different energy and are unable to access the other powers. If your setting fits this description, you may rule that once a character has taken a rank in one of the three magic skills, they cannot take ranks in the other magic skills.</p>
+<p>In other settings, although the three magic skills represent tapping into different energies, a trained spellcaster can tap into any of those energies by changing their approach or rituals. If your setting fits this description, you may allow characters to purchase ranks in all three skills (if that character wants to be able to perform all types of magic).</p>
+<p>Finally, in some settings, magic is a gift (or curse) that only a select few individuals can manipulate. In this case, you can rule that only characters who have a magic skill as a career skill can buy ranks in that skill. This makes magic use much more limited to a few characters in a party.</p>
+</blockquote>
+<h4 id="attack" tabindex="-1">Attack</h4>
+<p><strong>Skills:</strong> Arcana, Divine, Primal</p>
+<p>Attack spells include any combat check or other action that directly or indirectly deals damage or strain to an enemy. Examples include throwing a fireball, shooting lightning, smiting a foe with magical force, or knocking a foe around the battlefield with invisible blows.</p>
+<p>We recommend using the rules found on page 215 for making a magic Attack action whenever you want your character to attack someone with magic. Attacking generally happens in structured combat encounters, anyway. If you need to make an attack outside of combat (by shooting a bolt of force to cause a landslide to block a road, for example), your players can still follow the rules for the magic Attack action, and you can decide on the minimum damage needed to trigger the desired result.</p>
+<h4 id="augment" tabindex="-1">Augment</h4>
+<p><strong>Skills:</strong> Divine, Primal</p>
+<p>Augment spells magically enhance characters or objects. Sometimes, the distinction is mostly narrative—it may be purely a matter of description whether a spell imbues a sword with power or improves the reflexes of the character wielding it. Although these effects are often helpful in combat, such spells can be useful in many circumstances, from helping an ally scale a sheer surface to keeping the party's horses galloping past their normal limits.</p>
+<p>When determining the effect of an augment spell, see the Augment action's effects, on pages 215 and 216, for some of the possibilities. Of course, you or your players may want to try something not covered by those effects, such as temporarily repairing a weapon so that you can continue to wield it. In this case, you may set a difficulty by looking at the difficulty to repair the item (see <strong>Table I.5–4: Repairing Gear,</strong> on page 89). These spells could also be used to improve the effectiveness of gear (perhaps the augmented item adds [B] to checks related to its use). Augment could even let a character turn invisible or fly, although we recommend a difficulty of at least <strong>Hard ([D][D][D])</strong> for this!</p>
+<h4 id="barrier" tabindex="-1">Barrier</h4>
+<p><strong>Skills:</strong> Arcana, Divine</p>
+<p>&quot;Barrier,&quot; or protective, spells are fairly straightforward in structured encounters: they reduce incoming damage for your character and their allies. However, they have some interesting narrative uses as well.</p>
+<p>Barrier magics let the spellcaster protect themself from adverse conditions of all types. Your character may create a bubble under the ocean so they can travel underwater, a barrier that shields them from flames as they walk through a burning building, or even a barrier that deflects an onrushing avalanche. When using a Barrier spell in narrative situations like these, first define what you want the barrier to do (protect a character from heat or cold, create a bubble of air, deflect snow in an avalanche). Then, use the base difficulty for the check as defined on page 216, and follow the additional effects rules if the character wants to affect other targets.</p>
+<h4 id="conjure" tabindex="-1">Conjure</h4>
+<p><strong>Skills:</strong> Arcana, Primal</p>
+<p>Conjuration magic allows a character to summon allies and create items out of the raw stuff of magic (whatever that may be in your setting).</p>
+<p>Conjure's structured encounter rules, on page 216, are fairly good guidance for using Conjure in narrative encounters. However, we admit that the Conjure action is one of the most loosely defined rule sets because of the sheer number of items or creatures you could summon or create. When using Conjure to summon or create something in a narrative encounter, what you need to determine is the size or complexity of the conjuration. How elaborate the spell gets can be a matter of common sense for you and your players. Summoning a glowing sword and fighting with it seems reasonable, but summoning a cannon does not (especially if the cannon doesn't exist in your setting!) Likewise, summoning a</p>
+<p>&lt;Page 213&gt;</p>
+<blockquote>
+<p><strong>Infobox: Maintaining Spells in Narrative Encounters</strong></p>
+<p>Quite a few of our spells are supposed to be maintained over multiple rounds to provide an ongoing effect. In structured encounters, your character does this by performing the Concentration maneuver. However, in narrative encounters, tracking individual maneuvers can be unnecessarily tedious.</p>
+<p>Instead, we suggest taking a more narrative approach to concentration and maintaining spells. You can decide that a character can't perform some activities while also concentrating on a spell, such as tasks that might take a lot of their attention. A character might also start suffering strain if they try to maintain a spell over time. Finally, if something happens that could interrupt a character's concentration, you can have your player make an <strong>Average ([D][D]) Discipline check.</strong> Failure means their character loses concentration, and the spell ends.</p>
+</blockquote>
+<p>door to bar a portal or brush and brambles to make an area difficult terrain is within the scope of a spell, but summoning a canyon filled with molten lava is not!</p>
+<h4 id="curse" tabindex="-1">Curse</h4>
+<p><strong>Skills:</strong> Arcana, Divine</p>
+<p>What we call a &quot;Curse&quot; is any sort of affliction that applies a negative effect to a character, whether it be a penalty to combat checks, a wasting sickness incurable by mundane means, or an inability to speak a certain name. The most extreme afflictions might even bend a victim to the spellcaster's will. The distinction between affliction and attack might not always be clear. As a general principle, if a magical action inflicts damage or strain, it's an attack. If it simply makes a target more susceptible to damage or strain, it's a curse.</p>
+<p>Outside of structured encounters, curses could take any number of forms. Some could be annoying, such as someone sneezing uncontrollably or feeling inexplicably lethargic. The effects could be represented mechanically by adding a [S] or two to the target's checks. The check to inflict such a minor curse should either be opposed (see page 25), or <strong>Easy ([D])</strong> if the target is a minor character. Other curses could be more dangerous, such as a hex that causes dangerous things to happen to the target for no reason (ladders breaking, tree branches falling on them, and the like). Not only should the difficulty of the spell be higher—if it's not an opposed check, it should be at least <strong>Average ([D][D])</strong> and possibly <strong>Hard ([D][D][D])</strong>— but the effects can be represented narratively. If a character falls from a broken ladder, for example, use the falling rules on page 112.</p>
+<p>Of course, there are some truly terrible curses: blindness, disease, madness, or being turned into a toad. These checks should almost always be opposed (either by the target's Discipline or Resilience, depending on whether the curse affects the mind or the body). You can pull effects from the <strong>Table I.6–10: Critical Injury Result</strong> on page 115, the fear and sanity rules on page 243 and 244, or use similar inspiration when figuring out what the curse does.</p>
+<h4 id="dispel" tabindex="-1">Dispel</h4>
+<p><strong>Skills:</strong> Arcana</p>
+<p>We've made dispelling an opponent's magics the province of Arcana magic—primarily to balance out healing being limited to the Divine and Primal skills. (You may decide to ignore this limitation in your own setting, but just remember, we did it for balance reasons.) Dispelling should work the same in structured encounters and in narrative encounters, so just use the rules on page 217 if a character wants to dispel something narratively.</p>
+<p>&lt;Page 214&gt;</p>
+<blockquote>
+<p><strong>Infobox: Resisting Magic</strong></p>
+<p>High-level adversaries such as nemeses usually have a rank or three in the Adversary talent, which makes them more of a challenge in a fight. The Adversary talent upgrades the difficulty of combat checks targeting the NPC, and this obviously applies to Attack spells. However, other spells may seem like a way to get around the Adversary talent. Therefore, we recommend that you upgrade the difficulty of <em>any</em> spells targeting an NPC a number of times equal to that NPC's ranks in Adversary. This should be enough to make nemeses feel dangerous.</p>
+</blockquote>
+<h4 id="heal" tabindex="-1">Heal</h4>
+<p><strong>Skills:</strong> Divine, Primal</p>
+<p>At its most basic, healing magic can remove damage or strain from a character. The most powerful spells might cure deadly diseases or even raise the dead. Healing magic works much like the Medicine skill, but of course medicine in most fantasy worlds is fairly primitive.</p>
+<p>In game terms, healing magic is more difficult than an equivalent Medicine check. However, in exchange for this increased difficulty, healing magic can do things that a skilled doctor cannot. These include healing targets from afar, healing multiple targets at once, and on rare occasions, bringing the deceased back from the dead. Healing magic can also affect targets multiple times per encounter.</p>
+<p>When using healing magic, the additional affects listed in <strong>Table III.2–11</strong> should cover most of what you want to do in narrative time as well as structured time. For other effects—such as a spell to double the rate of natural healing for a target—you, the GM, can set the difficulty. If you're not sure what difficulty to assign, <strong>Average ([D][D])</strong> works for any acceleration of natural healing, while anything similar in scope and impact to bringing the dead back to life should be <strong>Daunting ([D][D][D][D])</strong> or even <strong>Formidable ([D][D][D][D][D])</strong>. Generally, we recommend making resurrection a rare and difficult endeavor, so that death doesn't lose its impact in your game.</p>
+<h4 id="utility" tabindex="-1">Utility</h4>
+<p><strong>Skills:</strong> Arcana, Divine, Primal</p>
+<p>Utility magic covers all the minor things that we expect people to be able to do with magic, such as levitating a book, transmuting a pebble into a butterfly, detecting something magical nearby, summoning a ghostly light source to see in the dark, or making one's voice growl with distant thunder. Basically, these are all cool abilities with a minor benefit, but are more tricks than dangerous or powerful magics. That doesn't mean a player can't figure out how their character can use a utility spell to their best advantage—that's half the fun of being a spellcaster!</p>
+<p>Utility magic doesn't have an equivalent action for structured encounters, since the effects are almost entirely narrative in nature. A check to cast a utility spell should always be <strong>Easy ([D])</strong>. If that check seems too easy for what you want to accomplish, then what you want to do is probably beyond the scope of utility magic!</p>
+<h2 id="sources" tabindex="-1">Sources</h2>
+<ul>
+<li>Genesys Core Rules, pp. 210-214</li>
+</ul>
+</main>
+<script>window.location.hash&&document.getElementById(window.location.hash.slice(1)).classList.add("referred"),window.addEventListener("hashchange",(e=>{const t=e.oldURL.split("#");t[1]&&document.getElementById(t[1]).classList.remove("referred");const n=e.newURL.split("#");n[1]&&document.getElementById(n[1]).classList.add("referred")}),!1);const url_parts=window.location.href.split("#"),url=url_parts[0],referrence=url_parts[1];document.querySelectorAll(".cm-s-obsidian > *[id]").forEach((function(e){e.ondblclick=function(e){const t=url+"#"+e.target.id;navigator.clipboard.writeText(t)}}))</script>
+<script src="https://fastly.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+<script defer="defer">TIMESTAMP_FORMAT="MMM dd, yyyy h:mm a",document.querySelectorAll(".human-date").forEach((function(e){date=e.getAttribute("data-date")||e.innerText,parsed_date=luxon.DateTime.fromISO(date),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromSQL(date)),null!=parsed_date.invalid&&(parsed_date=luxon.DateTime.fromHTML(date)),e.innerHTML=parsed_date.toFormat(TIMESTAMP_FORMAT)}))</script>
+<script>lucide.createIcons({attrs:{class:["svg-icon"]}})</script>
+</body>
+</html>
