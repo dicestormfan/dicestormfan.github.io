@@ -3,7 +3,1177 @@
     
         <url>
             <loc>/404.html</loc>
-            <lastmod>2026-07-23T19:36:02.224Z</lastmod>
+            <lastmod>2026-07-26T20:14:18.969Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/0-0-1-what-is-a-roleplaying-game-anyway/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/0-0-2-how-do-i-use-this-book/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/0-0-3-what-do-you-need-to-play/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-0-0-the-rules/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-0-1-narrative-play/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-0-chapter-1-core-mechanics/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-1-0-the-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-1-1-positive-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-1-2-negative-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-1-3-ten-sided-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-10-0-triumph-and-despair/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-10-1-triumph/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-10-2-despair/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-10-3-unlimited-possibilities/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-11-0-other-types-of-checks/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-11-1-opposed-checks/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-11-2-competitive-checks/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-11-3-assisted-checks/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-12-0-other-key-elements/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-12-1-talents/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-12-2-story-points/</loc>
+            <lastmod>2026-07-26T20:14:18.972Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-13-0-experience-and-development/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-13-1-starting-experience-points/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-13-2-improving-characteristics/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-13-3-skill-training/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-13-4-acquiring-talents/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-14-0-derived-attributes/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-14-1-wound-threshold/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-14-2-strain-threshold/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-14-3-defense/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-14-4-soak-value/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-2-0-dice-symbols-and-results/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-2-1-positive-results/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-2-2-negative-results/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-3-lights-camera-action/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-4-0-the-basic-dice-pool/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-4-1-characteristics/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-5-0-characteristic-ratings/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-5-1-characteristics-in-play/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-6-skills-and-training/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-7-0-difficulty/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-7-1-defining-task-difficulty/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-0-building-a-basic-dice-pool/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-1-applying-skills-and-characteristics/</loc>
+            <lastmod>2026-07-26T20:14:18.973Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-2-applying-task-difficulty/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-3-0-modifying-a-dice-pool/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-3-1-adding-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-3-2-upgrading-and-downgrading-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-8-3-3-removing-dice/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-9-0-interpreting-the-pool/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-9-1-successes-and-failures/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-9-2-advantage-and-threat/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-1-9-3-rounding-up/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-0-chapter-2-creating-characters/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-1-character-concept/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-2-generation-steps/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-3-0-step-1-determine-background/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-3-1-background-questions/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-4-0-step-2-select-a-character-archetype-or-species/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-4-1-archetype-1-average-human/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-4-2-archetype-2-the-laborer/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-4-3-archetype-3-the-intellectual/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-4-4-archetype-4-the-aristocrat/</loc>
+            <lastmod>2026-07-26T20:14:18.974Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-0-step-3-choose-a-career/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-1-what-does-this-do/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-2-careers/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-0-role-based-careers/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-1-entertainer/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-2-explorer/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-3-healer/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-4-leader/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-5-scoundrel/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-6-socialite/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-7-soldier/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-3-8-tradesperson/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-0-setting-based-careers/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-1-hacker/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-2-fighter-pilot/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-3-knight/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-4-mad-scientist/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-5-priest/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-6-druid/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-7-starship-captain/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-5-4-8-wizard/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-6-0-step-4-invest-experience-points/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-6-1-starting-xp/</loc>
+            <lastmod>2026-07-26T20:14:18.975Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-6-2-improving-characteristics/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-6-3-skill-training/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-6-4-acquiring-talents/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-7-0-step-5-determine-derived-attributes/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-7-1-wound-threshold/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-7-2-strain-threshold/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-7-3-defense/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-7-4-soak-value/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-0-step-6-determine-character-motivation/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-1-desire/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-2-fear/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-3-strength/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-4-flaw/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-8-5-motivations-in-play/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-9-0-step-7-choose-gear-appearance-and-personality/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-9-1-starting-gear/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-9-2-appearance/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-2-9-3-personality/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-0-chapter-3-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-1-what-are-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.976Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-2-skill-ranks/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-3-skill-descriptions/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-4-choosing-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-0-social-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-1-charm-presence/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-2-coercion-willpower/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-3-deception-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-4-leadership-presence/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-5-5-negotiation-presence/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-0-general-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-1-alchemy-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-10-medicine-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-11-operating-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-12-perception-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-13-piloting-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-14-resilience-brawn/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-15-riding-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-16-skulduggery-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-17-stealth-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-18-streetwise-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.977Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-19-survival-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-2-astrocartography-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-20-vigilance-willpower/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-3-athletics-brawn/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-4-computers-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-5-cool-presence/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-6-coordination-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-7-discipline-willpower/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-8-driving-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-6-9-mechanics-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-7-0-knowledge-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-7-1-knowledge-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-0-combat-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-1-brawl-brawn/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-2-0-melee-brawn/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-2-1-melee-light/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-2-2-melee-heavy/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-3-0-ranged-agility/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-3-1-ranged-light/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-3-2-ranged-heavy/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-8-3-3-gunnery/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-9-0-magic-skills/</loc>
+            <lastmod>2026-07-26T20:14:18.978Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-9-1-arcana-intellect/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-9-2-divine-willpower/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-3-9-3-primal-cunning/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-0-chapter-4-talents/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-1-talent-types/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-2-talent-tiers/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-3-talent-ranks-and-purchasing-the-same-talent-multiple-times/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-0-talent-descriptions/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-0-talent-entries/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-0-tier-1/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-1-bought-info/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-10-jump-up/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-11-knack-for-it/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-12-know-somebody/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-13-let-s-ride/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-14-one-with-nature/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-15-parry/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-16-proper-upbringing/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-17-quick-draw/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-18-quick-strike/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-19-rapid-reaction/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-2-clever-retort/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-20-second-wind/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-21-surgeon/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-22-swift/</loc>
+            <lastmod>2026-07-26T20:14:18.979Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-23-toughened/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-24-unremarkable/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-3-defensive-sysops/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-4-desperate-recovery/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-5-duelist/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-6-durable/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-7-forager/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-8-grit/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-1-9-hamstring-shot/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-0-tier-2/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-1-basic-military-training/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-10-heightened-awareness/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-11-inspiring-rhetoric/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-12-inventor/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-13-lucky-strike/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-14-scathing-tirade/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-15-side-step/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-2-berserk/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-3-coordinated-assault/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-4-counteroffer/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-5-daring-aviator/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-6-defensive-stance/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-7-defensive-sysops-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-8-dual-wielder/</loc>
+            <lastmod>2026-07-26T20:14:18.980Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-2-9-fan-the-hammer/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-0-tier-3/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-1-animal-companion/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-10-inspiring-rhetoric-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-11-painkiller-specialization/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-12-scathing-tirade-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-13-heroic-will/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-14-natural/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-15-rapid-archery/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-16-parry-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-2-barrel-roll/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-3-distinctive-style/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-4-dodge/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-5-eagle-eyes/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-6-field-commander/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-7-forgot-to-count/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-8-full-throttle/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-3-9-grenadier/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-0-tier-4/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-1-can-t-we-talk-about-this/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-10-overcharge/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-11-scathing-tirade-supreme/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-2-deadeye/</loc>
+            <lastmod>2026-07-26T20:14:18.981Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-3-defensive/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-4-defensive-driving/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-5-enduring/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-6-field-commander-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-7-how-convenient/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-8-inspiring-rhetoric-supreme/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-4-9-mad-inventor/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-5-0-tier-5/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-5-1-dedication/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-5-2-indomitable/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-5-3-master/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-4-4-1-5-4-overcharge-improved/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
+        </url>
+    
+        <url>
+            <loc>/buch/genesys/1-8-8-1-making-sure-adversaries-are-appropriate-challenges/</loc>
+            <lastmod>2026-07-26T20:14:18.982Z</lastmod>
         </url>
     
 </urlset>
