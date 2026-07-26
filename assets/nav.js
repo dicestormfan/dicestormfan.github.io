@@ -1,7 +1,7 @@
 
 // Client-side navigation: fetch the target page, swap only .content, never
-// touch/reload navbar or the sidebar (so its scroll position and the page's
-// own scroll frame stay put -- the whole point of a "static" left column).
+// touch/reload navbar or the sidebar (so its scroll position and expanded
+// tree branches stay put -- the whole point of a "static" left column).
 function swapContent(html, url) {
   const doc = new DOMParser().parseFromString(html, "text/html");
   const newContent = doc.querySelector("main.content");
@@ -9,9 +9,15 @@ function swapContent(html, url) {
   if (!newContent || !current) { location.href = url; return; }
   current.innerHTML = newContent.innerHTML;
   document.title = doc.title;
-  document.querySelectorAll(".filetree-sidebar .notelink").forEach((el) => el.classList.remove("active-note"));
+  document.querySelectorAll(".filetree-sidebar .active-note").forEach((el) => el.classList.remove("active-note"));
   const activeLink = document.querySelector('.filetree-sidebar a[href="' + url + '"]');
-  if (activeLink) activeLink.closest(".notelink").classList.add("active-note");
+  if (activeLink) {
+    const holder = activeLink.closest(".notelink");
+    if (holder) holder.classList.add("active-note");
+    let d = activeLink.closest("details");
+    while (d) { d.open = true; d = d.parentElement ? d.parentElement.closest("details") : null; }
+    activeLink.scrollIntoView({ block: "nearest" });
+  }
   window.scrollTo(0, 0);
 }
 
