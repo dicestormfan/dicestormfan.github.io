@@ -7,10 +7,24 @@
 <link rel="stylesheet" href="/styles/site.css">
 </head>
 <body class="domain-genesys">
+<script>(function(){
+  var t = localStorage.getItem("theme");
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.body.classList.add("theme-" + t);
+})();</script>
 <nav class="navbar">
   <div class="navbar-inner">
-    <a href="/" class="domain-switch active" data-domain="genesys">Genesys</a>
-    <a href="#" class="domain-switch" data-domain="terrinoth">Terrinoth</a>
+    <a href="/" class="domain-switch active" data-domain="genesys">
+      <img class="domain-logo domain-logo-light" src="/assets/images/Genesys.svg" alt="Genesys">
+      <img class="domain-logo domain-logo-dark" src="/assets/images/Genesys_dark.svg" alt="Genesys">
+    </a>
+    <a href="#" class="domain-switch" data-domain="terrinoth">
+      <img class="domain-logo domain-logo-light" src="/assets/images/Terrinoth.svg" alt="Terrinoth">
+      <img class="domain-logo domain-logo-dark" src="/assets/images/Terrinoth_dark.svg" alt="Terrinoth">
+    </a>
+    <button type="button" class="theme-toggle" aria-label="Toggle light/dark mode"></button>
   </div>
 </nav>
 <nav class="filetree-sidebar">

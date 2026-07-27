@@ -140,3 +140,17 @@ document.querySelectorAll(".domain-switch").forEach(function (el) {
   const saved = localStorage.getItem(DOMAIN_STORAGE_KEY);
   if (saved === "genesys" || saved === "terrinoth") applyDomain(saved);
 })();
+
+// Light/dark toggle (top-right glyph button). The initial theme is already
+// applied by the inline script right after <body> (see pageShell) -- before
+// this file even loads -- so all that's left here is reacting to clicks.
+const THEME_STORAGE_KEY = "theme";
+const themeToggle = document.querySelector(".theme-toggle");
+if (themeToggle) {
+  themeToggle.addEventListener("click", function () {
+    const next = document.body.classList.contains("theme-dark") ? "light" : "dark";
+    document.body.classList.remove("theme-light", "theme-dark");
+    document.body.classList.add("theme-" + next);
+    localStorage.setItem(THEME_STORAGE_KEY, next);
+  });
+}
