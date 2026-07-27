@@ -67,7 +67,7 @@ function swapContent(html, url) {
 }
 
 function navigate(url, push) {
-  fetch(url)
+  return fetch(url)
     .then((r) => r.text())
     .then((html) => {
       swapContent(html, url);
@@ -84,17 +84,28 @@ document.addEventListener("click", function (e) {
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   e.preventDefault();
 
-  // Clicking the label of the branch you're already reading again closes it
-  // instead of re-navigating -- a plain re-navigate would just force it back
-  // open via the active-path highlighting in swapContent above.
+  // A tree-node label click always toggles ITS OWN branch closed if it was
+  // already open -- whether that's because you're already on that exact
+  // page, or because you navigated into one of its descendants (making it
+  // an already-open ancestor). Capture the pre-click state before anything
+  // (navigation, the active-path re-render) can change it.
   const summary = a.closest("summary");
   const ownDetails = summary ? summary.closest("details") : null;
-  if (ownDetails && href === location.pathname) {
-    ownDetails.open = !ownDetails.open;
+  const wasOpen = ownDetails ? ownDetails.open : false;
+
+  if (href === location.pathname) {
+    // Already on this page -- nothing to fetch, just toggle.
+    if (ownDetails) ownDetails.open = !wasOpen;
     return;
   }
 
-  navigate(href, true);
+  navigate(href, true).then(() => {
+    // swapContent() always force-opens the newly active node's own branch
+    // to reveal the new position -- override that back closed if the user
+    // just clicked an already-expanded branch (same "click open -> close"
+    // rule as the same-page case above).
+    if (ownDetails && wasOpen) ownDetails.open = false;
+  });
 });
 
 window.addEventListener("popstate", function () {
