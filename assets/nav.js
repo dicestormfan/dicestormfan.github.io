@@ -111,3 +111,32 @@ document.addEventListener("click", function (e) {
 window.addEventListener("popstate", function () {
   navigate(location.pathname, false);
 });
+
+// Domain switch (top-left "Genesys" / "Terrinoth"): a client-side theme
+// toggle -- swaps the domain-* class on <body> (driving fonts, header
+// colors, and the background image via custom-style.css), and marks
+// whichever word is active vs. inactive. Persisted in localStorage so it
+// survives full page reloads; client-side navigate() above never touches
+// <body>, so within a session the choice already carries over on its own.
+const DOMAIN_STORAGE_KEY = "domain";
+function applyDomain(domain) {
+  document.body.classList.remove("domain-genesys", "domain-terrinoth");
+  document.body.classList.add("domain-" + domain);
+  document.querySelectorAll(".domain-switch").forEach(function (el) {
+    el.classList.toggle("active", el.dataset.domain === domain);
+  });
+}
+document.querySelectorAll(".domain-switch").forEach(function (el) {
+  el.addEventListener("click", function (e) {
+    // Genesys keeps its real href="/" (existing click handler above still
+    // navigates there); Terrinoth has no content of its own yet, so its
+    // click is a pure theme toggle with nothing to navigate to.
+    if (el.getAttribute("href") === "#") e.preventDefault();
+    localStorage.setItem(DOMAIN_STORAGE_KEY, el.dataset.domain);
+    applyDomain(el.dataset.domain);
+  });
+});
+(function () {
+  const saved = localStorage.getItem(DOMAIN_STORAGE_KEY);
+  if (saved === "genesys" || saved === "terrinoth") applyDomain(saved);
+})();
