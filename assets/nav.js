@@ -39,7 +39,15 @@ function swapContent(html, url) {
     const holder = activeLink.closest(".notelink");
     if (holder) holder.classList.add("active-note");
     let d = activeLink.closest("details");
-    while (d) { d.open = true; keepOpen.add(d); d = d.parentElement ? d.parentElement.closest("details") : null; }
+    while (d) {
+      d.open = true;
+      keepOpen.add(d);
+      // The whole open path -- current article + every ancestor -- shares
+      // the same active-note highlight (mirrors the server-rendered tree).
+      const summary = d.querySelector(":scope > summary.notelink");
+      if (summary) summary.classList.add("active-note");
+      d = d.parentElement ? d.parentElement.closest("details") : null;
+    }
     activeLink.scrollIntoView({ block: "nearest" });
   }
   // Client-side swaps never went through the server's single-path render, so
@@ -75,6 +83,17 @@ document.addEventListener("click", function (e) {
   if (!href || !href.startsWith("/") || a.target === "_blank") return;
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   e.preventDefault();
+
+  // Clicking the label of the branch you're already reading again closes it
+  // instead of re-navigating -- a plain re-navigate would just force it back
+  // open via the active-path highlighting in swapContent above.
+  const summary = a.closest("summary");
+  const ownDetails = summary ? summary.closest("details") : null;
+  if (ownDetails && href === location.pathname) {
+    ownDetails.open = !ownDetails.open;
+    return;
+  }
+
   navigate(href, true);
 });
 
