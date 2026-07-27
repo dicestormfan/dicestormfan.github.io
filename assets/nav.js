@@ -114,7 +114,7 @@ window.addEventListener("popstate", function () {
 
 // Domain switch (top-left "Genesys" / "Terrinoth"): a client-side theme
 // toggle -- swaps the domain-* class on <body> (driving fonts, header
-// colors, and the background image via custom-style.css), and marks
+// colors, and the background image via site.css), and marks
 // whichever word is active vs. inactive. Persisted in localStorage so it
 // survives full page reloads; client-side navigate() above never touches
 // <body>, so within a session the choice already carries over on its own.
