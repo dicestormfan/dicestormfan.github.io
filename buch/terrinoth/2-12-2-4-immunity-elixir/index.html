@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Immunity Elixir</title>
+<link rel="stylesheet" href="/styles/site.css">
+</head>
+<body class="domain-terrinoth">
+<script>(function(){
+  var t = localStorage.getItem("theme");
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.body.classList.add("theme-" + t);
+})();</script>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/" class="domain-switch" data-domain="genesys">
+      <img class="domain-logo domain-logo-light" src="/assets/images/Genesys.svg" alt="Genesys">
+      <img class="domain-logo domain-logo-dark" src="/assets/images/Genesys_dark.svg" alt="Genesys">
+    </a>
+    <a href="/buch/terrinoth/" class="domain-switch active" data-domain="terrinoth">
+      <img class="domain-logo domain-logo-light" src="/assets/images/Terrinoth.svg" alt="Terrinoth">
+      <img class="domain-logo domain-logo-dark" src="/assets/images/Terrinoth_dark.svg" alt="Terrinoth">
+    </a>
+    <button type="button" class="theme-toggle" aria-label="Toggle light/dark mode"></button>
+  </div>
+</nav>
+<nav class="filetree-sidebar">
+  <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/0-1-0-welcome-to-the-land-of-steel/">Introduction</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/0-1-0-welcome-to-the-land-of-steel/">Welcome to the Land of Steel</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/0-1-1-what-is-this-book-and-how-do-i-use-it/">What Is This Book, and How Do I Use It</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-1-2-tell-me-about-terrinoth/">Tell Me About Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-1-3-what-will-i-find-in-this-book/">What Will I Find in This Book</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-1-4-can-i-use-this-to-help-make-my-own-fantasy-setting/">Can I Use This to Help Make My Own Fantasy Setting</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-2-lights-against-the-darkness/">Lights Against the Darkness</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-3-wondrous-landscapes/">Wondrous Landscapes</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-4-magic-is-precious/">Magic Is Precious</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-5-adventures-to-be-had/">Adventures to Be Had</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-6-darkness-rising/">Darkness Rising</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-7-defending-civilization/">Defending Civilization</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/0-0-table-of-contents/">Table of Contents</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-0-tales-of-darkness/">Chapter i: Tales of Darkness</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-1-0-the-myths-of-creation/">The Myths of Creation</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-1-1-the-first-and-the-cold-void/">The First and the Cold Void</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-1-2-the-lays-of-the-first-and-their-echo/">The Lays of the First, and Their Echo</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-1-3-three-planes-of-power-are-conjured-from-the-void/">Three Planes of Power Are Conjured from the Void</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-1-4-setting-in-motion-the-verto-magica/">Setting in Motion the Verto Magica</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-1-5-primordial-creatures-the-fae-and-the-dimora/">Primordial Creatures - The Fae and the Dimora</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-2-0-the-elves/">The Elves</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-2-1-desire-and-betrayal/">Desire and Betrayal</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-2-2-the-elves-are-imprisoned/">The Elves Are Imprisoned</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-2-3-the-tears-of-latariana/">The Tears of Latariana</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-3-0-the-war-of-the-shadow-tear/">The War of the Shadow Tear</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-3-1-the-dismal-history-of-malcorne/">The Dismal History of Malcorne</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-3-2-a-tear-in-shadow/">A Tear in Shadow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-3-3-the-battle-of-enfreil/">The Battle of Enfreil</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-4-0-the-troubled-rise-of-the-younger-races/">The Troubled Rise of the Younger Races</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-4-1-the-years-of-hunger/">The Years of Hunger</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-5-0-the-early-history-of-the-dwarves/">The Early History of the Dwarves</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-5-1-the-epic-of-helka-the-bold/">The Epic of Helka the Bold</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-5-2-the-karok-doum/">The Karok Doum</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-5-3-the-war-of-fire/">The War of Fire</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-5-4-exile-to-dunwarr/">Exile to Dunwarr</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-6-0-humanity-steps-forth/">Humanity Steps Forth</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-6-1-lord-arcus-penacor-and-the-age-of-steel/">Lord Arcus Penacor and the Age of Steel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-6-2-the-early-days-of-the-king-of-grief/">The Early Days of the King of Grief</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-6-3-farrengol-penacor-s-wayward-ways/">Farrengol Penacor's Wayward Ways</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-6-4-the-forbidding-tower-of-nerek/">The Forbidding Tower of Nerek</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-6-5-return-of-the-dread-prince/">Return of the Dread Prince</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-7-0-the-rise-of-llovar-and-the-uthuk-y-llan/">The Rise of Llovar and the Uthuk Y'llan</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-7-1-the-wandering-loth-k-har-and-their-methods-of-divination/">The Wandering Loth K'har and Their Methods of Divination</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-7-2-the-evil-that-slept-in-the-sands/">The Evil That Slept in the Sands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-7-3-llovar-ascendant/">Llovar Ascendant</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-7-4-the-night-of-summons/">The Night of Summons</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-8-0-the-rise-of-timmorran/">The Rise of Timmorran</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-8-1-llander-s-flight-to-lorimor/">Llander's Flight to Lorimor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-8-2-timmorran-studies-magic/">Timmorran Studies Magic</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-8-3-assassins-of-the-q-aro-fenn/">Assassins of the Q'aro Fenn</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-8-4-the-mercurial-sal-meringyr/">The Mercurial Sal Meringyr</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-9-0-the-first-darkness/">The First Darkness</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-9-1-llovar-swarms-into-the-west/">Llovar Swarms into the West</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-9-2-an-alliance-formed/">An Alliance Formed</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-9-3-the-heroes-of-old-and-their-great-deeds/">The Heroes of Old and Their Great Deeds</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-9-4-the-host-of-thorns/">The Host of Thorns</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-9-5-the-locust-is-ended/">The Locust Is Ended</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-10-0-the-rise-and-fall-of-king-daqan/">The Rise and Fall of King Daqan</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-1-forging-a-new-peace/">Forging a New Peace</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-2-the-rescue-of-waiqar/">The Rescue of Waiqar</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-3-terrinoth/">Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-4-the-ru-campaign/">The Ru Campaign</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-5-daqan-s-reforms-the-council-of-barons-and-the-founding-of-the-free-cities/">Daqan's Reforms, the Council of Barons, and the Founding of the Free Cities</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-6-timmorran-s-preoccupations/">Timmorran's Preoccupations</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-10-7-the-murder-of-king-daqan/">The Murder of King Daqan</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-11-0-the-second-darkness/">The Second Darkness</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-1-the-creation-of-the-orb-of-the-sky/">The Creation of the Orb of the Sky</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-2-the-night-of-betrayal/">The Night of Betrayal</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-3-lumii-tamar-concocts-a-plan/">Lumii Tamar Concocts a Plan</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-4-death-cults-a-hidden-war/">Death Cults, a Hidden War</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-5-the-scourge/">The Scourge</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-11-6-a-coalition-formed-and-victory-won/">A Coalition Formed and Victory Won</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-12-0-the-rise-of-the-elder-kings/">The Rise of the Elder Kings</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-12-1-a-wounded-nation-heals/">A Wounded Nation Heals</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-12-2-the-rise-of-the-free-cities/">The Rise of the Free Cities</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-12-3-the-usurper-king/">The Usurper King</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-12-4-the-wages-of-greed-and-complacency/">The Wages of Greed and Complacency</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-13-0-the-third-darkness/">The Third Darkness</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-1-dawn-of-the-dragon-wars/">Dawn of the Dragon Wars</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-2-the-end-of-the-usurper-s-line/">The End of the Usurper's Line</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-3-the-runes-are-written/">The Runes Are Written</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-4-the-dragons-turn-to-wanton-slaughter/">The Dragons Turn to Wanton Slaughter</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-5-seeking-the-favor-of-the-dragonlords/">Seeking the Favor of the Dragonlords</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-6-an-alliance-at-sudanya/">An Alliance at Sudanya</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-7-the-turning-of-the-tide/">The Turning of the Tide</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-13-8-shaarina-s-judgement/">Shaarina's Judgement</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-14-0-the-age-of-lorimor/">The Age of Lorimor</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-14-1-rebuilding-terrinoth/">Rebuilding Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-14-2-lorimor-s-star-ascendant/">Lorimor's Star Ascendant</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-14-3-the-sun-sets-on-an-empire/">The Sun Sets on an Empire</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-14-4-the-battle-of-ranthor-bay/">The Battle of Ranthor Bay</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-14-5-the-queendom-of-the-torue-albes/">The Queendom of the Torue Albes</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/1-15-0-the-age-of-courage/">The Age of Courage</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-1-rise-of-the-guilds/">Rise of the Guilds</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-2-the-council-restored/">The Council Restored</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-3-the-return-of-the-elves/">The Return of the Elves</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-4-the-three-lords-alliance/">The Three-Lords Alliance</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-5-the-war-of-ten-brothers/">The War of Ten Brothers</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-6-the-destruction-of-tairnheath-castle/">The Destruction of Tairnheath Castle</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-7-a-voyage-of-discovery/">A Voyage of Discovery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-8-the-rise-of-the-willful/">The Rise of the Willful</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/1-15-9-the-slow-dawn-rises/">The Slow Dawn Rises</a></div></div></details></div></details>
+<details class="tree-node" open><summary class="notelink active-note"><a class="filename" href="/buch/terrinoth/2-0-chapter-ii-call-to-adventure/">Chapter II - Call to Adventure</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-1-creating-your-hero/">Creating Your Hero</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-0-character-species/">Character Species</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-1-0-humans/">Humans</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-1-1-species-ability-humans/">Species Ability (Humans)</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-0-elves/">Elves</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-1-species-ability-elves/">Species Ability (Elves)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-2-deep-elf/">Deep Elf</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-3-free-cities-elf/">Free Cities Elf</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-4-highborn-elf/">Highborn Elf</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-2-5-lowborn-elf/">Lowborn Elf</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-3-0-dwarves/">Dwarves</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-3-1-species-ability-dwarves/">Species Ability (Dwarves)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-3-2-dunwarr-dwarf/">Dunwarr Dwarf</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-3-3-forge-dwarf/">Forge Dwarf</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-4-0-orcs/">Orcs</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-4-1-species-ability-orcs/">Species Ability (Orcs)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-4-2-broken-plains-orc/">Broken Plains Orc</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-4-3-stone-dweller-orc/">Stone-Dweller Orc</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-4-4-sunderlands-orc/">Sunderlands Orc</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-5-0-catfolk-and-half-catfolk/">Catfolk and Half-Catfolk</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-5-1-species-ability-catfolk-and-half-catfolk/">Species Ability (Catfolk and Half-Catfolk)</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-6-0-half-catfolk/">Half-Catfolk</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-6-1-species-ability-half-catfolk/">Species Ability (Half-Catfolk)</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-2-7-0-gnomes/">Gnomes</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-7-1-species-ability-gnomes/">Species Ability (Gnomes)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-7-2-burrow-gnome/">Burrow Gnome</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-2-7-3-wanderer-gnome/">Wanderer Gnome</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-3-0-careers/">Careers</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-1-disciple/">Disciple</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-2-envoy/">Envoy</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-3-mage/">Mage</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-4-primalist/">Primalist</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-5-scholar/">Scholar</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-6-scoundrel/">Scoundrel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-7-scout/">Scout</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-3-8-warrior/">Warrior</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-4-0-heroic-abilities/">Heroic Abilities</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-1-using-a-heroic-ability/">Using a Heroic Ability</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-0-creating-a-heroic-ability/">Creating a Heroic Ability</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-1-choose-a-primary-ability-effect/">Choose a Primary Ability Effect</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-2-all-the-facts/">All the Facts</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-3-connected/">Connected</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-4-foretelling/">Foretelling</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-5-hard-to-kill/">Hard to Kill</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-6-influential/">Influential</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-7-miraculous-recovery/">Miraculous Recovery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-8-paragon/">Paragon</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-9-sixth-sense/">Sixth Sense</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-10-signature-weapon/">Signature Weapon</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-11-unbowed/">Unbowed</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-2-12-unleash/">Unleash</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-0-heroic-ability-upgrades/">Heroic Ability Upgrades</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-1-duration/">Duration</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-2-frequency/">Frequency</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-3-power/">Power</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-4-secondary-effect/">Secondary Effect</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-5-devastating/">Devastating</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-6-diminish/">Diminish</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-7-drain/">Drain</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-8-empowered/">Empowered</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-9-empower-allies/">Empower Allies</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-10-rejuvenation/">Rejuvenation</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-11-rejuvenate-allies/">Rejuvenate Allies</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-12-renewal/">Renewal</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-3-13-story/">Story</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-4-heroic-ability-origins/">Heroic Ability Origins</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-4-5-creating-heroic-abilities/">Creating Heroic Abilities</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-5-0-new-skills-and-rules/">New Skills and Rules</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-5-1-0-knowledge-skills/">Knowledge Skills</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-1-1-adventuring-intellect/">Adventuring (Intellect)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-1-2-forbidden-intellect/">Forbidden (Intellect)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-1-3-geography-intellect/">Geography (Intellect)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-1-4-lore-intellect/">Lore (Intellect)</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-5-2-0-magic-skills/">Magic Skills</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-2-1-runes-intellect/">Runes (Intellect)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-2-2-verse-presence/">Verse (Presence)</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-5-3-mounted-combat/">Mounted Combat</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-0-new-talents/">New Talents</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-0-tier-1/">Tier 1</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-1-apothecary/">Apothecary</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-2-bullrush/">Bullrush</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-3-challenge/">Challenge!</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-4-dark-insight/">Dark Insight</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-5-dungeoneer/">Dungeoneer</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-6-finesse/">Finesse</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-7-painful-blow/">Painful Blow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-8-precision/">Precision</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-9-shapeshifter/">Shapeshifter</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-10-shield-slam/">Shield Slam</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-11-tavern-brawler/">Tavern Brawler</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-12-templar/">Templar</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-1-13-tumble/">Tumble</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-0-tier-2/">Tier 2</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-1-adventurer/">Adventurer</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-2-bard/">Bard</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-3-block/">Block</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-4-blood-sacrifice/">Blood Sacrifice</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-5-bulwark/">Bulwark</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-6-chill-of-nordros/">Chill of Nordros</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-7-dirty-tricks/">Dirty Tricks</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-8-dominion-of-the-dimora/">Dominion of the Dimora</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-9-encouraging-song/">Encouraging Song</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-10-exploit/">Exploit</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-11-favor-of-the-fae/">Favor of the Fae</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-12-flames-of-kellos/">Flames of Kellos</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-13-flash-of-insight/">Flash of Insight</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-14-grapple/">Grapple</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-15-heroic-recovery/">Heroic Recovery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-16-hunter/">Hunter</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-17-impaling-strike/">Impaling Strike</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-18-natural-communion/">Natural Communion</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-19-reckless-charge/">Reckless Charge</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-20-runic-lore/">Runic Lore</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-21-shapeshifter-improved/">Shapeshifter (Improved)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-22-signature-spell/">Signature Spell</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-23-templar-improved/">Templar (Improved)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-24-threaten/">Threaten</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-25-well-traveled/">Well-Traveled</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-2-26-wraithbane/">Wraithbane</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-0-tier-3/">Tier 3</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-1-backstab/">Backstab</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-2-battle-casting/">Battle Casting</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-3-body-guard/">Body Guard</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-4-cavalier/">Cavalier</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-5-counterattack/">Counterattack</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-6-dissonance/">Dissonance</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-7-dual-strike/">Dual Strike</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-8-easy-prey/">Easy Prey</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-9-justice-of-the-citadel/">Justice of the Citadel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-10-potent-concoctions/">Potent Concoctions</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-11-precise-archery/">Precise Archery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-12-pressure-point/">Pressure Point</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-3-13-shockwave/">Shockwave</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-0-tier-4/">Tier 4</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-1-back-to-back/">Back-to-Back</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-2-conduit/">Conduit</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-3-death-rage/">Death Rage</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-4-venom-soaked-blade/">Venom Soaked Blade</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-5-signature-spell-improved/">Signature Spell (Improved)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-4-6-unrelenting/">Unrelenting</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-0-tier-5/">Tier 5</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-1-crushing-blow/">Crushing Blow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-2-let-s-talk-this-over/">Let's Talk This Over</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-3-retribution/">Retribution!</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-4-whirlwind/">Whirlwind</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-6-5-5-zealous-fire/">Zealous Fire</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-7-0-weapons/">Weapons</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-0-melee-weapons/">Melee Weapons</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-1-axe/">Axe</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-2-cestus/">Cestus</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-3-dagger/">Dagger</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-4-flail/">Flail</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-5-greataxe/">Greataxe</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-6-greatsword/">Greatsword</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-7-halberd/">Halberd</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-8-katar/">Katar</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-9-mace/">Mace</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-10-military-pick/">Military Pick</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-11-pike/">Pike</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-12-shield/">Shield</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-13-spear/">Spear</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-14-staff/">Staff</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-15-sword/">Sword</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-1-16-war-hammer/">War Hammer</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-0-ranged-weapons/">Ranged Weapons</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-1-bow/">Bow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-2-crossbow/">Crossbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-3-hand-crossbow/">Hand Crossbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-4-heavy-crossbow/">Heavy Crossbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-5-longbow/">Longbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-6-repeating-crossbow/">Repeating Crossbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-7-sling/">Sling</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-7-2-8-throwing-axe/">Throwing Axe</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-8-0-armor/">Armor</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-1-brigandine/">Brigandine</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-2-chainmail/">Chainmail</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-3-heavy-robes/">Heavy Robes</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-4-leather-armor/">Leather Armor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-5-padded-armor/">Padded Armor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-6-plate-armor/">Plate Armor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-8-7-scale-armor/">Scale Armor</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-9-0-craftsmanship/">Craftsmanship</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-9-1-ancient/">Ancient</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-9-2-dwarven/">Dwarven</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-9-3-elven/">Elven</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-9-4-iron/">Iron</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-9-5-steel/">Steel</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-10-0-magic-implements/">Magic Implements</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-1-holy-icon/">Holy Icon</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-2-magic-scepter/">Magic Scepter</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-3-magic-staff/">Magic Staff</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-4-magic-tome/">Magic Tome</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-5-magic-wand/">Magic Wand</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-10-6-musical-instrument/">Musical Instrument</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-11-0-implement-materials/">Implement Materials</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-11-1-bone/">Bone</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-11-2-oak/">Oak</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-11-3-hazel/">Hazel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-11-4-willow/">Willow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-11-5-yew/">Yew</a></div></div></details>
+<details class="tree-node" open><summary class="notelink active-note"><a class="filename" href="/buch/terrinoth/2-12-0-gear-and-services/">Gear and Services</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-0-gear/">Gear</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-1-alchemist-s-kit-and-lab/">Alchemist's Kit and Lab</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-2-apothecary-s-kit/">Apothecary's Kit</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-3-backpack/">Backpack</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-4-bedroll/">Bedroll</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-5-climbing-gear/">Climbing Gear</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-6-extra-quiver/">Extra Quiver</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-7-fine-cloak/">Fine Cloak</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-8-flask/">Flask</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-9-flint-and-steel/">Flint and Steel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-10-herbs-of-healing/">Herbs of Healing</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-11-lantern/">Lantern</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-12-pole-thirty-hands-long/">Pole (Thirty Hands Long)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-13-rope/">Rope</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-14-thieves-tools/">Thieves' Tools</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-15-torches-3/">Torches (3)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-16-trail-rations/">Trail Rations</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-17-wagon/">Wagon</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-18-waterskin/">Waterskin</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-1-19-winter-clothing/">Winter Clothing</a></div></div></details>
+<details class="tree-node" open><summary class="notelink active-note"><a class="filename" href="/buch/terrinoth/2-12-2-0-potions-and-elixirs/">Potions and Elixirs</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-1-acid-flask/">Acid Flask</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-2-bottled-courage/">Bottled Courage</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-3-health-elixir/">Health Elixir</a></div>
+<div class="notelink active-note"><a class="filename" href="/buch/terrinoth/2-12-2-4-immunity-elixir/">Immunity Elixir</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-5-invisibility-potion/">Invisibility Potion</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-6-poison/">Poison</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-7-power-potion/">Power Potion</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-8-protective-tonic/">Protective Tonic</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-9-regeneration-elixir/">Regeneration Elixir</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-10-smokebomb-vial/">Smokebomb Vial</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-11-speed-potion/">Speed Potion</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-2-12-stamina-elixir/">Stamina Elixir</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-0-animals-and-related-gear/">Animals and Related Gear</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-1-barding/">Barding</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-2-beast-of-burden-minion/">Beast of Burden (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-3-flying-mount-rival/">Flying Mount (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-4-riding-beast-minion/">Riding Beast (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-5-saddlebags/">Saddlebags</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-3-6-war-mount-rival/">War Mount (Rival)</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-0-services/">Services</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-1-ale/">Ale</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-2-lodgings/">Lodgings</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-3-meals/">Meals</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-4-porters-and-torchbearers/">Porters and Torchbearers</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-5-travel-arrangements/">Travel Arrangements</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-12-4-6-wine/">Wine</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-13-0-item-attachments-and-enchantments/">Item Attachments and Enchantments</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-0-weapon-attachments/">Weapon Attachments</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-1-explosive-missile/">Explosive Missile</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-2-rune-of-blades/">Rune of Blades</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-3-runic-flame/">Runic Flame</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-4-runic-frost/">Runic Frost</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-5-runic-thunder/">Runic Thunder</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-6-rune-of-severing/">Rune of Severing</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-1-7-ynfernael-corruption/">Ynfernael Corruption</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-13-2-0-armor-attachments/">Armor Attachments</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-2-1-gilded/">Gilded</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-2-2-ironbound-rune/">Ironbound Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-2-3-spikes/">Spikes</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-13-2-4-twilight-rune/">Twilight Rune</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-14-0-magic-items/">Magic Items</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-1-bloodscript-ring/">Bloodscript Ring</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-2-cloak-of-mists/">Cloak of Mists</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-3-dead-man-s-compass/">Dead Man's Compass</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-4-deepwood-longbow/">Deepwood Longbow</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-5-elven-boots/">Elven Boots</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-6-gauntlets-of-power/">Gauntlets of Power</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-7-horn-of-courage/">Horn of Courage</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-8-mace-of-kellos/">Mace of Kellos</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-9-prismatic-staff/">Prismatic Staff</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-10-serpent-dagger/">Serpent Dagger</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-11-shadow-bracers/">Shadow Bracers</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-12-shield-of-light/">Shield of Light</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-13-soulbound-sword/">Soulbound Sword</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-14-staff-of-light/">Staff of Light</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-15-truelight-lantern/">Truelight Lantern</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-16-warding-talisman/">Warding Talisman</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-14-17-winged-boots/">Winged Boots</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-15-0-crafting/">Crafting</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-15-1-the-crafting-process/">The Crafting Process</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-15-2-0-alchemy/">Alchemy</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-15-2-1-other-potions-and-elixirs/">Other Potions and Elixirs</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-15-2-2-alchemy-ingredients/">Alchemy Ingredients</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-16-0-the-magic-of-mennara/">The Magic of Mennara</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-1-magic-skills/">Magic Skills</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-2-spell-effects/">Spell Effects</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-3-using-the-runes-skill/">Using the Runes Skill</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-4-the-arcane-arts/">The Arcane Arts</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-5-the-source-of-sorcery/">The Source of Sorcery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-16-6-the-riddles-of-the-runes/">The Riddles of the Runes</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-17-0-runebound-shards/">Runebound Shards</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-1-arcane-bolt-rune/">Arcane Bolt Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-2-blasting-rune/">Blasting Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-3-ice-storm-rune/">Ice Storm Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-4-immolation-rune/">Immolation Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-5-lesser-rune/">Lesser Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-6-lightning-strike-rune/">Lightning Strike Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-7-rune-of-collection/">Rune of Collection</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-8-rune-of-fate/">Rune of Fate</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-9-rune-of-misery/">Rune of Misery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-10-soulstone-rune/">Soulstone Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-11-stasis-rune/">Stasis Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-12-sunburst-rune/">Sunburst Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-13-teleportation-rune/">Teleportation Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-14-terror-rune/">Terror Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-15-vision-rune/">Vision Rune</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-16-wanderer-s-stone/">Wanderer's Stone</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-17-17-ynfernael-rune/">Ynfernael Rune</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-18-0-the-strength-of-devotion/">The Strength of Devotion</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-0-spirits-of-power/">Spirits of Power</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-1-kellos-the-blazing-light-of-life-and-justice/">Kellos, the Blazing Light of Life and Justice</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-2-nordros-master-of-cold-and-death/">Nordros, Master of Cold and Death</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-3-aris-patron-of-peace-and-prosperity/">Aris, Patron of Peace and Prosperity</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-4-fortuna-lady-of-luck-and-trickery/">Fortuna, Lady of Luck and Trickery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-5-kurnos-lord-of-the-hunt/">Kurnos, Lord of the Hunt</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-6-pollux-the-artificer/">Pollux the Artificer</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-18-1-7-syraskil-marnn-and-the-stormlords/">Syraskil, Marnn, and the Stormlords</a></div></div></details></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-19-the-virtues-of-verse/">The Virtues of Verse</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-20-spiritspeaking/">Spiritspeaking</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-21-0-elven-magic/">Elven Magic</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/2-21-1-0-the-empyrean-arts/">The Empyrean Arts</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/2-21-1-1-of-light-and-air/">Of Light and Air</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-21-1-2-of-life-and-dreams/">Of Life and Dreams</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-21-1-3-the-spheres-combined/">The Spheres Combined</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-21-2-elven-sorcery/">Elven Sorcery</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/2-21-3-wealdcallers/">Wealdcallers</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-0-chapter-iii-lands-of-magic/">Chapter III - Lands of Magic</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-0-terrinoth/">Terrinoth</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-1-0-southern-terrinoth/">Southern Terrinoth</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-1-1-trast-the-gateway-to-terrinoth/">Trast, the Gateway to Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-1-2-otrin-the-vigilant-land/">Otrin, the Vigilant Land</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-1-3-frest-barony-of-the-usurped-throne/">Frest, Barony of the Usurped Throne</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-2-0-eastern-terrinoth/">Eastern Terrinoth</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-2-1-dhernas-the-spear-of-daqan/">Dhernas, the Spear of Daqan</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-2-2-kell-the-shield-of-daqan/">Kell, the Shield of Daqan</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-2-3-pelgate-the-faded-barony/">Pelgate, the Faded Barony</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-0-western-terrinoth/">Western Terrinoth</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-1-archaut/">Archaut</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-2-the-citadel/">The Citadel</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-3-allerfeldt-the-breadbasket-of-terrinoth/">Allerfeldt, the Breadbasket of Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-4-cailn-the-scarred-crossroads/">Cailn, the Scarred Crossroads</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-3-5-telor-the-port-of-terrinoth/">Telor, the Port of Terrinoth</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-4-0-northern-terrinoth/">Northern Terrinoth</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-4-1-carthridge-the-silver-barony/">Carthridge, the Silver Barony</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-4-2-rhynn-the-envy-of-terrinoth/">Rhynn, the Envy of Terrinoth</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-4-3-forthyn-the-last-civilized-land/">Forthyn, the Last Civilized Land</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-0-the-free-cities/">The Free Cities</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-1-dawnsmoor/">Dawnsmoor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-2-forge/">Forge</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-3-frostgate/">Frostgate</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-4-greyhaven/">Greyhaven</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-5-nerekhall/">Nerekhall</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-6-riverwatch/">Riverwatch</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-7-tamalir/">Tamalir</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-5-8-vynelvale/">Vynelvale</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-0-life-in-the-land-of-steel/">Life in the Land of Steel</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-1-baronial-knight-rival/">Baronial Knight (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-2-dragon-hybrid-rival/">Dragon Hybrid (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-3-feral-dragon-nemesis/">Feral Dragon (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-4-goblin-minion/">Goblin (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-5-goblin-witcher-rival/">Goblin Witcher (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-6-greyhaven-wizard-nemesis/">Greyhaven Wizard (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-7-ironbound-rival/">Ironbound (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-8-priest-of-kellos-rival/">Priest of Kellos (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-9-rune-golem-nemesis/">Rune Golem (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-10-splig-king-of-all-goblins-nemesis/">Splig, King of All Goblins (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-1-6-11-tamalir-guildmaster-rival/">Tamalir Guildmaster (Rival)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-2-0-the-mistlands/">The Mistlands</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-1-zorgas/">Zorgas</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-2-bilehall/">Bilehall</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-3-castle-dalibor/">Castle Dalibor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-4-the-misty-hills/">The Misty Hills</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-5-roth-s-vale/">Roth's Vale</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-0-unlife-in-the-mists/">Unlife in the Mists</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-1-barghest-rival/">Barghest (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-2-death-knight-nemesis/">Death Knight (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-3-ferrox-rival/">Ferrox (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-4-lord-of-bilehall-nemesis/">Lord of Bilehall (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-5-necromancer-nemesis/">Necromancer (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-6-reanimate-minion/">Reanimate (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-6-7-wraith-rival/">Wraith (Rival)</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-2-7-secrets-of-the-grave/">Secrets of the Grave</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-3-0-the-aymhelin/">The Aymhelin</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-1-lithelin-and-the-ailatar/">Lithelin and the Ailatar</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-2-the-bloodwood/">The Bloodwood</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-3-blackthorn-grove/">Blackthorn Grove</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-4-selenic-coast/">Selenic Coast</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-5-the-darnati-highlands/">The Darnati Highlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-6-the-deepwood/">The Deepwood</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-7-the-thalian-glades/">The Thalian Glades</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-0-life-in-the-forest/">Life in the Forest</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-1-aymhelin-scion-rival/">Aymhelin Scion (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-2-deepwood-archer-minion/">Deepwood Archer (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-3-forest-guardian-nemesis/">Forest Guardian (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-4-leonx-rider-rival/">Leonx Rider (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-5-leonx-rival/">Leonx (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-6-storm-sorceress-nemesis/">Storm Sorceress (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-3-8-7-true-fae-nemesis/">True Fae (Nemesis)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-4-0-the-dunwarr-mountains/">The Dunwarr Mountains</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-1-the-mountain-gates/">The Mountain Gates</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-2-thelgrim/">Thelgrim</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-3-hadranhold/">Hadranhold</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-4-duldor-deeps/">Duldor Deeps</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-5-labyrinth-of-deurg/">Labyrinth of Deurg</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-6-the-frontier/">The Frontier</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-0-life-in-the-mountains/">Life in the Mountains</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-1-deep-elf-rival/">Deep Elf (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-2-dimora-nemesis/">Dimora (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-3-dwarf-guilder-rival/">Dwarf Guilder (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-4-dwarven-dragon-hunter-nemesis/">Dwarven Dragon Hunter (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-5-kennsir-dwarf-rival/">Kennsir Dwarf (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-4-7-6-kobold-minion/">Kobold (Minion)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-5-0-the-molten-heath/">The Molten Heath</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-1-the-domain-of-dragons/">The Domain of Dragons</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-2-the-karok-doum/">The Karok Doum</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-3-black-ember-gorge/">Black Ember Gorge</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-0-life-on-the-heath/">Life on the Heath</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-1-ancient-dragon-nemesis/">Ancient Dragon (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-2-dwarf-ancestral-specter-rival/">Dwarf Ancestral Specter (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-3-lava-elemental-rival/">Lava Elemental (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-4-salamander-rival/">Salamander (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-5-4-5-young-dragon-rival/">Young Dragon (Rival)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-6-0-the-broken-plains/">The Broken Plains</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-1-the-orcs-of-the-plains/">The Orcs of the Plains</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-0-the-lands-of-the-plains/">The Lands of the Plains</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-1-the-baruk-range/">The Baruk Range</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-2-the-erd-riverlands/">The Erd Riverlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-3-the-ghur-highlands/">The Ghur Highlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-4-the-kul-valleys/">The Kul Valleys</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-5-the-lok-cliffs/">The Lok Cliffs</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-6-the-mok-plateau/">The Mok Plateau</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-2-7-the-ugluk-badlands/">The Ugluk Badlands</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-0-life-on-the-plains/">Life on the Plains</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-1-beastman-minion/">Beastman (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-2-gurak-tol-rival/">Gurak Tol (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-3-ogre-nemesis/">Ogre (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-4-orc-spiritspeaker-nemesis/">Orc Spiritspeaker (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-6-3-5-orc-outrider-rival/">Orc Outrider (Rival)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-7-0-the-ru-steppes-and-beyond/">The Ru Steppes and Beyond</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-1-the-borderlands/">The Borderlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-2-the-ru-and-the-darkness/">The Ru and the Darkness</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-3-the-charg-r-wastes/">The Charg'r Wastes</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-4-tribes-of-the-uthuk-y-llan/">Tribes of the Uthuk Y'llan</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-5-a-tear-in-the-veil/">A Tear in the Veil</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-0-life-in-the-ru/">Life in the Ru</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-1-berserker-minion/">Berserker (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-2-bloodsister-and-nightseer-nemesis/">Bloodsister and Nightseer (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-3-flesh-ripper-minion/">Flesh Ripper (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-4-grotesque-rival/">Grotesque (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-5-spined-thresher-nemesis/">Spined Thresher (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-6-viper-legion-archer-rival/">Viper Legion Archer (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-6-7-witch-and-warlock-rival/">Witch and Warlock (Rival)</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-7-7-whispers-of-the-ynfernael/">Whispers of the Ynfernael</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-8-0-lorimor-and-the-torue-albes/">Lorimor and the Torue Albes</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-0-lorimor/">Lorimor</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-1-the-inlands/">The Inlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-2-lorim/">Lorim</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-3-mounts-arrik-and-orrik/">Mounts Arrik and Orrik</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-4-the-lost-keeps/">The Lost Keeps</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-5-the-coastlands/">The Coastlands</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-6-orris/">Orris</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-1-7-redwater/">Redwater</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-0-the-torue-albes/">The Torue Albes</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-1-alben/">Alben</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-2-dallak/">Dallak</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-3-garnott/">Garnott</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-4-trelton/">Trelton</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-5-garnet-island/">Garnet Island</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-6-gafford/">Gafford</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-7-tarianor/">Tarianor</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-8-tigh-higard/">Tigh Higard</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-9-shellport/">Shellport</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-10-ulthik-isle/">Ulthik Isle</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-2-11-hardell/">Hardell</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-0-life-in-the-west/">Life in the West</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-1-giant-nemesis/">Giant (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-2-gnome-minstrel-nemesis/">Gnome Minstrel (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-3-lorimor-marine-minion/">Lorimor Marine (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-4-lost-knight-rival/">Lost Knight (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-5-manticore-nemesis/">Manticore (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-6-merriod-nemesis/">Merriod (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-7-pirate-minion/">Pirate (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-8-shade-minion/">Shade (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-9-siren-rival/">Siren (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-10-sword-poet-nemesis/">Sword Poet (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-8-3-11-wyrm-of-the-deep-nemesis/">Wyrm of the Deep (Nemesis)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-9-0-isheim/">Isheim</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-1-the-frozen-north/">The Frozen North</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-2-lords-of-the-hearth/">Lords of the Hearth</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-9-3-0-an-uncharted-wilderness/">An Uncharted Wilderness</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-3-1-vrede-city-of-flame-and-frost/">Vrede, City of Flame and Frost</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-3-2-paths-of-the-onoit/">Paths of the Onoit</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-3-3-sacred-places/">Sacred Places</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-9-4-0-realm-of-the-white-death/">Realm of the White Death</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-4-1-haunts-of-the-icy-dead/">Haunts of the Icy Dead</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-4-2-the-green-vale/">The Green Vale</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-0-life-in-the-cold/">Life in the Cold</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-1-ice-wyrm-nemesis/">Ice Wyrm (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-2-ice-blood-warrior-minion/">Ice-Blood Warrior (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-3-wendigo-rival/">Wendigo (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-4-onoit-shaman-rival/">Onoit Shaman (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-9-5-5-weik-warrior-minion/">Weik Warrior (Minion)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-10-0-al-kalim/">Al-Kalim</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-10-1-0-caliphate-of-the-desert-king/">Caliphate of the Desert King</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-1-1-court-of-the-caliph/">Court of the Caliph</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-1-2-collegiate-arcane/">Collegiate Arcane</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-1-3-vizier-cities/">Vizier Cities</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-1-4-the-thieves-coast/">The Thieves' Coast</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-10-2-0-the-great-sand-sea/">The Great Sand Sea</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-2-1-perils-of-the-desert/">Perils of the Desert</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-2-2-lost-cities/">Lost Cities</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-0-life-in-the-sands/">Life in the Sands</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-1-assassin-nemesis/">Assassin (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-2-djinn-nemesis/">Djinn (Nemesis)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-3-minor-elemental-rival/">Minor Elemental (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-4-scorpion-swarm-rival/">Scorpion Swarm (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-10-3-5-thieves-guild-cutpurse-rival/">Thieves' Guild Cutpurse (Rival)</a></div></div></details></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-11-0-zanaga/">Zanaga</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-11-1-0-a-new-world/">A New World</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-1-1-lands-of-the-lion-people/">Lands of the Lion People</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-1-2-gods-of-the-plains/">Gods of the Plains</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-1-3-gods-of-shadow-and-magic/">Gods of Shadow and Magic</a></div></div></details>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-2-the-lost-expedition/">The Lost Expedition</a></div>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-11-3-0-tribes-of-the-serpent-gods/">Tribes of the Serpent Gods</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-3-1-mahkim/">Mahkim</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-3-2-lizardmen/">Lizardmen</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-3-3-nagas/">Nagas</a></div></div></details>
+<details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-0-life-in-the-jungle/">Life in the Jungle</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-1-carnivorous-flora-rival/">Carnivorous Flora (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-2-giant-snake-rival/">Giant Snake (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-3-makhim-minion/">Makhim (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-4-naga-priestess-rival/">Naga Priestess (Rival)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-5-singhara-hunter-minion/">Singhara Hunter (Minion)</a></div>
+<div class="notelink"><a class="filename" href="/buch/terrinoth/3-11-4-6-singhara-pridelord-nemesis/">Singhara Pridelord (Nemesis)</a></div></div></details></div></details></div></details>
+</nav>
+<main class="content">
+<h1>Immunity Elixir</h1>
+<p>Immunity elixirs are concocted to act as antidotes to a wide variety of common poisons and diseases. Once a person has imbibed an immunity elixir, they will not as easily succumb to the disease or poison it is designed to counteract for a short period of time thereafter.</p>
+<p>Using an immunity elixir immediately nullifies any mundane poisons or toxins currently afflicting your character (some magical or otherwise extraordinary poisons might not be affected, at the GM's discretion). In addition, for the rest of the encounter or scene, your character upgrades Resilience checks made to resist poisons and toxins twice.</p>
+<hr>
+<ul>
+<li>Realms of Terrinoth, p. 102</li>
+</ul>
+
+</main>
+<footer class="page-footer-nav" id="page-footer-nav">
+  <div class="footer-prev"><a class="footer-slot footer-slot-l3" href="/buch/terrinoth/2-11-0-implement-materials/">‹‹‹ Implement Materials</a><a class="footer-slot footer-slot-l2" href="/buch/terrinoth/2-12-1-0-gear/">‹‹ Gear</a><a class="footer-slot footer-slot-l1" href="/buch/terrinoth/2-12-2-3-health-elixir/">‹ Health Elixir</a></div><div class="footer-next"><a class="footer-slot footer-slot-l1" href="/buch/terrinoth/2-12-2-5-invisibility-potion/">Invisibility Potion ›</a><a class="footer-slot footer-slot-l2" href="/buch/terrinoth/2-12-3-0-animals-and-related-gear/">Animals and Related Gear ››</a><a class="footer-slot footer-slot-l3" href="/buch/terrinoth/2-13-0-item-attachments-and-enchantments/">Item Attachments and Enchantments ›››</a></div>
+</footer>
+<script src="/assets/nav.js"></script>
+</body>
+</html>
