@@ -38,10 +38,11 @@ function swapContent(html, url) {
   if (newDomain && newDomain !== curDomain) {
     document.body.classList.remove(curDomain);
     document.body.classList.add(newDomain);
-    const newDomainName = newDomain.slice(7); // "domain-genesys" -> "genesys"
-    document.querySelectorAll(".domain-switch").forEach(function (el) {
-      el.classList.toggle("active", el.dataset.domain === newDomainName);
-    });
+    // The sidebar now holds both the domain tabs and the tree (see
+    // build-site.js's pageShell) -- swapping its whole innerHTML carries
+    // over the new domain's correct active-tab state from the
+    // server-rendered page too, so no separate .domain-switch
+    // active-class toggle is needed here anymore.
     const newSidebar = doc.querySelector(".filetree-sidebar");
     const curSidebar = document.querySelector(".filetree-sidebar");
     if (newSidebar && curSidebar) curSidebar.innerHTML = newSidebar.innerHTML;

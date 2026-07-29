@@ -14,27 +14,14 @@
   }
   document.body.classList.add("theme-" + t);
 })();</script>
-<nav class="navbar">
-  <div class="navbar-inner">
-    <a href="/" class="domain-switch active" data-domain="genesys">
-      <img class="domain-logo domain-logo-light" src="/assets/images/Genesys.svg" alt="Genesys">
-      <img class="domain-logo domain-logo-dark" src="/assets/images/Genesys_dark.svg" alt="Genesys">
-    </a>
-    <a href="/buch/terrinoth/" class="domain-switch" data-domain="terrinoth">
-      <img class="domain-logo domain-logo-light" src="/assets/images/Terrinoth.svg" alt="Terrinoth">
-      <img class="domain-logo domain-logo-dark" src="/assets/images/Terrinoth_dark.svg" alt="Terrinoth">
-    </a>
-    <div class="navbar-search">
-      <input type="search" class="search-input" placeholder="Search articles…" autocomplete="off" aria-label="Search articles">
-      <div class="search-results" hidden></div>
-    </div>
-    <button type="button" class="lang-toggle" aria-label="Toggle language (no German content yet -- display only)">🇩🇪</button>
-    <button type="button" class="theme-toggle" aria-label="Toggle light/dark mode"></button>
-  </div>
-</nav>
-<div class="shell">
+<div class="page-shell">
 <nav class="filetree-sidebar">
-  <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/0-0-introduction/">Introduction</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/0-0-1-what-is-a-roleplaying-game-anyway/">What Is a Roleplaying Game, Anyway</a></div>
+  <div class="sidebar-tabs">
+    <a href="/" class="domain-switch domain-tab-genesys active" data-domain="genesys">Genesys</a>
+    <a href="/buch/terrinoth/" class="domain-switch domain-tab-terrinoth" data-domain="terrinoth">Terrinoth</a>
+  </div>
+  <div class="filetree-tree">
+    <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/0-0-introduction/">Introduction</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/0-0-1-what-is-a-roleplaying-game-anyway/">What Is a Roleplaying Game, Anyway</a></div>
 <div class="notelink"><a class="filename" href="/buch/genesys/0-0-2-how-do-i-use-this-book/">How Do I Use This Book</a></div>
 <div class="notelink"><a class="filename" href="/buch/genesys/0-0-3-what-do-you-need-to-play/">What Do You Need to Play</a></div></div></details>
 <details class="tree-node" open><summary class="notelink active-note"><a class="filename" href="/buch/genesys/1-0-the-rules/">Part <span class="roman-numeral">I</span>: The Rules</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/1-1-0-chapter-1-core-mechanics/">Chapter 1 - Core Mechanics</a></summary><div class="filelist"><details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/1-1-1-0-the-dice/">The Dice</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/1-1-1-1-positive-dice/">Positive Dice</a></div>
@@ -490,8 +477,19 @@
 <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/3-4-4-0-mystery/">Mystery</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/3-4-4-1-why-use-mystery/">Why Use Mystery</a></div></div></details>
 <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/3-4-5-0-pulp/">Pulp</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/3-4-5-1-why-use-pulp/">Why Use Pulp</a></div></div></details>
 <details class="tree-node"><summary class="notelink"><a class="filename" href="/buch/genesys/3-4-6-0-romance-and-drama/">Romance and Drama</a></summary><div class="filelist"><div class="notelink"><a class="filename" href="/buch/genesys/3-4-6-1-why-use-romance-and-drama/">Why Use Romance and Drama</a></div></div></details></div></details></div></details>
+  </div>
 </nav>
-<div class="main-column">
+<div class="right-column">
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="navbar-search">
+      <input type="search" class="search-input" placeholder="Search articles…" autocomplete="off" aria-label="Search articles">
+      <div class="search-results" hidden></div>
+    </div>
+    <button type="button" class="lang-toggle" aria-label="Toggle language (no German content yet -- display only)">🇩🇪</button>
+    <button type="button" class="theme-toggle" aria-label="Toggle light/dark mode"></button>
+  </div>
+</nav>
 <main class="content">
 <h1 id="short-range">Short Range</h1>
 <p>Short range indicates up to several meters between targets. Many thrown weapons and small firearms are most accurate at short range. Two people within short range of each other can talk comfortably without raising their voices. Moving to another spot within short range is usually easy to do and generally only requires one maneuver.</p>
