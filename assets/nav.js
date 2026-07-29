@@ -61,7 +61,12 @@ function swapContent(html, url) {
   // unmarked no matter which of the (identical) hrefs the tree actually shows.
   // querySelectorAll + marking every match (and walking up from each one)
   // covers both, same as the server-rendered tree already does.
-  const activeLinks = document.querySelectorAll('.filetree-sidebar a[href="' + url + '"]');
+  // Sidebar entries never carry a "#heading-id" fragment of their own (they
+  // always link at the plain article), so a shortcut's "#anchor" URL has to
+  // be stripped back down to just the path first, or this lookup silently
+  // matches nothing at all and the sidebar shows no active section.
+  const urlNoHash = url.split("#")[0];
+  const activeLinks = document.querySelectorAll('.filetree-sidebar a[href="' + urlNoHash + '"]');
   const keepOpen = new Set();
   activeLinks.forEach(function (activeLink, i) {
     const holder = activeLink.closest(".notelink");
@@ -207,8 +212,22 @@ const SEARCH_INDEX = [{"title":"Genesys","url":"/","domain":"Genesys"},{"title":
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
+  // -1 = nothing highlighted yet (plain hover/Enter-picks-first still
+  // works); ArrowDown/ArrowUp move a "active" class among the result <a>
+  // tags without touching input focus, mirroring a standard combobox.
+  let activeIndex = -1;
+
+  function setActive(idx) {
+    const items = Array.from(results.querySelectorAll(".search-result-item"));
+    if (!items.length) return;
+    activeIndex = Math.max(0, Math.min(idx, items.length - 1));
+    items.forEach((el, i) => el.classList.toggle("active", i === activeIndex));
+    items[activeIndex].scrollIntoView({ block: "nearest" });
+  }
+
   function render(query) {
     const q = query.trim().toLowerCase();
+    activeIndex = -1;
     if (!q) {
       results.hidden = true;
       results.innerHTML = "";
@@ -231,8 +250,14 @@ const SEARCH_INDEX = [{"title":"Genesys","url":"/","domain":"Genesys"},{"title":
   input.addEventListener("input", function () { render(input.value); });
   input.addEventListener("focus", function () { if (input.value) render(input.value); });
   input.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { results.hidden = true; input.blur(); }
-    if (e.key === "Enter") { const first = results.querySelector("a"); if (first) first.click(); }
+    if (e.key === "Escape") { results.hidden = true; input.blur(); return; }
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive(activeIndex + 1); return; }
+    if (e.key === "ArrowUp") { e.preventDefault(); setActive(activeIndex - 1); return; }
+    if (e.key === "Enter") {
+      const items = results.querySelectorAll(".search-result-item");
+      const pick = activeIndex >= 0 ? items[activeIndex] : items[0];
+      if (pick) pick.click();
+    }
   });
   // Clears the field once a result is actually followed -- both a mouse
   // click and the Enter-key handler above end up dispatching a real click
