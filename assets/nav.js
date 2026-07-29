@@ -288,3 +288,17 @@ if (themeToggle) {
     localStorage.setItem(THEME_STORAGE_KEY, next);
   });
 }
+
+// Language toggle (placeholder, Nutzerwunsch 2026-07-29): purely cosmetic
+// for now -- there's no German content to actually switch to yet, so a
+// click just swaps the flag glyph and nothing else. Defaults to the German
+// flag (see the button's initial content in build-site.js's pageShell)
+// since it represents "switch TO this language", and the site's actual
+// content is all English already -- no localStorage persistence, since
+// there's no real state behind it to remember yet.
+const langToggle = document.querySelector(".lang-toggle");
+if (langToggle) {
+  langToggle.addEventListener("click", function () {
+    langToggle.textContent = langToggle.textContent === "🇩🇪" ? "🇺🇸" : "🇩🇪";
+  });
+}
