@@ -85,6 +85,22 @@ function swapContent(html, url) {
     if (!keepOpen.has(d)) d.open = false;
   });
 
+  // A "#heading-id" fragment (e.g. the home portal's Shortcuts column, see
+  // addHeadingIds/resolveShortcut in build-site.js) has to be resolved by
+  // hand here -- client-side swaps never trigger the browser's own native
+  // fragment-scroll (that only fires on a real navigation/hashchange, and
+  // preventDefault() in the click handler below suppresses exactly that).
+  // Without this, every heading-anchored link -- including a shortcut that
+  // points at a specific table -- silently landed on the plain top of the
+  // article instead, indistinguishable from a link with no fragment at all.
+  const hashIdx = url.indexOf("#");
+  const hash = hashIdx === -1 ? "" : url.slice(hashIdx + 1);
+  const target = hash ? document.getElementById(hash) : null;
+  if (target) {
+    target.scrollIntoView({ block: "start" });
+    return;
+  }
+
   // Reset scroll on every plausible scroll container -- which one actually
   // holds the page's scroll offset depends on the inherited Obsidian-app
   // CSS cascade, so cover window/html/body all at once rather than guess.
@@ -137,7 +153,10 @@ document.addEventListener("click", function (e) {
 });
 
 window.addEventListener("popstate", function () {
-  navigate(location.pathname, false);
+  // location.pathname alone drops the "#heading-id" fragment (that lives in
+  // location.hash instead) -- without appending it back, back/forward past a
+  // shortcut's anchor link would re-land on the plain article top.
+  navigate(location.pathname + location.hash, false);
 });
 
 // ArrowLeft/ArrowRight page through the whole book front-to-back (flat
@@ -157,7 +176,16 @@ document.addEventListener("keydown", function (e) {
   const domain = domainClassOf(document.body);
   const order = FLAT_ORDERS[domain ? domain.slice(7) : "genesys"] || [];
   const idx = order.indexOf(location.pathname);
-  if (idx === -1) return;
+  if (idx === -1) {
+    // Not a flat-order page at all -- i.e. the domain's own home portal
+    // (its URL isn't in the list, see FLAT_ORDER_URLS in build-site.js).
+    // ArrowRight from there has an obvious target: the domain's own first
+    // article ("Introduction", order[0]) -- ArrowLeft has no obvious
+    // target (nothing comes "before" the book even starts), so that's left
+    // a no-op rather than guessed at.
+    if (e.key === "ArrowRight" && order.length) navigate(order[0], true);
+    return;
+  }
   const targetIdx = e.key === "ArrowLeft" ? idx - 1 : idx + 1;
   if (targetIdx < 0 || targetIdx >= order.length) return;
   navigate(order[targetIdx], true);
