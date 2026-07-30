@@ -373,3 +373,39 @@ document.querySelectorAll(".container-tab").forEach(function (btn) {
     }
   });
 });
+
+// ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
+// see buildSkillsOverviewHtml in build-site.js) ----
+// Delegated on "document" rather than queried once at load: this page (like
+// any other) can be reached via the SPA client-side navigate() above, which
+// only swaps main.content's innerHTML -- a listener bound directly to
+// elements present at initial script-load time would miss controls that
+// arrive later via a swap.
+function applySkillsFilter(root) {
+  const select = root.querySelector(".skills-setting-select");
+  const magicBox = root.querySelector(".skills-magic-checkbox");
+  const table = root.querySelector(".skills-table");
+  if (!select || !magicBox || !table) return;
+  const setting = select.value;
+  const magicOn = magicBox.checked;
+  table.querySelectorAll("tbody tr").forEach(function (tr) {
+    const visible = tr.dataset.magic === "1"
+      ? magicOn
+      : (tr.dataset.settings || "").split("|").some((s) => s === "All" || s === setting);
+    tr.hidden = !visible;
+  });
+}
+document.addEventListener("change", function (e) {
+  const root = e.target.closest(".skills-overview");
+  if (!root) return;
+  if (e.target.classList.contains("skills-setting-select")) {
+    // Changing the Setting always resets Magic Rules to its setting-specific
+    // default (checked for Fantasy, unchecked otherwise) -- Nutzerwunsch
+    // 2026-07-31, an explicit override of whatever the checkbox was set to.
+    const magicBox = root.querySelector(".skills-magic-checkbox");
+    if (magicBox) magicBox.checked = e.target.value === "Fantasy";
+  }
+  if (e.target.classList.contains("skills-setting-select") || e.target.classList.contains("skills-magic-checkbox")) {
+    applySkillsFilter(root);
+  }
+});
