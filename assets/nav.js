@@ -422,3 +422,36 @@ document.addEventListener("click", function (e) {
   const link = tr.querySelector("a");
   if (link) link.click();
 });
+
+// Sortable column headers (Nutzerwunsch 2026-07-31): clicking Name,
+// Characteristic, or Group cycles that column asc -> desc -> off (Page is
+// plain, not sortable). Only one column is ever active at a time -- clicking
+// a different header always starts it fresh at "asc" and resets the rest.
+// "off" restores the table's original default order (already
+// alphabetical-by-name) via each row's own data-idx, set at build time --
+// see SKILLS_TABLE_HEAD/buildSkillsOverviewHtml in build-site.js.
+document.addEventListener("click", function (e) {
+  const th = e.target.closest(".skills-table th.sortable");
+  if (!th) return;
+  const headerCells = Array.from(th.parentElement.children);
+  const next = th.dataset.sort === "asc" ? "desc" : th.dataset.sort === "desc" ? "" : "asc";
+  headerCells.forEach(function (h) {
+    const active = h === th;
+    h.dataset.sort = active ? next : "";
+    const indicator = h.querySelector(".sort-indicator");
+    if (indicator) indicator.textContent = active ? (next === "asc" ? " ▲" : next === "desc" ? " ▼" : "") : "";
+  });
+  const table = th.closest("table");
+  const tbody = table.querySelector("tbody");
+  const colIndex = headerCells.indexOf(th);
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  rows.sort(function (a, b) {
+    if (next === "") return Number(a.dataset.idx) - Number(b.dataset.idx);
+    const av = a.children[colIndex].textContent.trim().toLowerCase();
+    const bv = b.children[colIndex].textContent.trim().toLowerCase();
+    if (av === bv) return Number(a.dataset.idx) - Number(b.dataset.idx);
+    const cmp = av < bv ? -1 : 1;
+    return next === "asc" ? cmp : -cmp;
+  });
+  rows.forEach(function (r) { tbody.appendChild(r); });
+});
