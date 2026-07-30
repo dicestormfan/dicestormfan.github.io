@@ -409,3 +409,16 @@ document.addEventListener("change", function (e) {
     applySkillsFilter(root);
   }
 });
+
+// A click anywhere in a skills-table row navigates the same as clicking its
+// own name link (Nutzerwunsch 2026-07-31) -- ignored when the click already
+// landed on the link itself (that's the generic <a> click handler's job, and
+// synthetically re-clicking it here would double-navigate). link.click()
+// dispatches a fresh click on the <a>, which bubbles back up into that same
+// generic handler above for proper SPA navigation, not a hard page reload.
+document.addEventListener("click", function (e) {
+  const tr = e.target.closest(".skills-table tbody tr");
+  if (!tr || e.target.closest("a")) return;
+  const link = tr.querySelector("a");
+  if (link) link.click();
+});
