@@ -347,27 +347,29 @@ const fontIncrease = document.querySelector(".font-increase");
 if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); });
 if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); });
 
-// Example popovers (Nutzerwunsch 2026-07-30, see extractRelocatableContainers
-// in build-site.js) -- click a trigger to open its popover, closing any
-// other one that was open; clicking the same trigger again, or anywhere
-// else on the page, closes it.
-function closeAllExamplePopovers() {
-  document.querySelectorAll(".example-popover").forEach(function (p) { p.hidden = true; });
-  document.querySelectorAll(".example-trigger").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+// Container tabs (Nutzerwunsch 2026-07-30, REVISED same day -- replaces an
+// earlier per-item accordion/popover approach entirely, see
+// extractRelocatableContainers/buildContainerTabsHtml in build-site.js).
+// One shared row of tab buttons, rendered identically above the article's
+// H1 and at its end: clicking any button (either row -- both carry the
+// same data-target values) shows that container's panel in the single
+// shared content slot below the bottom row, hiding whatever was shown
+// before. A click in the TOP row additionally scrolls the bottom section
+// into view, since that's the only place the panel actually appears.
+function activateContainerTab(id) {
+  document.querySelectorAll(".container-tab").forEach(function (btn) {
+    btn.classList.toggle("active", btn.dataset.target === id);
+  });
+  document.querySelectorAll(".container-panel").forEach(function (panel) {
+    panel.hidden = panel.dataset.id !== id;
+  });
 }
-document.querySelectorAll(".example-trigger").forEach(function (btn) {
-  const popover = btn.nextElementSibling;
-  if (!popover) return;
-  btn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    const wasOpen = !popover.hidden;
-    closeAllExamplePopovers();
-    if (!wasOpen) {
-      popover.hidden = false;
-      btn.setAttribute("aria-expanded", "true");
+document.querySelectorAll(".container-tab").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    activateContainerTab(btn.dataset.target);
+    if (btn.closest(".container-tabs-top")) {
+      const section = document.querySelector(".article-containers");
+      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
-});
-document.addEventListener("click", function (e) {
-  if (!e.target.closest(".example-container")) closeAllExamplePopovers();
 });
