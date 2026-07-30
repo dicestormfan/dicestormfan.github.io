@@ -346,3 +346,28 @@ const fontDecrease = document.querySelector(".font-decrease");
 const fontIncrease = document.querySelector(".font-increase");
 if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); });
 if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); });
+
+// Example popovers (Nutzerwunsch 2026-07-30, see extractRelocatableContainers
+// in build-site.js) -- click a trigger to open its popover, closing any
+// other one that was open; clicking the same trigger again, or anywhere
+// else on the page, closes it.
+function closeAllExamplePopovers() {
+  document.querySelectorAll(".example-popover").forEach(function (p) { p.hidden = true; });
+  document.querySelectorAll(".example-trigger").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+}
+document.querySelectorAll(".example-trigger").forEach(function (btn) {
+  const popover = btn.nextElementSibling;
+  if (!popover) return;
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const wasOpen = !popover.hidden;
+    closeAllExamplePopovers();
+    if (!wasOpen) {
+      popover.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+    }
+  });
+});
+document.addEventListener("click", function (e) {
+  if (!e.target.closest(".example-container")) closeAllExamplePopovers();
+});
