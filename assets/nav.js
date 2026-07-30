@@ -273,6 +273,19 @@ const SEARCH_INDEX = [{"title":"Genesys","url":"/","domain":"Genesys"},{"title":
   });
 })();
 
+// ---- Cookie helpers (Nutzerwunsch 2026-07-30, explicit and emphatic:
+// persistence for theme/language/font-size is cookie-based, not
+// localStorage) -- 1-year expiry, path=/ so every page under the domain
+// reads the same cookie regardless of which article set it.
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+function setCookie(name, value) {
+  document.cookie = name + "=" + encodeURIComponent(value) + "; path=/; max-age=" + COOKIE_MAX_AGE + "; SameSite=Lax";
+}
+function getCookie(name) {
+  const m = document.cookie.match("(?:^|; )" + name + "=([^;]*)");
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
 // Light/dark toggle (top-right glyph button). The initial theme is already
 // applied by the inline script right after <body> (see pageShell) -- before
 // this file even loads -- so all that's left here is reacting to clicks.
@@ -286,7 +299,7 @@ if (themeToggle) {
     const next = document.body.classList.contains("theme-dark") ? "light" : "dark";
     document.body.classList.remove("theme-light", "theme-dark");
     document.body.classList.add("theme-" + next);
-    localStorage.setItem(THEME_STORAGE_KEY, next);
+    setCookie(THEME_STORAGE_KEY, next);
   });
 }
 
@@ -295,11 +308,41 @@ if (themeToggle) {
 // click just swaps the flag glyph and nothing else. Defaults to the German
 // flag (see the button's initial content in build-site.js's pageShell)
 // since it represents "switch TO this language", and the site's actual
-// content is all English already -- no localStorage persistence, since
-// there's no real state behind it to remember yet.
+// content is all English already -- no persistence, since there's no real
+// state behind it to remember yet (once real German content exists, this
+// gets the same cookie treatment as theme/font-scale).
 const langToggle = document.querySelector(".lang-toggle");
 if (langToggle) {
   langToggle.addEventListener("click", function () {
     langToggle.textContent = langToggle.textContent === "🇩🇪" ? "🇺🇸" : "🇩🇪";
   });
 }
+
+// Site-wide font-size buttons (Nutzerwunsch 2026-07-30): every content
+// font-size in site.scss is expressed in em/pt-on-top-of-em relative to
+// body's own font-size, so scaling just that one root value scales the
+// whole site proportionally (headings, tables, lists) while leaving the
+// small fixed pt calibration offsets -- see the .domain-genesys/.domain-
+// terrinoth h1-h6 formulas -- essentially untouched, which is what keeps
+// them working as font-family size compensation instead of also scaling.
+// --font-scale is applied as an inline style (not a class) so it can hold
+// an arbitrary numeric value; the initial value is set by the same inline
+// pre-body script that applies the theme (see pageShell), to avoid a
+// flash of default-sized text before this file loads.
+const FONT_SCALE_KEY = "fontScale";
+const FONT_SCALE_MIN = 0.8;
+const FONT_SCALE_MAX = 1.4;
+const FONT_SCALE_STEP = 0.1;
+function getFontScale() {
+  const v = parseFloat(getCookie(FONT_SCALE_KEY));
+  return !v || v < FONT_SCALE_MIN || v > FONT_SCALE_MAX ? 1 : v;
+}
+function setFontScale(v) {
+  const clamped = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, v)).toFixed(2);
+  document.documentElement.style.setProperty("--font-scale", clamped);
+  setCookie(FONT_SCALE_KEY, clamped);
+}
+const fontDecrease = document.querySelector(".font-decrease");
+const fontIncrease = document.querySelector(".font-increase");
+if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); });
+if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); });
