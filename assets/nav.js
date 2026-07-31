@@ -318,6 +318,21 @@ if (langToggle) {
   });
 }
 
+// Floating overlay layout toggle (Nutzerwunsch 2026-07-31): one central
+// button, not per-container -- swaps .filetree-sidebar/.navbar/.page-footer-
+// nav from their normal fixed layout into edge-anchored overlays that slide
+// in on hover (see body.layout-floating in site.scss). Persisted the same
+// way as theme/fontScale; the inline pre-body script (pageShell) applies it
+// before first paint to avoid a flash of the wrong layout.
+const layoutToggle = document.querySelector(".layout-toggle");
+if (layoutToggle) {
+  layoutToggle.addEventListener("click", function () {
+    const next = !document.body.classList.contains("layout-floating");
+    document.body.classList.toggle("layout-floating", next);
+    setCookie("layoutFloating", next ? "1" : "0");
+  });
+}
+
 // Site-wide font-size buttons (Nutzerwunsch 2026-07-30): every content
 // font-size in site.scss is expressed in em/pt-on-top-of-em relative to
 // body's own font-size, so scaling just that one root value scales the

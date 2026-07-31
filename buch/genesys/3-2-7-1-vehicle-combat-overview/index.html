@@ -20,6 +20,7 @@
   var fs = parseFloat(getCookie("fontScale"));
   if (!fs || fs < 0.6 || fs > 1.4) fs = 1;
   document.documentElement.style.setProperty("--font-scale", fs);
+  if (getCookie("layoutFloating") === "1") document.body.classList.add("layout-floating");
 })();</script>
 <div class="page-shell">
 <nav class="filetree-sidebar">
@@ -3185,6 +3186,23 @@
       <input type="search" class="search-input" placeholder="Search articles…" autocomplete="off" aria-label="Search articles">
       <div class="search-results" hidden></div>
     </div>
+    <button type="button" class="layout-toggle" aria-label="Toggle floating overlay layout"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(1.0000038,0,0,1,-150.8009,-463.73313)"
+     style="stroke-width:0.999998"><path
+       fill="currentColor"
+       d="m 199.54565,563.57024 c -2.67724,-0.98697 -10.23586,-4.59569 -13.53157,-6.46038 -15.99575,-9.05028 -25.46649,-19.64931 -28.26251,-31.62952 -0.74999,-3.21354 -0.76187,-10.5568 -0.022,-13.62042 1.14768,-4.75245 2.55327,-7.26626 4.27421,-7.64423 1.66185,-0.36501 1.88984,-0.14522 9.17229,8.84211 2.16017,2.66588 2.52076,3.69918 1.77632,5.09018 -0.44871,0.83841 -1.94086,1.54644 -3.25911,1.54644 -1.04494,0 -1.10989,0.0597 -1.10554,1.01645 0.0149,3.27948 2.19973,8.3049 5.16227,11.87404 3.80869,4.58855 11.82553,9.87976 19.14965,12.63897 l 1.9547,0.7364 v -14.65691 -14.6569 l -1.55625,-0.14953 c -3.53677,-0.33984 -7.38023,-3.20094 -8.97269,-6.67934 -0.6745,-1.47331 -0.73088,-1.83986 -0.4253,-2.76574 0.60652,-1.83781 1.28889,-2.05683 6.40833,-2.05683 h 4.54591 v -6.70311 c 0,-6.40748 -0.0273,-6.71178 -0.6197,-6.89979 -1.20931,-0.38382 -3.84526,-2.6316 -5.19651,-4.43131 -4.33248,-5.77026 -3.67046,-13.84953 1.55777,-19.01112 5.69473,-5.62213 14.70677,-5.62213 20.40148,0 5.22823,5.16159 5.89026,13.24086 1.55779,19.01112 -1.35127,1.79971 -3.9872,4.04749 -5.19653,4.43131 -0.59236,0.18801 -0.61969,0.49231 -0.61969,6.89979 v 6.70311 h 4.54592 c 5.02511,0 5.77729,0.22342 6.35771,1.8884 0.37753,1.08299 0.0784,2.30975 -1.02034,4.18461 -1.62338,2.7701 -5.27209,5.13536 -8.38306,5.43428 l -1.50023,0.14415 v 14.6596 c 0,8.06277 0.0461,14.65959 0.10248,14.65959 0.40882,0 4.74616,-1.94491 7.77654,-3.4871 10.82822,-5.51056 17.46986,-13.10675 18.28588,-20.91396 l 0.19546,-1.87018 h -1.15471 c -1.35802,0 -2.84973,-0.69827 -3.30365,-1.54644 -0.74445,-1.391 -0.38386,-2.4243 1.77632,-5.09018 5.18457,-6.39834 6.77267,-8.24449 7.39709,-8.599 2.37953,-1.35103 4.3201,0.87222 5.88006,6.73661 0.89927,3.38066 0.97516,10.73792 0.14733,14.28493 -2.38424,10.21591 -9.40949,19.1688 -21.59645,27.52225 -4.37167,2.99654 -11.03877,6.63911 -16.28821,8.89908 -4.12619,1.77638 -5.29434,2.0804 -6.41144,1.66857 z m 3.24126,-83.16895 c 1.48389,-1.4839 1.0142,-3.87083 -0.92079,-4.67932 -0.92693,-0.3873 -1.21199,-0.3873 -2.13892,0 -1.2566,0.52504 -1.74531,1.30411 -1.74531,2.78224 0,2.44378 3.05297,3.64912 4.80502,1.89708 z"
+       id="path6" /></g></svg>
+</button>
     <button type="button" class="lang-toggle" aria-label="Toggle language (no German content yet -- display only)">🇩🇪</button>
     <button type="button" class="font-decrease" aria-label="Decrease font size">−</button>
     <button type="button" class="font-increase" aria-label="Increase font size">+</button>
@@ -3241,14 +3259,49 @@
 <h3 id="mixed-personal-and-vehicle-combat">Mixed Personal and Vehicle Combat</h3>
 <p>Sometimes, characters might engage with vehicles despite being on foot, or a battle might contain armor and infantry elements. Characters on foot might even be pursued by enemies with small vehicles like motorcycles or horses, or a character might be thrown from their vehicle mid-battle. In such cases, the characters in vehicles behave as if they are involved in a small vehicle combat (or even a capital ship combat), while those outside of vehicles take their turns as usual, as described in <strong>Part <span class="roman-numeral">I</span>–Chapter 6: Combat Encounters</strong> (see page 96).</p>
 <p>Although foot soldiers generally do not appreciate fighting tanks, they do have one advantage: they are harder to hit than most vehicles. As smaller targets, they are harder to hit, whereas infantry can hit tanks with ease, even if they struggle to damage them. Although difficulty for combat checks is set based on range, smaller individuals still get bonuses for attacking things larger than they are (see page 109).</p>
-<blockquote>
-<h2 id="pilot-only-maneuvers-and-actions">Pilot Only Maneuvers and Actions</h2>
+<details class="accordion-section container-accordion-section"><summary><h2 id="pilot-only-maneuvers-and-actions"><span class="type-icon" aria-hidden="true"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   sodipodi:docname="infobox.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="2.0454689"
+     inkscape:cx="189.19868"
+     inkscape:cy="188.95423"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" /><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(0.89999997,0,0,0.90010555,-118.59991,-285.47032)"
+     style="stroke-width:1.11105"><path
+       id="path6"
+       fill="currentColor"
+       d="m 185.98794,320.49923 c -4.64477,0.008 -9.28487,0.69224 -13.73065,2.16338 -11.36793,3.61436 -21.36278,11.38137 -27.59438,21.5623 -2.7934,4.50759 -4.92764,9.57577 -6.13368,14.74263 -1.28572,5.212 -1.34268,10.55984 -1.05206,15.90986 0.30749,6.34389 2.41218,12.54634 5.21599,18.23051 3.993,7.91783 10.09963,14.76709 17.60046,19.51453 4.95628,3.21711 10.52883,5.42513 16.30581,6.63385 3.54885,0.82865 7.19896,1.39677 10.87975,1.16473 4.53517,-0.10485 9.09364,-0.45749 13.43492,-1.8298 5.68049,-1.6328 11.20781,-4.1623 15.92464,-7.67207 9.88178,-7.23785 16.98302,-18.11221 19.53878,-30.10673 1.07457,-5.02006 1.096,-10.23723 0.77481,-15.30677 -0.25852,-3.64425 -0.96783,-7.07648 -2.14277,-10.52755 -4.10848,-12.6174 -13.42625,-23.43235 -25.3176,-29.33052 -5.14578,-2.55303 -10.74335,-4.36899 -16.40914,-4.90663 -2.42398,-0.23545 -4.86099,-0.28529 -7.29488,-0.24172 z m 5.9169,14.69429 c 4.74153,-0.0515 9.57937,3.14775 10.72013,7.87201 1.20957,4.9702 -1.98739,10.644 -6.9462,12.0166 -2.9641,0.66848 -6.33229,0.99546 -9.03269,-0.6937 -2.94128,-1.61608 -5.23434,-4.63712 -5.37682,-8.06643 -0.32003,-4.34155 2.32242,-8.82573 6.46755,-10.33241 1.32244,-0.52846 2.74573,-0.78599 4.16803,-0.79607 z m -7.5606,21.92492 c 3.80898,-0.0236 7.96283,0.99555 10.49121,4.04428 2.06557,2.38416 2.96321,5.67589 2.4786,8.78436 -0.39958,6.39848 -2.87206,12.39694 -4.25345,18.60453 -0.4206,1.73924 -0.91304,3.53413 -0.73298,5.33247 0.97051,0.32224 2.08003,0.23102 3.09353,0.0907 1.12548,-0.16586 2.43687,-0.61914 3.66069,-0.74864 1.59325,-0.0676 3.06675,1.41731 2.83171,3.03079 -0.0711,1.54321 -0.61812,3.04061 -1.2714,4.42304 -1.07017,1.65823 -3.1681,2.03409 -4.83891,2.82155 -4.33225,1.77863 -9.17662,2.65612 -13.80328,1.60917 -3.21161,-0.65014 -6.16073,-2.66043 -7.70838,-5.58076 -1.43954,-2.54727 -1.60853,-5.59722 -1.08893,-8.42552 0.656,-4.0064 1.85638,-7.8977 2.90828,-11.81217 0.8914,-3.25808 1.86962,-6.53924 2.09986,-9.92344 0.0448,-0.42218 -0.18527,-0.8241 -0.6478,-0.72333 -1.95609,-0.23591 -3.81925,0.53178 -5.71676,0.81892 -1.44044,0.15126 -2.987,-0.86201 -3.05641,-2.38953 -0.21499,-1.81004 0.61745,-3.51721 0.86013,-5.28316 0.13597,-0.78486 0.90516,-1.07684 1.58014,-1.2383 4.21872,-1.62072 8.5192,-3.40612 13.11415,-3.435 z" /></g></svg>
+</span>Pilot Only Maneuvers and Actions</h2></summary>
 <p>Some maneuvers and actions are specified as &quot;Pilot Only.&quot; Pilot Only maneuvers and actions affect the current speed and positioning of the vehicle. As each vehicle has a cap on how far and how swiftly it can move, its maneuvers and actions are limited, as described below.</p>
 <p>A vehicle can benefit from only one Pilot Only action per round.</p>
 <p>Additionally, a vehicle can benefit from one Pilot Only maneuver per round, and it can benefit from a second Pilot Only maneuver if it suffers 2 system strain. If the vehicle has a single pilot, the pilot must also suffer 2 strain (or downgrade an action to a maneuver) to perform two maneuvers, as per combat rules.</p>
-<p>Some vehicles can have multiple pilots, in which case two different pilots can each perform a Pilot Only maneuver. In such cases, the vehicle suffers system strain for the second maneuver, but the second pilot does not.</p>
-</blockquote>
-<hr class="sources-hr">
+<p>Some vehicles can have multiple pilots, in which case two different pilots can each perform a Pilot Only maneuver. In such cases, the vehicle suffers system strain for the second maneuver, but the second pilot does not.</p></details><hr class="sources-hr">
 <p><em>Source: GC 225-226</em></p>
 
 </main>

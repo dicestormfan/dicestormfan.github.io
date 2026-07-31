@@ -20,6 +20,7 @@
   var fs = parseFloat(getCookie("fontScale"));
   if (!fs || fs < 0.6 || fs > 1.4) fs = 1;
   document.documentElement.style.setProperty("--font-scale", fs);
+  if (getCookie("layoutFloating") === "1") document.body.classList.add("layout-floating");
 })();</script>
 <div class="page-shell">
 <nav class="filetree-sidebar">
@@ -3185,6 +3186,23 @@
       <input type="search" class="search-input" placeholder="Search articles…" autocomplete="off" aria-label="Search articles">
       <div class="search-results" hidden></div>
     </div>
+    <button type="button" class="layout-toggle" aria-label="Toggle floating overlay layout"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(1.0000038,0,0,1,-150.8009,-463.73313)"
+     style="stroke-width:0.999998"><path
+       fill="currentColor"
+       d="m 199.54565,563.57024 c -2.67724,-0.98697 -10.23586,-4.59569 -13.53157,-6.46038 -15.99575,-9.05028 -25.46649,-19.64931 -28.26251,-31.62952 -0.74999,-3.21354 -0.76187,-10.5568 -0.022,-13.62042 1.14768,-4.75245 2.55327,-7.26626 4.27421,-7.64423 1.66185,-0.36501 1.88984,-0.14522 9.17229,8.84211 2.16017,2.66588 2.52076,3.69918 1.77632,5.09018 -0.44871,0.83841 -1.94086,1.54644 -3.25911,1.54644 -1.04494,0 -1.10989,0.0597 -1.10554,1.01645 0.0149,3.27948 2.19973,8.3049 5.16227,11.87404 3.80869,4.58855 11.82553,9.87976 19.14965,12.63897 l 1.9547,0.7364 v -14.65691 -14.6569 l -1.55625,-0.14953 c -3.53677,-0.33984 -7.38023,-3.20094 -8.97269,-6.67934 -0.6745,-1.47331 -0.73088,-1.83986 -0.4253,-2.76574 0.60652,-1.83781 1.28889,-2.05683 6.40833,-2.05683 h 4.54591 v -6.70311 c 0,-6.40748 -0.0273,-6.71178 -0.6197,-6.89979 -1.20931,-0.38382 -3.84526,-2.6316 -5.19651,-4.43131 -4.33248,-5.77026 -3.67046,-13.84953 1.55777,-19.01112 5.69473,-5.62213 14.70677,-5.62213 20.40148,0 5.22823,5.16159 5.89026,13.24086 1.55779,19.01112 -1.35127,1.79971 -3.9872,4.04749 -5.19653,4.43131 -0.59236,0.18801 -0.61969,0.49231 -0.61969,6.89979 v 6.70311 h 4.54592 c 5.02511,0 5.77729,0.22342 6.35771,1.8884 0.37753,1.08299 0.0784,2.30975 -1.02034,4.18461 -1.62338,2.7701 -5.27209,5.13536 -8.38306,5.43428 l -1.50023,0.14415 v 14.6596 c 0,8.06277 0.0461,14.65959 0.10248,14.65959 0.40882,0 4.74616,-1.94491 7.77654,-3.4871 10.82822,-5.51056 17.46986,-13.10675 18.28588,-20.91396 l 0.19546,-1.87018 h -1.15471 c -1.35802,0 -2.84973,-0.69827 -3.30365,-1.54644 -0.74445,-1.391 -0.38386,-2.4243 1.77632,-5.09018 5.18457,-6.39834 6.77267,-8.24449 7.39709,-8.599 2.37953,-1.35103 4.3201,0.87222 5.88006,6.73661 0.89927,3.38066 0.97516,10.73792 0.14733,14.28493 -2.38424,10.21591 -9.40949,19.1688 -21.59645,27.52225 -4.37167,2.99654 -11.03877,6.63911 -16.28821,8.89908 -4.12619,1.77638 -5.29434,2.0804 -6.41144,1.66857 z m 3.24126,-83.16895 c 1.48389,-1.4839 1.0142,-3.87083 -0.92079,-4.67932 -0.92693,-0.3873 -1.21199,-0.3873 -2.13892,0 -1.2566,0.52504 -1.74531,1.30411 -1.74531,2.78224 0,2.44378 3.05297,3.64912 4.80502,1.89708 z"
+       id="path6" /></g></svg>
+</button>
     <button type="button" class="lang-toggle" aria-label="Toggle language (no German content yet -- display only)">🇩🇪</button>
     <button type="button" class="font-decrease" aria-label="Decrease font size">−</button>
     <button type="button" class="font-increase" aria-label="Increase font size">+</button>
@@ -3250,11 +3268,62 @@
 <p>A particularly dangerous type of harm is a Critical Injury. A Critical Injury is often the result of an attack during combat, but characters can also suffer one from exceeding their wound threshold or through other means. Each time a character suffers a Critical Injury, the player rolls d100 on <strong>Table I.6–10: Critical Injury Result,</strong> on page 115, to determine the injury's severity rating and effects.</p>
 <p>The short-term effects of some injuries are temporary, and may only disorient or afflict the character for a brief amount of time. Other injuries are more serious and represent some sort of long-term debilitation or impairment. These injuries continue to affect the character until they receive the proper medical treatment to recover from the injury.</p>
 <p>Regardless, a Critical Injury remains with the character until properly healed; even if the short-term effect of the Critical Injury has passed, the status of having a Critical Injury remains. Each Critical Injury a character suffers from adds +10 to any subsequent Critical Injury roll. Essentially, Critical Injury is cumulative, and left untreated, even a number of relatively minor Critical Injuries can lead to devastating results.</p>
-<blockquote>
-<h2 id="strain-damage-and-critical-injuries">Strain Damage and Critical Injuries</h2>
-<p>Although not always likely, some attacks that deal strain damage (notably weapons with the Stun Damage quality) can also trigger Critical Injuries. Although this may seem odd, it actually makes sense. When a player character inflicts a Critical Injury on an adversary that can be incapacitated by a single Critical Injury (such as a minion), then the adversary is simply incapacitated by being rendered unconscious. If a PC or nemesis NPC suffers a Critical Injury from a weapon dealing strain damage, the outcome can be anything from adverse long-term effects from the weapon, to tangential injuries from being stunned (for example, the character could be knocked off balance and take a nasty crack on the skull when they hit the ground). Of course, since these Critical Injuries would have to be triggered by the players or GM, both parties can always decide that a Critical Injury would not make sense in that narrative, and choose not to trigger them.</p>
-</blockquote>
-<h3 id="table-i-6-10-critical-injury-result"><strong>TABLE I.6–10: CRITICAL INJURY RESULT</strong></h3>
+<details class="accordion-section container-accordion-section"><summary><h2 id="strain-damage-and-critical-injuries"><span class="type-icon" aria-hidden="true"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   sodipodi:docname="infobox.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="2.0454689"
+     inkscape:cx="189.19868"
+     inkscape:cy="188.95423"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" /><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(0.89999997,0,0,0.90010555,-118.59991,-285.47032)"
+     style="stroke-width:1.11105"><path
+       id="path6"
+       fill="currentColor"
+       d="m 185.98794,320.49923 c -4.64477,0.008 -9.28487,0.69224 -13.73065,2.16338 -11.36793,3.61436 -21.36278,11.38137 -27.59438,21.5623 -2.7934,4.50759 -4.92764,9.57577 -6.13368,14.74263 -1.28572,5.212 -1.34268,10.55984 -1.05206,15.90986 0.30749,6.34389 2.41218,12.54634 5.21599,18.23051 3.993,7.91783 10.09963,14.76709 17.60046,19.51453 4.95628,3.21711 10.52883,5.42513 16.30581,6.63385 3.54885,0.82865 7.19896,1.39677 10.87975,1.16473 4.53517,-0.10485 9.09364,-0.45749 13.43492,-1.8298 5.68049,-1.6328 11.20781,-4.1623 15.92464,-7.67207 9.88178,-7.23785 16.98302,-18.11221 19.53878,-30.10673 1.07457,-5.02006 1.096,-10.23723 0.77481,-15.30677 -0.25852,-3.64425 -0.96783,-7.07648 -2.14277,-10.52755 -4.10848,-12.6174 -13.42625,-23.43235 -25.3176,-29.33052 -5.14578,-2.55303 -10.74335,-4.36899 -16.40914,-4.90663 -2.42398,-0.23545 -4.86099,-0.28529 -7.29488,-0.24172 z m 5.9169,14.69429 c 4.74153,-0.0515 9.57937,3.14775 10.72013,7.87201 1.20957,4.9702 -1.98739,10.644 -6.9462,12.0166 -2.9641,0.66848 -6.33229,0.99546 -9.03269,-0.6937 -2.94128,-1.61608 -5.23434,-4.63712 -5.37682,-8.06643 -0.32003,-4.34155 2.32242,-8.82573 6.46755,-10.33241 1.32244,-0.52846 2.74573,-0.78599 4.16803,-0.79607 z m -7.5606,21.92492 c 3.80898,-0.0236 7.96283,0.99555 10.49121,4.04428 2.06557,2.38416 2.96321,5.67589 2.4786,8.78436 -0.39958,6.39848 -2.87206,12.39694 -4.25345,18.60453 -0.4206,1.73924 -0.91304,3.53413 -0.73298,5.33247 0.97051,0.32224 2.08003,0.23102 3.09353,0.0907 1.12548,-0.16586 2.43687,-0.61914 3.66069,-0.74864 1.59325,-0.0676 3.06675,1.41731 2.83171,3.03079 -0.0711,1.54321 -0.61812,3.04061 -1.2714,4.42304 -1.07017,1.65823 -3.1681,2.03409 -4.83891,2.82155 -4.33225,1.77863 -9.17662,2.65612 -13.80328,1.60917 -3.21161,-0.65014 -6.16073,-2.66043 -7.70838,-5.58076 -1.43954,-2.54727 -1.60853,-5.59722 -1.08893,-8.42552 0.656,-4.0064 1.85638,-7.8977 2.90828,-11.81217 0.8914,-3.25808 1.86962,-6.53924 2.09986,-9.92344 0.0448,-0.42218 -0.18527,-0.8241 -0.6478,-0.72333 -1.95609,-0.23591 -3.81925,0.53178 -5.71676,0.81892 -1.44044,0.15126 -2.987,-0.86201 -3.05641,-2.38953 -0.21499,-1.81004 0.61745,-3.51721 0.86013,-5.28316 0.13597,-0.78486 0.90516,-1.07684 1.58014,-1.2383 4.21872,-1.62072 8.5192,-3.40612 13.11415,-3.435 z" /></g></svg>
+</span>Strain Damage and Critical Injuries</h2></summary>
+<p>Although not always likely, some attacks that deal strain damage (notably weapons with the Stun Damage quality) can also trigger Critical Injuries. Although this may seem odd, it actually makes sense. When a player character inflicts a Critical Injury on an adversary that can be incapacitated by a single Critical Injury (such as a minion), then the adversary is simply incapacitated by being rendered unconscious. If a PC or nemesis NPC suffers a Critical Injury from a weapon dealing strain damage, the outcome can be anything from adverse long-term effects from the weapon, to tangential injuries from being stunned (for example, the character could be knocked off balance and take a nasty crack on the skull when they hit the ground). Of course, since these Critical Injuries would have to be triggered by the players or GM, both parties can always decide that a Critical Injury would not make sense in that narrative, and choose not to trigger them.</p></details><details class="accordion-section container-accordion-section"><summary><h2 id="table-i-6-10-critical-injury-result"><span class="type-icon" aria-hidden="true"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(0.89999998,0,0,0.89999998,-12.820693,-287.83426)"
+     style="stroke-width:1.11111"><path
+       fill="currentColor"
+       d="m 21.384424,421.68985 -1.459153,-1.45933 v -11.74639 c 0,-16.54845 -1.057863,-15.51077 15.631909,-15.33374 15.292042,0.16219 14.200996,-0.92898 14.363173,14.36494 0.130701,12.32597 -0.04594,13.44514 -2.346421,14.8671 -1.17928,0.72892 -1.819984,0.76676 -12.98542,0.76676 H 22.843577 Z m 35.820604,0.69792 c -2.200202,-1.34159 -2.326557,-2.12177 -2.324994,-14.35605 0.002,-15.82335 -1.074715,-14.76573 15.032297,-14.76573 12.75541,0 12.737256,-0.003 14.298555,2.55769 0.681777,1.11828 0.732435,1.96112 0.733742,12.20804 0.0016,12.23428 -0.124792,13.01446 -2.324994,14.35605 -1.17604,0.71711 -1.871257,0.7586 -12.707303,0.7586 -10.836046,0 -11.531264,-0.0415 -12.707303,-0.7586 z m 34.998382,-0.0195 c -2.250402,-1.44168 -2.429074,-2.59597 -2.299101,-14.85302 0.162178,-15.29392 -0.92887,-14.20275 14.363181,-14.36494 12.32442,-0.1307 13.44346,0.0459 14.86524,2.3467 0.72883,1.17944 0.76666,1.82022 0.76666,12.98703 v 11.7464 l -1.45915,1.45932 -1.45916,1.45934 -11.7893,-0.006 c -11.225578,-0.006 -11.846621,-0.043 -12.98837,-0.7745 z M 22.657532,387.63416 c -0.667748,-0.29031 -1.555044,-1.08716 -1.971769,-1.77075 -0.715956,-1.17445 -0.757682,-1.87426 -0.757682,-12.70751 0,-10.8374 0.04149,-11.5327 0.75851,-12.70888 1.341426,-2.20048 2.121518,-2.32685 14.354272,-2.32529 15.8214,10e-4 14.763892,-1.07485 14.763892,15.03417 0,12.75698 0.0033,12.73882 -2.55736,14.30031 -1.120271,0.68316 -1.946907,0.73154 -12.288422,0.71912 -8.669505,-0.01 -11.352115,-0.12843 -12.301441,-0.54117 z m 34.87517,-0.12956 c -2.552535,-1.36911 -2.654073,-1.91807 -2.654073,-14.34872 0,-16.05027 -1.014574,-15.03557 15.033702,-15.03557 16.048276,0 15.033703,-1.0147 15.033703,15.03557 0,16.05026 1.014573,15.03556 -15.033703,15.03556 -10.031583,0 -11.222245,-0.0661 -12.379629,-0.68684 z m 35.044564,-0.0485 c -2.560605,-1.56148 -2.557357,-1.54333 -2.557357,-14.30031 0,-12.757 -0.0033,-12.73884 2.557357,-14.30033 1.118147,-0.68187 1.960891,-0.73253 12.206534,-0.73384 12.23275,-0.001 13.01284,0.12488 14.35427,2.32529 0.71701,1.17618 0.75852,1.87148 0.75852,12.70888 0,10.83738 -0.0415,11.53268 -0.75852,12.70886 -1.34143,2.20049 -2.12152,2.32686 -14.35427,2.32529 -10.245643,-10e-4 -11.088387,-0.052 -12.206534,-0.73384 z M 22.744091,352.53593 c -2.787963,-1.30398 -2.81882,-1.46514 -2.81882,-14.72192 v -11.73277 l 1.459153,-1.45932 1.459153,-1.45934 h 11.744935 c 16.546397,0 15.50884,-1.058 15.331841,15.63385 -0.16243,15.31778 0.961659,14.21082 -14.568047,14.34599 -10.183016,0.0886 -11.229643,0.0384 -12.608215,-0.60649 z m 35.758619,0.3218 c -0.590674,-0.18282 -1.411352,-0.63776 -1.823731,-1.01102 -1.728918,-1.56484 -1.80035,-2.1061 -1.80035,-13.64197 0,-12.15181 0.128485,-12.94055 2.326399,-14.28075 1.176039,-0.7171 1.871257,-0.7586 12.707303,-0.7586 10.836046,0 11.531263,0.0415 12.707303,0.7586 2.200204,1.3416 2.326556,2.12178 2.324994,14.35605 -0.002,15.74749 0.983242,14.73585 -14.451024,14.8379 -6.004318,0.0396 -11.400222,-0.0774 -11.990894,-0.26021 z m 34.944621,-0.0128 c -1.528228,-0.45763 -2.801945,-1.77233 -3.237978,-3.34216 -0.205246,-0.73894 -0.374117,-5.94943 -0.375271,-11.57889 -0.0024,-11.49673 0.192469,-12.6197 2.429204,-14.00226 1.163241,-0.719 1.846679,-0.759 12.972854,-0.759 h 11.74494 l 1.45916,1.45934 1.45915,1.45933 v 11.74639 c 0,16.45416 1.00235,15.42321 -14.94735,15.37377 -5.732114,-0.0178 -10.909231,-0.17821 -11.504709,-0.35652 z"
+       id="path1" /></g></svg>
+</span><strong>TABLE I.6–10: CRITICAL INJURY RESULT</strong></h2></summary>
 <table>
 <thead>
 <tr>
@@ -4435,7 +4504,7 @@
 </tr>
 </tbody>
 </table>
-<hr class="sources-hr">
+</details><hr class="sources-hr">
 <p><em>Source: GC 114-115</em></p>
 
 </main>

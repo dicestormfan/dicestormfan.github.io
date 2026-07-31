@@ -20,6 +20,7 @@
   var fs = parseFloat(getCookie("fontScale"));
   if (!fs || fs < 0.6 || fs > 1.4) fs = 1;
   document.documentElement.style.setProperty("--font-scale", fs);
+  if (getCookie("layoutFloating") === "1") document.body.classList.add("layout-floating");
 })();</script>
 <div class="page-shell">
 <nav class="filetree-sidebar">
@@ -3185,6 +3186,23 @@
       <input type="search" class="search-input" placeholder="Search articles…" autocomplete="off" aria-label="Search articles">
       <div class="search-results" hidden></div>
     </div>
+    <button type="button" class="layout-toggle" aria-label="Toggle floating overlay layout"><svg
+  
+  
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1" /><g
+     id="layer1"
+     transform="matrix(1.0000038,0,0,1,-150.8009,-463.73313)"
+     style="stroke-width:0.999998"><path
+       fill="currentColor"
+       d="m 199.54565,563.57024 c -2.67724,-0.98697 -10.23586,-4.59569 -13.53157,-6.46038 -15.99575,-9.05028 -25.46649,-19.64931 -28.26251,-31.62952 -0.74999,-3.21354 -0.76187,-10.5568 -0.022,-13.62042 1.14768,-4.75245 2.55327,-7.26626 4.27421,-7.64423 1.66185,-0.36501 1.88984,-0.14522 9.17229,8.84211 2.16017,2.66588 2.52076,3.69918 1.77632,5.09018 -0.44871,0.83841 -1.94086,1.54644 -3.25911,1.54644 -1.04494,0 -1.10989,0.0597 -1.10554,1.01645 0.0149,3.27948 2.19973,8.3049 5.16227,11.87404 3.80869,4.58855 11.82553,9.87976 19.14965,12.63897 l 1.9547,0.7364 v -14.65691 -14.6569 l -1.55625,-0.14953 c -3.53677,-0.33984 -7.38023,-3.20094 -8.97269,-6.67934 -0.6745,-1.47331 -0.73088,-1.83986 -0.4253,-2.76574 0.60652,-1.83781 1.28889,-2.05683 6.40833,-2.05683 h 4.54591 v -6.70311 c 0,-6.40748 -0.0273,-6.71178 -0.6197,-6.89979 -1.20931,-0.38382 -3.84526,-2.6316 -5.19651,-4.43131 -4.33248,-5.77026 -3.67046,-13.84953 1.55777,-19.01112 5.69473,-5.62213 14.70677,-5.62213 20.40148,0 5.22823,5.16159 5.89026,13.24086 1.55779,19.01112 -1.35127,1.79971 -3.9872,4.04749 -5.19653,4.43131 -0.59236,0.18801 -0.61969,0.49231 -0.61969,6.89979 v 6.70311 h 4.54592 c 5.02511,0 5.77729,0.22342 6.35771,1.8884 0.37753,1.08299 0.0784,2.30975 -1.02034,4.18461 -1.62338,2.7701 -5.27209,5.13536 -8.38306,5.43428 l -1.50023,0.14415 v 14.6596 c 0,8.06277 0.0461,14.65959 0.10248,14.65959 0.40882,0 4.74616,-1.94491 7.77654,-3.4871 10.82822,-5.51056 17.46986,-13.10675 18.28588,-20.91396 l 0.19546,-1.87018 h -1.15471 c -1.35802,0 -2.84973,-0.69827 -3.30365,-1.54644 -0.74445,-1.391 -0.38386,-2.4243 1.77632,-5.09018 5.18457,-6.39834 6.77267,-8.24449 7.39709,-8.599 2.37953,-1.35103 4.3201,0.87222 5.88006,6.73661 0.89927,3.38066 0.97516,10.73792 0.14733,14.28493 -2.38424,10.21591 -9.40949,19.1688 -21.59645,27.52225 -4.37167,2.99654 -11.03877,6.63911 -16.28821,8.89908 -4.12619,1.77638 -5.29434,2.0804 -6.41144,1.66857 z m 3.24126,-83.16895 c 1.48389,-1.4839 1.0142,-3.87083 -0.92079,-4.67932 -0.92693,-0.3873 -1.21199,-0.3873 -2.13892,0 -1.2566,0.52504 -1.74531,1.30411 -1.74531,2.78224 0,2.44378 3.05297,3.64912 4.80502,1.89708 z"
+       id="path6" /></g></svg>
+</button>
     <button type="button" class="lang-toggle" aria-label="Toggle language (no German content yet -- display only)">🇩🇪</button>
     <button type="button" class="font-decrease" aria-label="Decrease font size">−</button>
     <button type="button" class="font-increase" aria-label="Increase font size">+</button>
@@ -3194,7 +3212,7 @@
 <main class="content">
 <h1 id="positive-dice">Positive Dice</h1>
 <p>Three types of positive dice have symbols that improve the odds of successfully completing a task or achieving beneficial side effects.</p>
-<h3 id="boost-dice-b">Boost Dice <span class="gd-icon-wrap"><span class="gd-raw">[B]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
+<details name="positive-dice" class="accordion-section"><summary><h3 id="boost-dice-b">Boost Dice <span class="gd-icon-wrap"><span class="gd-raw">[B]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
    viewBox="0 0 100 100"
@@ -3210,7 +3228,7 @@
      class="stroke-die"
      d="m 14.773438,19.773438 v 60.453124 a 5.0000002,5.0000002 45 0 0 5,5 h 60.453124 a 5.0000002,5.0000002 135 0 0 5,-5 V 19.773438 a 5.0000002,5.0000002 45 0 0 -5,-5 H 19.773438 a 5.0000002,5.0000002 135 0 0 -5,5 z m 6.999999,-1.000001 h 56.453125 a 3.0000001,3.0000001 45 0 1 3,3 v 56.453125 a 3.0000001,3.0000001 135 0 1 -3,3 H 21.773437 a 3.0000001,3.0000001 45 0 1 -3,-3 V 21.773437 a 3.0000001,3.0000001 135 0 1 3,-3 z"
      id="path122" />
-</svg></span></span></h3>
+</svg></span></span></h3></summary>
 <p>Special advantages, or &quot;boosts,&quot; are represented with light blue six-sided dice. Boost dice represent benefits gained through luck, chance, and advantageous actions that your character takes. They reflect your character's possession of some sort of benefit or advantage, such as having ample time to complete the task or having the right equipment. Boost dice and Setback dice are thematic opposites of each other. Boost dice are represented by <span class="gd-icon-wrap"><span class="gd-raw">[B]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
@@ -3228,7 +3246,7 @@
      d="m 14.773438,19.773438 v 60.453124 a 5.0000002,5.0000002 45 0 0 5,5 h 60.453124 a 5.0000002,5.0000002 135 0 0 5,-5 V 19.773438 a 5.0000002,5.0000002 45 0 0 -5,-5 H 19.773438 a 5.0000002,5.0000002 135 0 0 -5,5 z m 6.999999,-1.000001 h 56.453125 a 3.0000001,3.0000001 45 0 1 3,3 v 56.453125 a 3.0000001,3.0000001 135 0 1 -3,3 H 21.773437 a 3.0000001,3.0000001 45 0 1 -3,-3 V 21.773437 a 3.0000001,3.0000001 135 0 1 3,-3 z"
      id="path122" />
 </svg></span></span> in text.</p>
-<h3 id="ability-dice-a">Ability Dice <span class="gd-icon-wrap"><span class="gd-raw">[A]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
+</details><details name="positive-dice" class="accordion-section"><summary><h3 id="ability-dice-a">Ability Dice <span class="gd-icon-wrap"><span class="gd-raw">[A]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
    viewBox="0 0 100 100"
@@ -3244,7 +3262,7 @@
      class="stroke-die"
      d="M 46.821383,4.5431789 12.563382,46.140415 a 6.0711712,6.0711712 90 0 0 0,7.71917 l 34.258001,41.597236 a 4.117822,4.117822 -180 0 0 6.357234,0 l 34.258,-41.597236 a 6.0711712,6.0711712 90 0 0 0,-7.71917 l -34.258,-41.5972361 a 4.1178219,4.1178219 1.3845306e-7 0 0 -6.357234,0 z m 5.085768,4.747197 31.619292,38.3938571 a 3.6427628,3.6427628 90 0 1 0,4.631534 L 51.907151,90.709624 a 2.4706524,2.4706524 0 0 1 -3.814302,0 L 16.473557,52.315767 a 3.6427628,3.6427628 90 0 1 0,-4.631534 L 48.092849,9.2903759 a 2.4706524,2.4706524 -180 0 1 3.814302,0 z"
      id="path124" />
-</svg></span></span></h3>
+</svg></span></span></h3></summary>
 <p>Ability is represented with green eight-sided dice. Ability dice form the basis of most dice pools rolled by the players. They represent your character's aptitude or skill used when attempting a skill check. These dice possess positive, beneficial symbols. Ability dice are opposed by Difficulty dice. Ability dice are represented by <span class="gd-icon-wrap"><span class="gd-raw">[A]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
@@ -3262,7 +3280,7 @@
      d="M 46.821383,4.5431789 12.563382,46.140415 a 6.0711712,6.0711712 90 0 0 0,7.71917 l 34.258001,41.597236 a 4.117822,4.117822 -180 0 0 6.357234,0 l 34.258,-41.597236 a 6.0711712,6.0711712 90 0 0 0,-7.71917 l -34.258,-41.5972361 a 4.1178219,4.1178219 1.3845306e-7 0 0 -6.357234,0 z m 5.085768,4.747197 31.619292,38.3938571 a 3.6427628,3.6427628 90 0 1 0,4.631534 L 51.907151,90.709624 a 2.4706524,2.4706524 0 0 1 -3.814302,0 L 16.473557,52.315767 a 3.6427628,3.6427628 90 0 1 0,-4.631534 L 48.092849,9.2903759 a 2.4706524,2.4706524 -180 0 1 3.814302,0 z"
      id="path124" />
 </svg></span></span> in text.</p>
-<h3 id="proficiency-dice-p">Proficiency Dice <span class="gd-icon-wrap"><span class="gd-raw">[P]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
+</details><details name="positive-dice" class="accordion-section"><summary><h3 id="proficiency-dice-p">Proficiency Dice <span class="gd-icon-wrap"><span class="gd-raw">[P]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
    viewBox="0 0 100 100"
@@ -3278,7 +3296,7 @@
      class="stroke-die"
      d="M 45.669941,5.3458213 13.494121,23.92371 a 8.6605272,8.6605272 119.99922 0 0 -4.3300585,7.500118 v 37.154297 a 8.6601685,8.6601685 59.999754 0 0 4.3301485,7.499963 l 32.17564,18.576246 a 8.6606333,8.6606333 5.9339553e-4 0 0 8.660349,9e-5 L 86.507691,76.077998 a 8.6599614,8.6599614 120.00084 0 0 4.3302,-7.499873 V 31.423828 A 8.66032,8.66032 60.000188 0 0 86.50778,23.923799 L 54.330111,5.3457316 a 8.6599159,8.6599159 179.99941 0 0 -8.66017,8.97e-5 z M 52.5981,8.9648021 84.239791,27.232464 a 5.1960563,5.1960563 59.99954 0 1 2.5981,4.499958 v 36.537109 a 5.1958177,5.1958177 120.0016 0 1 -2.59816,4.499855 L 52.59816,91.035301 a 5.196446,5.196446 0.00179716 0 1 -5.196226,-1.63e-4 L 15.762129,72.767596 A 5.1961941,5.1961941 60.000198 0 1 13.164063,68.267578 V 31.732422 a 5.1961942,5.1961942 119.9998 0 1 2.598066,-4.500018 L 47.401934,8.9648617 a 5.1962073,5.1962073 179.99934 0 1 5.196166,-5.96e-5 z"
      id="path126" />
-</svg></span></span></h3>
+</svg></span></span></h3></summary>
 <p>Proficiency is represented with yellow twelve-sided dice. Proficiency dice represent the combination of innate ability and training. They are most often used when your character attempts a skill check using a trained skill. Proficiency dice can also be added to a pool when you spend a Story Point (see page 27) for an important skill check. These dice possess a greater likelihood of success, and they are the only dice that feature the potent Triumph symbol (see page 12). Proficiency dice are the upgraded version of Ability dice (for more on upgrades, see page 21). Proficiency dice are represented by <span class="gd-icon-wrap"><span class="gd-raw">[P]</span><span class="gd-icon" aria-hidden="true"><svg class="gd-die"
    width="100mm"
    height="100mm"
@@ -3296,7 +3314,7 @@
      d="M 45.669941,5.3458213 13.494121,23.92371 a 8.6605272,8.6605272 119.99922 0 0 -4.3300585,7.500118 v 37.154297 a 8.6601685,8.6601685 59.999754 0 0 4.3301485,7.499963 l 32.17564,18.576246 a 8.6606333,8.6606333 5.9339553e-4 0 0 8.660349,9e-5 L 86.507691,76.077998 a 8.6599614,8.6599614 120.00084 0 0 4.3302,-7.499873 V 31.423828 A 8.66032,8.66032 60.000188 0 0 86.50778,23.923799 L 54.330111,5.3457316 a 8.6599159,8.6599159 179.99941 0 0 -8.66017,8.97e-5 z M 52.5981,8.9648021 84.239791,27.232464 a 5.1960563,5.1960563 59.99954 0 1 2.5981,4.499958 v 36.537109 a 5.1958177,5.1958177 120.0016 0 1 -2.59816,4.499855 L 52.59816,91.035301 a 5.196446,5.196446 0.00179716 0 1 -5.196226,-1.63e-4 L 15.762129,72.767596 A 5.1961941,5.1961941 60.000198 0 1 13.164063,68.267578 V 31.732422 a 5.1961942,5.1961942 119.9998 0 1 2.598066,-4.500018 L 47.401934,8.9648617 a 5.1962073,5.1962073 179.99934 0 1 5.196166,-5.96e-5 z"
      id="path126" />
 </svg></span></span> in text.</p>
-<hr class="sources-hr">
+</details><hr class="sources-hr">
 <p><em>Source: GC 9-10</em></p>
 
 </main>
