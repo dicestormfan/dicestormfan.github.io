@@ -384,7 +384,7 @@ document.querySelectorAll(".container-tab").forEach(function (btn) {
 function applySkillsFilter(root) {
   const select = root.querySelector(".skills-setting-select");
   const magicBox = root.querySelector(".skills-magic-checkbox");
-  const table = root.querySelector(".skills-table");
+  const table = root.querySelector(".overview-table");
   if (!select || !magicBox || !table) return;
   const setting = select.value;
   const magicOn = magicBox.checked;
@@ -410,28 +410,31 @@ document.addEventListener("change", function (e) {
   }
 });
 
-// A click anywhere in a skills-table row navigates the same as clicking its
-// own name link (Nutzerwunsch 2026-07-31) -- ignored when the click already
-// landed on the link itself (that's the generic <a> click handler's job, and
-// synthetically re-clicking it here would double-navigate). link.click()
-// dispatches a fresh click on the <a>, which bubbles back up into that same
-// generic handler above for proper SPA navigation, not a hard page reload.
+// A click anywhere in an overview-table row navigates the same as clicking
+// its own name link (Nutzerwunsch 2026-07-31) -- ignored when the click
+// already landed on the link itself (that's the generic <a> click handler's
+// job, and synthetically re-clicking it here would double-navigate).
+// link.click() dispatches a fresh click on the <a>, which bubbles back up
+// into that same generic handler above for proper SPA navigation, not a hard
+// page reload.
 document.addEventListener("click", function (e) {
-  const tr = e.target.closest(".skills-table tbody tr");
+  const tr = e.target.closest(".overview-table tbody tr");
   if (!tr || e.target.closest("a")) return;
   const link = tr.querySelector("a");
   if (link) link.click();
 });
 
-// Sortable column headers (Nutzerwunsch 2026-07-31): clicking Name,
-// Characteristic, or Group cycles that column asc -> desc -> off (Page is
-// plain, not sortable). Only one column is ever active at a time -- clicking
-// a different header always starts it fresh at "asc" and resets the rest.
-// "off" restores the table's original default order (already
-// alphabetical-by-name) via each row's own data-idx, set at build time --
-// see SKILLS_TABLE_HEAD/buildSkillsOverviewHtml in build-site.js.
+// Sortable column headers, any overview table (Nutzerwunsch 2026-07-31):
+// clicking a sortable column (Skills: Name/Characteristic/Group; Talents:
+// Name/Tier/Activation/Ranked -- Page and Description are always plain)
+// cycles that column asc -> desc -> off. Only one column is ever active at a
+// time -- clicking a different header always starts it fresh at "asc" and
+// resets the rest. "off" restores the table's original default order
+// (already alphabetical-by-name) via each row's own data-idx, set at build
+// time -- see buildOverviewTableHead/buildSkillsOverviewHtml/
+// buildTalentsOverviewHtml in build-site.js.
 document.addEventListener("click", function (e) {
-  const th = e.target.closest(".skills-table th.sortable");
+  const th = e.target.closest(".overview-table th.sortable");
   if (!th) return;
   const headerCells = Array.from(th.parentElement.children);
   const next = th.dataset.sort === "asc" ? "desc" : th.dataset.sort === "desc" ? "" : "asc";
@@ -439,7 +442,7 @@ document.addEventListener("click", function (e) {
     const active = h === th;
     h.dataset.sort = active ? next : "";
     const indicator = h.querySelector(".sort-indicator");
-    if (indicator) indicator.textContent = active ? (next === "asc" ? " ▲" : next === "desc" ? " ▼" : "") : "";
+    if (indicator) indicator.textContent = active ? (next === "asc" ? " ▴" : next === "desc" ? " ▾" : "") : "";
   });
   const table = th.closest("table");
   const tbody = table.querySelector("tbody");
