@@ -103,7 +103,6 @@ function swapContent(html, url) {
   const hash = hashIdx === -1 ? "" : url.slice(hashIdx + 1);
   const target = hash ? document.getElementById(hash) : null;
   if (target) {
-    revealIfContainerPanel(target);
     target.scrollIntoView({ block: "start" });
     return;
   }
@@ -362,55 +361,6 @@ function updateFontButtonState() {
 updateFontButtonState();
 if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); });
 if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); updateFontButtonState(); });
-
-// Container tabs (Nutzerwunsch 2026-07-30, REVISED same day -- replaces an
-// earlier per-item accordion/popover approach entirely, see
-// extractRelocatableContainers/buildContainerTabsHtml in build-site.js).
-// One shared row of tab buttons, rendered identically above the article's
-// H1 and at its end: clicking any button (either row -- both carry the
-// same data-target values) shows that container's panel in the single
-// shared content slot below the bottom row, hiding whatever was shown
-// before. A click in the TOP row additionally scrolls the bottom section
-// into view, since that's the only place the panel actually appears.
-function activateContainerTab(id) {
-  document.querySelectorAll(".container-tab").forEach(function (btn) {
-    btn.classList.toggle("active", btn.dataset.target === id);
-  });
-  document.querySelectorAll(".container-panel").forEach(function (panel) {
-    panel.hidden = panel.dataset.id !== id;
-  });
-}
-// A search-result (or any other) link straight into an Infobox/Example (see
-// build-site.js's renderContainer -- the panel's own id IS the search
-// index's anchor) lands on an element that's hidden by default; a plain
-// scrollIntoView() onto a hidden, zero-height element goes nowhere visible.
-// Un-hides it via the same tab-activation path a real click would use
-// first, so both the generic swapContent hash-scroll below and the initial
-// page-load check further down reveal it correctly.
-function revealIfContainerPanel(el) {
-  if (el.classList.contains("container-panel")) activateContainerTab(el.dataset.id);
-}
-document.querySelectorAll(".container-tab").forEach(function (btn) {
-  btn.addEventListener("click", function () {
-    activateContainerTab(btn.dataset.target);
-    if (btn.closest(".container-tabs-top")) {
-      const section = document.querySelector(".article-containers");
-      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-});
-// A cold/fresh page load (as opposed to an in-app SPA swap, already handled
-// inside swapContent above) -- e.g. a search result link opened directly --
-// has already run the browser's own native fragment-scroll by the time this
-// script executes, which for a hidden container-panel target scrolled
-// nowhere. Redo it by hand once the target is actually revealed.
-if (location.hash) {
-  const initialTarget = document.getElementById(location.hash.slice(1));
-  if (initialTarget) {
-    revealIfContainerPanel(initialTarget);
-    initialTarget.scrollIntoView({ block: "start" });
-  }
-}
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
