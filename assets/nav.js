@@ -330,7 +330,12 @@ if (langToggle) {
 // pre-body script that applies the theme (see pageShell), to avoid a
 // flash of default-sized text before this file loads.
 const FONT_SCALE_KEY = "fontScale";
-const FONT_SCALE_MIN = 0.8;
+// FONT_SCALE_MIN lowered from 0.8 to 0.6 (Nutzerwunsch 2026-07-31: "Minus
+// soll noch zwei Stufen kleiner möglich sein") -- two more FONT_SCALE_STEPs
+// below the old floor. Keep in sync with the hardcoded 0.6 in the inline
+// pre-body FOUC-prevention script below (pageShell), which duplicates this
+// clamp before this script has even loaded.
+const FONT_SCALE_MIN = 0.6;
 const FONT_SCALE_MAX = 1.4;
 const FONT_SCALE_STEP = 0.1;
 function getFontScale() {
@@ -344,8 +349,18 @@ function setFontScale(v) {
 }
 const fontDecrease = document.querySelector(".font-decrease");
 const fontIncrease = document.querySelector(".font-increase");
-if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); });
-if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); });
+// Disable +/- at their respective limits (Nutzerwunsch 2026-07-31) -- run
+// once on load (cookie may already be at a limit) and again after every
+// click, since setFontScale's own clamp is what actually decides whether a
+// click moved the value at all.
+function updateFontButtonState() {
+  const scale = getFontScale();
+  if (fontDecrease) fontDecrease.disabled = scale <= FONT_SCALE_MIN;
+  if (fontIncrease) fontIncrease.disabled = scale >= FONT_SCALE_MAX;
+}
+updateFontButtonState();
+if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); });
+if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); updateFontButtonState(); });
 
 // Container tabs (Nutzerwunsch 2026-07-30, REVISED same day -- replaces an
 // earlier per-item accordion/popover approach entirely, see
