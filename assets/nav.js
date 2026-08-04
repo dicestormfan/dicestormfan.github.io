@@ -619,9 +619,24 @@ document.addEventListener("click", function (e) {
   // control character, which is what a single "" here would have produced
   // instead of a word-boundary assertion). Doubling makes a single real
   // backslash survive into the generated nav.js.
+  // REGRESS 2026-08-04 fix: a header like "{Tr}"/"{Th}" (see DICE_MAP/
+  // RESULT_MAP in build-site.js -- these are case-sensitive notation tokens
+  // the glyph-rendering pass looks up verbatim) has no vowel, so the
+  // ALL-CAPS exception below used to mistake it for an abbreviation like
+  // "HP" and corrupt it to "{TR}"/"{TH}", silently breaking the symbol.
+  // Notation tokens are pulled out to a placeholder BEFORE the case logic
+  // runs (and are excluded from the vowel/digit exception check that logic
+  // does), then spliced back in completely untouched. w (ASCII-only in a
+  // non-unicode regex) doesn't match the placeholder character either, so
+  // the title-case .replace below skips over it on its own.
   function popoverHeaderCase(text) {
-    if (!/[aeiouAEIOU]/.test(text) || /\d/.test(text)) return text.toUpperCase();
-    return text.replace(/\w+/g, function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+    const tokens = [];
+    const placeholder = text.replace(/\{[^}]*\}|\[[^\]]*\]/g, function (m) { tokens.push(m); return "\uE000"; });
+    const cased = (!/[aeiouAEIOU]/.test(placeholder) || /\d/.test(placeholder))
+      ? placeholder.toUpperCase()
+      : placeholder.replace(/\w+/g, function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+    let i = 0;
+    return cased.replace(/\uE000/g, function () { return tokens[i++]; });
   }
 
   // A header's plain label text, with its (possibly non-empty, if a sort is
