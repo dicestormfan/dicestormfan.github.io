@@ -650,20 +650,29 @@ document.addEventListener("keydown", function (e) {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen();
 });
-// Drives the cursor-hidden EXCEPTION for articles containing a relocatable
-// Infobox/Example/Table container (Nutzerwunsch 2026-08-05: "auf Artikeln,
-// in denen es Container gibt, muss der Cursor sichtbar sein... regulärer
-// Pfeilcursor" -- everywhere in .content, not just on the container itself).
-// A plain JS-set body class, not CSS ":has(.container-accordion-section)"
-// directly (tried first, REGRESS 2026-08-05: didn't reliably take effect) --
-// this sidesteps any doubt about :has() support/behavior entirely and
-// matches the same "drive it off one JS-controlled class" pattern
-// body.is-fullscreen itself already uses (see comment above). Has to re-run
-// after every client-side navigation too (see swapContent below), not just
-// on fullscreenchange -- a different article can load, with or without a
-// container, while already in fullscreen.
+// Drives the cursor-hidden EXCEPTION for articles containing ANY collapsible
+// "Hamburger-Menü" section (Nutzerwunsch 2026-08-05: "auf Artikeln, in denen
+// es Container gibt, muss der Cursor sichtbar sein"; REGRESS 2026-08-05,
+// caught same day: ".container-accordion-section" alone only matches the
+// relocatable Infobox/Example/Table containers -- it missed the far more
+// common PLAIN ".accordion-section" (see makeAccordionSection in
+// build-site.js, class="accordion-section" with no "container-" prefix),
+// the user's own "Hamburger-Menü" term for any ordinary fold/unfold section
+// within an article's regular flow. Every ".container-accordion-section"
+// element already carries ".accordion-section" too -- see
+// extractRelocatableContainers's own class="accordion-section
+// container-accordion-section" -- so the plain, broader class alone already
+// covers both kinds, no need to check for either specifically.
+// A plain JS-set body class, not CSS ":has(.accordion-section)" directly
+// (tried first, REGRESS 2026-08-05: didn't reliably take effect) -- this
+// sidesteps any doubt about :has() support/behavior entirely and matches
+// the same "drive it off one JS-controlled class" pattern body.is-fullscreen
+// itself already uses (see comment above). Has to re-run after every
+// client-side navigation too (see swapContent below), not just on
+// fullscreenchange -- a different article can load, with or without a
+// collapsible section, while already in fullscreen.
 function updateFullscreenContainerFlag() {
-  document.body.classList.toggle("has-container", !!document.querySelector(".content .container-accordion-section"));
+  document.body.classList.toggle("has-container", !!document.querySelector(".content .accordion-section"));
 }
 document.addEventListener("fullscreenchange", function () {
   const isFullscreen = !!document.fullscreenElement;
