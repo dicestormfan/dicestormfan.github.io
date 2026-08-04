@@ -457,17 +457,21 @@ document.addEventListener("click", function (e) {
   if (link) link.click();
 });
 
-// Sortable column headers, any overview table (Nutzerwunsch 2026-07-31):
-// clicking a sortable column (Skills: Name/Characteristic/Group; Talents:
-// Name/Tier/Activation/Ranked -- Page and Description are always plain)
-// cycles that column asc -> desc -> off. Only one column is ever active at a
-// time -- clicking a different header always starts it fresh at "asc" and
-// resets the rest. "off" restores the table's original default order
-// (already alphabetical-by-name) via each row's own data-idx, set at build
-// time -- see buildOverviewTableHead/buildSkillsOverviewHtml/
-// buildTalentsOverviewHtml in build-site.js.
+// Sortable column headers -- overview tables originally (Nutzerwunsch
+// 2026-07-31: Skills' Name/Characteristic/Group; Talents' Name/Tier/
+// Activation/Ranked -- Page and Description are always plain), generalized
+// 2026-08-04 to arbitrary book tables too (see TABLE_FEATURES/
+// applyTableSortable in build-site.js -- same class="sortable"/data-sort/
+// .sort-indicator shape either way, so this one handler already covers
+// both; only the selector itself needed broadening from ".overview-table
+// th.sortable" to a plain "th.sortable"). Clicking a sortable column cycles
+// that column asc -> desc -> off. Only one column is ever active at a time
+// -- clicking a different header always starts it fresh at "asc" and resets
+// the rest. "off" restores the table's original source order via each row's
+// own data-idx, set at build time (see buildOverviewTableHead/
+// buildSkillsOverviewHtml/buildTalentsOverviewHtml/applyTableSortable).
 document.addEventListener("click", function (e) {
-  const th = e.target.closest(".overview-table th.sortable");
+  const th = e.target.closest("th.sortable");
   if (!th) return;
   const headerCells = Array.from(th.parentElement.children);
   const next = th.dataset.sort === "asc" ? "desc" : th.dataset.sort === "desc" ? "" : "asc";
@@ -490,4 +494,64 @@ document.addEventListener("click", function (e) {
     return next === "asc" ? cmp : -cmp;
   });
   rows.forEach(function (r) { tbody.appendChild(r); });
+  // Table II.1–1's grouping rows (see TABLE_GROUP_ROWS_HIDE_ON_SORT/
+  // markTableGroupRows in build-site.js) hide themselves the instant ANY
+  // column in this table is actively sorted, and reappear once every column
+  // is back to "off" (Nutzerwunsch 2026-08-04) -- a sorted view mixes rows
+  // from every group together, so a row that used to introduce "Melee
+  // Weapons" no longer sits above only melee weapons.
+  const anySortActive = Array.from(table.querySelectorAll("th.sortable")).some(function (h) { return h.dataset.sort; });
+  table.querySelectorAll(".table-group-row").forEach(function (row) {
+    row.hidden = anySortActive;
+  });
+});
+
+// Feature 3, Doppelklick-Popover (Nutzerwunsch 2026-08-04, see
+// applyTableDblclick in build-site.js): a table opts in via
+// data-dblclick-title on its own <table> tag (only present when the user's
+// per-table config named a trigger column AND that column's header actually
+// exists). Double-clicking anywhere on a data row -- except directly on a
+// link, which still needs to navigate normally -- opens a modal listing
+// every column:value pair for that row (the trigger column shows up as just
+// another ordinary row, per the user's own correction: it only decides
+// whether the feature exists, it isn't singled out in the popover itself).
+// Header labels are read live from the DOM (not baked in at build time), so
+// a sorted column's current header text/indicator state doesn't matter --
+// only its plain label text ends up in the popover row anyway.
+document.addEventListener("dblclick", function (e) {
+  if (e.target.closest("a")) return;
+  const tr = e.target.closest("tbody tr");
+  if (!tr || tr.classList.contains("table-group-row")) return;
+  const table = tr.closest("table");
+  if (!table || !table.dataset.dblclickTitle) return;
+  const headerCells = Array.from(table.querySelectorAll("thead th"));
+  const cells = Array.from(tr.children);
+  if (!cells.length) return;
+  let rowsHtml = "";
+  headerCells.forEach(function (th, i) {
+    const cell = cells[i];
+    if (!cell) return;
+    rowsHtml += '<span class="table-modal-label">' + th.innerHTML.replace(/<span class="sort-indicator">.*?<\/span>/, "") + '</span>' +
+      '<span class="table-modal-value">' + cell.innerHTML + '</span>';
+  });
+  const overlay = document.createElement("div");
+  overlay.className = "table-modal-overlay";
+  overlay.innerHTML = '<div class="table-modal" role="dialog" aria-modal="true">' +
+    '<button type="button" class="table-modal-close" aria-label="Close">×</button>' +
+    '<h3 class="table-modal-title">' + table.dataset.dblclickTitle + '</h3>' +
+    '<div class="table-modal-rows">' + rowsHtml + '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  function closeModal() {
+    overlay.remove();
+    document.removeEventListener("keydown", onKeydown);
+  }
+  function onKeydown(ev) {
+    if (ev.key === "Escape") closeModal();
+  }
+  overlay.addEventListener("click", function (ev) {
+    if (ev.target === overlay) closeModal();
+  });
+  overlay.querySelector(".table-modal-close").addEventListener("click", closeModal);
+  document.addEventListener("keydown", onKeydown);
 });
