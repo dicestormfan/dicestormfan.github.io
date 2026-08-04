@@ -235,13 +235,19 @@ document.addEventListener("keydown", function (e) {
 // after e.g. a navbar button was clicked and kept focus. Same
 // INPUT/TEXTAREA/isContentEditable guard as ArrowLeft/ArrowRight above --
 // covers the search field, the one explicit exception named by the user.
-// PageUp/PageDown (Nutzerwunsch 2026-08-05: "genau wie die Pfeil-hoch und
-// -runter-Tasten... auch dann wirken, wenn der Body nicht den Fokus hat")
-// join the same step-scroll as ArrowUp/ArrowDown, same amount -- the user
-// asked for the identical mechanism, not a bigger page-sized jump. Home/End
-// (Nutzerwunsch 2026-08-05: "'Pos1' soll direkt an den Anfang... 'Ende'
-// direkt ans Ende") jump straight to .content's own scroll boundaries
-// instead of stepping.
+// PageUp/PageDown (Nutzerwunsch 2026-08-05, corrected same day after a
+// misread: NOT "same step as ArrowUp/ArrowDown" -- "egal wo der Cursor oder
+// Fokus... gerade ist, so wirken, als sei auf dem Textbereich PageUp bzw.
+// PageDown gedrückt worden", i.e. .content's own NATIVE PageUp/PageDown
+// scroll amount -- a near-full-viewport jump, not the small arrow-key nudge)
+// share the same guard/dispatch as ArrowUp/ArrowDown, but scroll by
+// content.clientHeight instead of the fixed small step. "* 0.9", not the
+// bare clientHeight, so the last couple lines of the previous screenful stay
+// visible at the top of the next one for continuity -- the same convention
+// browsers themselves use for a real PageUp/PageDown on a focused scroll
+// container. Home/End (Nutzerwunsch 2026-08-05: "'Pos1' soll direkt an den
+// Anfang... 'Ende' direkt ans Ende") jump straight to .content's own scroll
+// boundaries instead of stepping.
 const ARROW_SCROLL_AMOUNT = 80;
 document.addEventListener("keydown", function (e) {
   if (e.key !== "ArrowUp" && e.key !== "ArrowDown" && e.key !== "PageUp" && e.key !== "PageDown" && e.key !== "Home" && e.key !== "End") return;
@@ -254,7 +260,8 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Home") { content.scrollTo({ top: 0, behavior: "smooth" }); return; }
   if (e.key === "End") { content.scrollTo({ top: content.scrollHeight, behavior: "smooth" }); return; }
   const dir = (e.key === "ArrowDown" || e.key === "PageDown") ? 1 : -1;
-  content.scrollBy({ top: dir * ARROW_SCROLL_AMOUNT, behavior: "smooth" });
+  const amount = (e.key === "PageUp" || e.key === "PageDown") ? content.clientHeight * 0.9 : ARROW_SCROLL_AMOUNT;
+  content.scrollBy({ top: dir * amount, behavior: "smooth" });
 });
 // Delegated on document (not bound to the buttons themselves) so it keeps
 // working after a client-side navigation replaces the footer's innerHTML
