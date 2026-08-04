@@ -50,6 +50,12 @@ function swapContent(html, url) {
 
   current.innerHTML = newContent.innerHTML;
   document.title = doc.title;
+  // Re-check for a container in the newly-swapped-in article (Nutzerwunsch
+  // 2026-08-05, fullscreen cursor exception -- see updateFullscreenContainerFlag
+  // further down) -- a client-side navigation can land on a page with a
+  // different container situation than the one just left, while already in
+  // fullscreen.
+  updateFullscreenContainerFlag();
 
   const newFooter = doc.querySelector("#page-footer-nav");
   const currentFooter = document.querySelector("#page-footer-nav");
@@ -229,16 +235,26 @@ document.addEventListener("keydown", function (e) {
 // after e.g. a navbar button was clicked and kept focus. Same
 // INPUT/TEXTAREA/isContentEditable guard as ArrowLeft/ArrowRight above --
 // covers the search field, the one explicit exception named by the user.
+// PageUp/PageDown (Nutzerwunsch 2026-08-05: "genau wie die Pfeil-hoch und
+// -runter-Tasten... auch dann wirken, wenn der Body nicht den Fokus hat")
+// join the same step-scroll as ArrowUp/ArrowDown, same amount -- the user
+// asked for the identical mechanism, not a bigger page-sized jump. Home/End
+// (Nutzerwunsch 2026-08-05: "'Pos1' soll direkt an den Anfang... 'Ende'
+// direkt ans Ende") jump straight to .content's own scroll boundaries
+// instead of stepping.
 const ARROW_SCROLL_AMOUNT = 80;
 document.addEventListener("keydown", function (e) {
-  if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+  if (e.key !== "ArrowUp" && e.key !== "ArrowDown" && e.key !== "PageUp" && e.key !== "PageDown" && e.key !== "Home" && e.key !== "End") return;
   if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
   const active = document.activeElement;
   if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
   const content = document.querySelector(".content");
   if (!content) return;
   e.preventDefault();
-  content.scrollBy({ top: (e.key === "ArrowDown" ? 1 : -1) * ARROW_SCROLL_AMOUNT, behavior: "smooth" });
+  if (e.key === "Home") { content.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (e.key === "End") { content.scrollTo({ top: content.scrollHeight, behavior: "smooth" }); return; }
+  const dir = (e.key === "ArrowDown" || e.key === "PageDown") ? 1 : -1;
+  content.scrollBy({ top: dir * ARROW_SCROLL_AMOUNT, behavior: "smooth" });
 });
 // Delegated on document (not bound to the buttons themselves) so it keeps
 // working after a client-side navigation replaces the footer's innerHTML
@@ -470,12 +486,23 @@ const THEME_STORAGE_KEY = "theme";
 // -- both need the exact same click behavior, and since the resulting
 // body.theme-* class is what actually drives BOTH buttons' visual state via
 // CSS, no extra sync logic is needed beyond just wiring up every instance.
+// Tooltip text names the ACTION a click performs, not the current state
+// (Nutzerwunsch 2026-08-05: "Set dark mode" bzw. "Set light mode") -- so it
+// has to flip in step with the theme itself, both right after a click AND
+// on initial page load (a page can load in either theme depending on the
+// saved cookie, see the inline pre-body script in pageShell).
+function updateThemeToggleTitles() {
+  const title = document.body.classList.contains("theme-dark") ? "Set light mode" : "Set dark mode";
+  document.querySelectorAll(".theme-toggle").forEach(function (el) { el.title = title; });
+}
+updateThemeToggleTitles();
 document.querySelectorAll(".theme-toggle").forEach(function (themeToggle) {
   themeToggle.addEventListener("click", function () {
     const next = document.body.classList.contains("theme-dark") ? "light" : "dark";
     document.body.classList.remove("theme-light", "theme-dark");
     document.body.classList.add("theme-" + next);
     setCookie(THEME_STORAGE_KEY, next);
+    updateThemeToggleTitles();
   });
 });
 
@@ -520,7 +547,22 @@ if (layoutToggle) {
 // an arbitrary numeric value; the initial value is set by the same inline
 // pre-body script that applies the theme (see pageShell), to avoid a
 // flash of default-sized text before this file loads.
+// FONT_SCALE_KEY is the NORMAL-mode cookie -- kept as the original,
+// pre-fullscreen name so an existing saved preference survives this change
+// unchanged. Fullscreen gets its own SEPARATE cookie (Nutzerwunsch
+// 2026-08-05: "Cookiedaten hinzufügen, die für Normalmodus und Vollbildmodus
+// speichern, welche Textgröße eingestellt war... wird also nicht dieselbe
+// Größe bzw. die Maximalgröße des Normalmodus angewendet, sondern einfach
+// der zuvor für Normalmodus gespeicherte Wert" -- REGRESS 2026-08-05: the
+// original single-cookie design read/wrote the SAME cookie for both modes,
+// so leaving fullscreen didn't restore the user's separate normal-mode
+// preference, it clobbered it with the (clamped-down) fullscreen value).
+// fontScaleKeyActive()/fontScaleMaxActive() are functions, not cached
+// variables, reading body.is-fullscreen fresh on every call -- simpler and
+// less error-prone than a manually-synced "let" that has to be remembered
+// on every fullscreenchange.
 const FONT_SCALE_KEY = "fontScale";
+const FONT_SCALE_KEY_FULLSCREEN = "fontScaleFullscreen";
 // FONT_SCALE_MIN lowered from 0.8 to 0.6 (Nutzerwunsch 2026-07-31: "Minus
 // soll noch zwei Stufen kleiner möglich sein") -- two more FONT_SCALE_STEPs
 // below the old floor. Keep in sync with the hardcoded 0.6 in the inline
@@ -529,31 +571,28 @@ const FONT_SCALE_KEY = "fontScale";
 const FONT_SCALE_MIN = 0.6;
 const FONT_SCALE_MAX = 1.4;
 const FONT_SCALE_STEP = 0.1;
-// The active ceiling doubles in fullscreen mode (Nutzerwunsch 2026-08-04:
-// "im Vollbildmodus kann man die Schrift nochmal deutlich größer machen...
-// der Max-Wert wird im Vollbildmodus verdoppelt. Wenn man den Vollbildmodus
-// wieder schließt, dann gilt wieder der normale Max-Wert und der aktuelle
-// Wert wird ggf. darauf reduziert.") -- a plain "let", not FONT_SCALE_MAX
-// itself, so entering/exiting fullscreen (see the fullscreenchange listener
-// further down) can move the ceiling without touching the base constant
-// everything else here still clamps MIN against.
-let fontScaleMaxActive = FONT_SCALE_MAX;
+// Fullscreen's own ceiling is double the normal one (Nutzerwunsch
+// 2026-08-04: "im Vollbildmodus kann man die Schrift nochmal deutlich
+// größer machen... der Max-Wert wird im Vollbildmodus verdoppelt").
+const FONT_SCALE_MAX_FULLSCREEN = FONT_SCALE_MAX * 2;
+function fontScaleKeyActive() {
+  return document.body.classList.contains("is-fullscreen") ? FONT_SCALE_KEY_FULLSCREEN : FONT_SCALE_KEY;
+}
+function fontScaleMaxActive() {
+  return document.body.classList.contains("is-fullscreen") ? FONT_SCALE_MAX_FULLSCREEN : FONT_SCALE_MAX;
+}
 function getFontScale() {
-  const v = parseFloat(getCookie(FONT_SCALE_KEY));
-  // No cookie at all -> the real default (1). An out-of-CURRENT-range
-  // cookie (e.g. a value saved while in fullscreen, now read back outside
-  // it) is CLAMPED to the active bounds, not discarded back to 1 -- the
-  // fullscreen close case ("der aktuelle Wert wird ggf. darauf reduziert")
-  // generalizes to any moment the active max is smaller than a stored
-  // value, including a plain page reload after a past fullscreen session,
-  // not just a live fullscreenchange transition.
+  const v = parseFloat(getCookie(fontScaleKeyActive()));
+  // No cookie at all -> the real default (1). An out-of-range cookie (e.g.
+  // hand-edited, or the ceiling itself changed since it was saved) is
+  // CLAMPED to the active bounds, not discarded back to 1.
   if (!v) return 1;
-  return Math.min(fontScaleMaxActive, Math.max(FONT_SCALE_MIN, v));
+  return Math.min(fontScaleMaxActive(), Math.max(FONT_SCALE_MIN, v));
 }
 function setFontScale(v) {
-  const clamped = Math.min(fontScaleMaxActive, Math.max(FONT_SCALE_MIN, v)).toFixed(2);
+  const clamped = Math.min(fontScaleMaxActive(), Math.max(FONT_SCALE_MIN, v)).toFixed(2);
   document.documentElement.style.setProperty("--font-scale", clamped);
-  setCookie(FONT_SCALE_KEY, clamped);
+  setCookie(fontScaleKeyActive(), clamped);
 }
 // querySelectorAll, not querySelector (Nutzerwunsch 2026-08-04, fullscreen
 // mode) -- same reasoning as .theme-toggle above: .fullscreen-bar carries
@@ -564,11 +603,11 @@ const fontIncreaseBtns = document.querySelectorAll(".font-increase");
 // once on load (cookie may already be at a limit) and again after every
 // click, since setFontScale's own clamp is what actually decides whether a
 // click moved the value at all. Also re-run on every fullscreen enter/exit
-// (fontScaleMaxActive itself just changed).
+// (fontScaleMaxActive() itself now reads a different cookie/ceiling).
 function updateFontButtonState() {
   const scale = getFontScale();
   fontDecreaseBtns.forEach(function (b) { b.disabled = scale <= FONT_SCALE_MIN; });
-  fontIncreaseBtns.forEach(function (b) { b.disabled = scale >= fontScaleMaxActive; });
+  fontIncreaseBtns.forEach(function (b) { b.disabled = scale >= fontScaleMaxActive(); });
 }
 updateFontButtonState();
 fontDecreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); }); });
@@ -590,21 +629,53 @@ document.querySelectorAll(".fullscreen-toggle").forEach(function (btn) {
 document.querySelectorAll(".fullscreen-close").forEach(function (btn) {
   btn.addEventListener("click", function () { document.exitFullscreen(); });
 });
+// "f" toggles fullscreen on/off (Nutzerwunsch 2026-08-05: "sofern das
+// Searchfeld nicht den Fokus hat") -- same INPUT/TEXTAREA/isContentEditable
+// guard as the other single-key shortcuts above.
+document.addEventListener("keydown", function (e) {
+  if (e.key.toLowerCase() !== "f") return;
+  // Not e.shiftKey too, unlike the other single-key shortcuts above --
+  // Shift+f is how a capital "F" is typed and should still toggle, only
+  // Ctrl/Cmd/Alt+f (browser/OS shortcuts, e.g. "Find") are left alone.
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen();
+});
+// Drives the cursor-hidden EXCEPTION for articles containing a relocatable
+// Infobox/Example/Table container (Nutzerwunsch 2026-08-05: "auf Artikeln,
+// in denen es Container gibt, muss der Cursor sichtbar sein... regulärer
+// Pfeilcursor" -- everywhere in .content, not just on the container itself).
+// A plain JS-set body class, not CSS ":has(.container-accordion-section)"
+// directly (tried first, REGRESS 2026-08-05: didn't reliably take effect) --
+// this sidesteps any doubt about :has() support/behavior entirely and
+// matches the same "drive it off one JS-controlled class" pattern
+// body.is-fullscreen itself already uses (see comment above). Has to re-run
+// after every client-side navigation too (see swapContent below), not just
+// on fullscreenchange -- a different article can load, with or without a
+// container, while already in fullscreen.
+function updateFullscreenContainerFlag() {
+  document.body.classList.toggle("has-container", !!document.querySelector(".content .container-accordion-section"));
+}
 document.addEventListener("fullscreenchange", function () {
   const isFullscreen = !!document.fullscreenElement;
   document.body.classList.toggle("is-fullscreen", isFullscreen);
-  fontScaleMaxActive = isFullscreen ? FONT_SCALE_MAX * 2 : FONT_SCALE_MAX;
-  // Unconditional re-apply, not "clamp only if over the limit": getFontScale()
-  // already clamps its OWN return value against the fontScaleMaxActive just
-  // set above, so a naive "if (getFontScale() > FONT_SCALE_MAX)" guard here
-  // would never fire -- getFontScale() can never itself report a value
-  // outside the current bounds, that's exactly what it's for. The actual
-  // problem this line fixes is that the COOKIE and the live --font-scale CSS
-  // property can still be sitting at the OLD (fullscreen-era, larger) value
-  // -- only setFontScale() ever WRITES either of those, so it has to run
-  // every time, using getFontScale()'s already-correctly-clamped read as its
-  // input, to actually persist the reduction ("der aktuelle Wert wird ggf.
-  // darauf reduziert").
+  updateFullscreenContainerFlag();
+  // REGRESS 2026-08-05, fixed: this used to hand-assign a module-level
+  // "fontScaleMaxActive" variable here -- stale leftover from BEFORE
+  // fontScaleKeyActive()/fontScaleMaxActive() became live functions that
+  // read body.is-fullscreen (just toggled above) directly, on every call.
+  // Left in place, it silently overwrote the FUNCTION binding with a plain
+  // number, so the very next getFontScale()/setFontScale() call below threw
+  // "fontScaleMaxActive is not a function" -- which in turn aborted this
+  // whole handler, and (observed while testing) somehow left fullscreen
+  // itself in a broken half-entered state. Nothing to do here now: reading
+  // getFontScale() (whose OWN internal fontScaleMaxActive() call already
+  // sees the class toggled two lines up) and writing it straight back via
+  // setFontScale() is what actually persists the mode-appropriate value
+  // into --font-scale and the (now separate per-mode, see
+  // FONT_SCALE_KEY_FULLSCREEN) cookie.
   setFontScale(getFontScale());
   updateFontButtonState();
 });
