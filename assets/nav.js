@@ -217,6 +217,29 @@ document.addEventListener("keydown", function (e) {
   if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
   pageBy(e.key === "ArrowLeft" ? -1 : 1);
 });
+// ArrowUp/ArrowDown always scroll .content (Nutzerwunsch 2026-08-05: "egal
+// ob Vollbildmodus oder nicht, immer Bildlauf in die entsprechende
+// Richtung... Ausnahme falls der Fokus auf dem Suchfeld ist") -- .content is
+// the one actually-scrolling box in both fullscreen and the normal layout
+// alike (its own overflow-y: auto in site.scss is unconditional, not a
+// fullscreen-only thing), so no branching on body.is-fullscreen is needed
+// here. Explicit scrollBy() rather than relying on the browser's own native
+// arrow-key scroll: that only fires when the CURRENTLY FOCUSED element's
+// nearest scrollable ancestor happens to be .content, which isn't true right
+// after e.g. a navbar button was clicked and kept focus. Same
+// INPUT/TEXTAREA/isContentEditable guard as ArrowLeft/ArrowRight above --
+// covers the search field, the one explicit exception named by the user.
+const ARROW_SCROLL_AMOUNT = 80;
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+  const content = document.querySelector(".content");
+  if (!content) return;
+  e.preventDefault();
+  content.scrollBy({ top: (e.key === "ArrowDown" ? 1 : -1) * ARROW_SCROLL_AMOUNT, behavior: "smooth" });
+});
 // Delegated on document (not bound to the buttons themselves) so it keeps
 // working after a client-side navigation replaces the footer's innerHTML
 // wholesale (see swapContent's #page-footer-nav handling above) -- same
@@ -589,8 +612,44 @@ document.addEventListener("fullscreenchange", function () {
 // 2026-08-04) -- same book-order paging as the footer buttons/ArrowLeft-
 // ArrowRight (see pageBy above), just reachable without the footer that's
 // hidden in fullscreen.
-document.querySelectorAll(".fullscreen-page-prev").forEach(function (btn) { btn.addEventListener("click", function () { pageBy(-1); }); });
-document.querySelectorAll(".fullscreen-page-next").forEach(function (btn) { btn.addEventListener("click", function () { pageBy(1); }); });
+// The clickable/hoverable zone was enlarged 2026-08-05 to cover the whole
+// side margin at .content's own height, not just the small 5vw circle (see
+// .fullscreen-page in site.scss) -- on a touch device that zone should also
+// forward a vertical swipe to .content's own scroll (Nutzerwunsch
+// 2026-08-05: "nach oben oder nach unten wischen soll in diesen
+// Seitenbereichen genauso wirken, als würde man auf dem Textfeld nach oben
+// oder unten wischen"). .fullscreen-page is a position: fixed SIBLING of
+// .content (see pageShell), not a descendant, so a native touch-scroll
+// gesture landing on it has no scrollable ancestor to reach on its own --
+// this replays the same drag manually via .content.scrollBy(). A genuine
+// drag also has to suppress the synthetic "click" the browser still fires
+// on touchend, or a swipe-to-scroll would ALSO trigger pageBy() as if it had
+// been a tap.
+let fullscreenPageSwiped = false;
+document.querySelectorAll(".fullscreen-page").forEach(function (btn) {
+  let lastY = null;
+  let moved = false;
+  btn.addEventListener("touchstart", function (e) {
+    if (e.touches.length !== 1) return;
+    lastY = e.touches[0].clientY;
+    moved = false;
+  }, { passive: true });
+  btn.addEventListener("touchmove", function (e) {
+    if (lastY === null || e.touches.length !== 1) return;
+    const y = e.touches[0].clientY;
+    const dy = lastY - y;
+    lastY = y;
+    if (Math.abs(dy) > 2) moved = true;
+    const content = document.querySelector(".content");
+    if (content) content.scrollBy({ top: dy });
+  }, { passive: true });
+  btn.addEventListener("touchend", function () {
+    if (moved) fullscreenPageSwiped = true;
+    lastY = null;
+  });
+});
+document.querySelectorAll(".fullscreen-page-prev").forEach(function (btn) { btn.addEventListener("click", function () { if (fullscreenPageSwiped) { fullscreenPageSwiped = false; return; } pageBy(-1); }); });
+document.querySelectorAll(".fullscreen-page-next").forEach(function (btn) { btn.addEventListener("click", function () { if (fullscreenPageSwiped) { fullscreenPageSwiped = false; return; } pageBy(1); }); });
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
