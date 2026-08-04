@@ -353,6 +353,18 @@ const SEARCH_INDEX = [{"title":"Genesys","titleHtml":"Genesys","url":"/","pathSe
       .map((m, i) => '<a class="search-result-item ' + (m.sortKey.charAt(0) === "0" ? "search-result-gc" : "search-result-rot") + '" href="' + m.url + '"><span class="search-result-title">' + m.titleHtml + '</span><span class="search-result-path">' + escapeHtml(shortPaths[i]) + "</span></a>")
       .join("");
     results.hidden = false;
+    // Reset back to the base CSS's own "width: max-content" BEFORE
+    // measuring (Nutzerwunsch 2026-08-04 bug, found while chasing "zu viel
+    // Platz"): every keystroke re-runs render(), but the PREVIOUS
+    // keystroke's inline width (set at the end of this same function) was
+    // still sitting on the element going into the next measurement pass.
+    // .search-result-title's "flex: 1 1 auto" genuinely shrinks to fit
+    // inside whatever width the ancestor already has -- unlike overflow:
+    // hidden clipping, which scrollWidth ignores, a real flex-shrink
+    // changes the element's actual laid-out size, so scrollWidth measured
+    // against a stale, too-narrow-or-too-wide leftover width no longer
+    // reflects the new content's true natural size.
+    results.style.width = "";
     // Width = widest title + widest path (Nutzerwunsch 2026-08-04, repeated
     // emphatically: "SO BREIT WIE DER BREITESTE TREFFER + SO BREIT WIE DER
     // BREITESTE PFAD"), each measured independently -- NOT the widest single
@@ -361,10 +373,24 @@ const SEARCH_INDEX = [{"title":"Genesys","titleHtml":"Genesys","url":"/","pathSe
     // to different rows. scrollWidth reports each span's true content width
     // regardless of its own overflow:hidden/ellipsis clipping, so no need to
     // temporarily un-clip anything to measure it.
+    // ONLY rows actually visible without scrolling count (Nutzerwunsch
+    // 2026-08-04, follow-up after removing the old 15-result cap made the
+    // box far too wide): shortenPaths' own collision-avoidance above still
+    // correctly runs against the FULL, now much longer match list -- paths
+    // stay genuinely unique even once you scroll further down -- but a
+    // title/path belonging to some far-down row nobody can even see yet
+    // (already clipped by .search-results' own max-height/overflow-y, see
+    // site.scss) shouldn't be allowed to force the box wider than what's
+    // actually on screen. results.clientHeight already reflects that clip
+    // at this exact point, before this element's own width is touched.
     let maxTitle = 0;
     let maxPath = 0;
-    results.querySelectorAll(".search-result-title").forEach((el) => { maxTitle = Math.max(maxTitle, el.scrollWidth); });
-    results.querySelectorAll(".search-result-path").forEach((el) => { maxPath = Math.max(maxPath, el.scrollWidth); });
+    const visibleBottom = results.clientHeight;
+    results.querySelectorAll(".search-result-item").forEach((item) => {
+      if (item.offsetTop + item.offsetHeight > visibleBottom) return;
+      maxTitle = Math.max(maxTitle, item.querySelector(".search-result-title").scrollWidth);
+      maxPath = Math.max(maxPath, item.querySelector(".search-result-path").scrollWidth);
+    });
     // +12 (.search-result-item's own gap) +20 (its 10px+10px horizontal
     // padding) +2 (.search-results' own 1px+1px border) -- see site.scss.
     results.style.width = (maxTitle + maxPath + 12 + 20 + 2) + "px";
