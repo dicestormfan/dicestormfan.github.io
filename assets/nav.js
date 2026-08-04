@@ -326,8 +326,14 @@ const SEARCH_INDEX = [{"title":"Genesys","titleHtml":"Genesys","url":"/","pathSe
     [startsGC, containsGC, startsRoT, containsRoT].forEach((arr) => arr.sort(bySortKey));
     // Domain outermost, THEN tier -- GC-starts, GC-contains, RoT-starts,
     // RoT-contains, not the tier-outer/domain-inner grouping an earlier
-    // attempt at this concat order would produce.
-    const matches = startsGC.concat(containsGC, startsRoT, containsRoT).slice(0, 15);
+    // attempt at this concat order would produce. No hard cap anymore
+    // (Nutzerwunsch 2026-08-04: "Scrollliste einfach nur so lang wie nötig
+    // machen") -- the old .slice(0, 15) cut the list off BEFORE
+    // .search-results' own scrolling (max-height: 60vh; overflow-y: auto,
+    // see site.scss) ever got a chance to kick in, so a broad query with 15+
+    // Genesys hits silently dropped every Terrinoth hit entirely instead of
+    // just requiring a scroll to reach them.
+    const matches = startsGC.concat(containsGC, startsRoT, containsRoT);
     if (!matches.length) {
       results.innerHTML = '<div class="search-no-results">No matches</div>';
       results.style.width = "";
@@ -335,8 +341,16 @@ const SEARCH_INDEX = [{"title":"Genesys","titleHtml":"Genesys","url":"/","pathSe
       return;
     }
     const shortPaths = shortenPaths(matches);
+    // Each hit rendered in its OWN domain's body font (Nutzerwunsch
+    // 2026-08-04: "schreibe die GC-Treffer in GC-Font, die RoT-Treffer in
+    // RoT-Font"), not the current page's -- a GC hit stays GC-styled even
+    // while searching from a Terrinoth page, and vice versa. Same "Adobe
+    // Hebrew Regular"/"Garamond Premier Pro" @font-face names the domains'
+    // own body text already uses (see body.domain-genesys/domain-terrinoth
+    // in site.scss); .search-result-gc/-rot just apply the matching one
+    // here, keyed off the same sortKey domain-rank digit used for sorting.
     results.innerHTML = matches
-      .map((m, i) => '<a class="search-result-item" href="' + m.url + '"><span class="search-result-title">' + m.titleHtml + '</span><span class="search-result-path">' + escapeHtml(shortPaths[i]) + "</span></a>")
+      .map((m, i) => '<a class="search-result-item ' + (m.sortKey.charAt(0) === "0" ? "search-result-gc" : "search-result-rot") + '" href="' + m.url + '"><span class="search-result-title">' + m.titleHtml + '</span><span class="search-result-path">' + escapeHtml(shortPaths[i]) + "</span></a>")
       .join("");
     results.hidden = false;
     // Width = widest title + widest path (Nutzerwunsch 2026-08-04, repeated
