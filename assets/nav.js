@@ -441,15 +441,20 @@ function getCookie(name) {
 // -- it's a real link now (see HOME_URLS in build-site.js), handled by the
 // generic click listener above like any other nav link.
 const THEME_STORAGE_KEY = "theme";
-const themeToggle = document.querySelector(".theme-toggle");
-if (themeToggle) {
+// querySelectorAll, not querySelector (Nutzerwunsch 2026-08-04, fullscreen
+// mode): there are now TWO ".theme-toggle" buttons in the DOM -- the
+// navbar's own, and .fullscreen-bar's copy (see pageShell in build-site.js)
+// -- both need the exact same click behavior, and since the resulting
+// body.theme-* class is what actually drives BOTH buttons' visual state via
+// CSS, no extra sync logic is needed beyond just wiring up every instance.
+document.querySelectorAll(".theme-toggle").forEach(function (themeToggle) {
   themeToggle.addEventListener("click", function () {
     const next = document.body.classList.contains("theme-dark") ? "light" : "dark";
     document.body.classList.remove("theme-light", "theme-dark");
     document.body.classList.add("theme-" + next);
     setCookie(THEME_STORAGE_KEY, next);
   });
-}
+});
 
 // Language toggle (placeholder, Nutzerwunsch 2026-07-29): purely cosmetic
 // for now -- there's no German content to actually switch to yet, so a
@@ -501,29 +506,91 @@ const FONT_SCALE_KEY = "fontScale";
 const FONT_SCALE_MIN = 0.6;
 const FONT_SCALE_MAX = 1.4;
 const FONT_SCALE_STEP = 0.1;
+// The active ceiling doubles in fullscreen mode (Nutzerwunsch 2026-08-04:
+// "im Vollbildmodus kann man die Schrift nochmal deutlich größer machen...
+// der Max-Wert wird im Vollbildmodus verdoppelt. Wenn man den Vollbildmodus
+// wieder schließt, dann gilt wieder der normale Max-Wert und der aktuelle
+// Wert wird ggf. darauf reduziert.") -- a plain "let", not FONT_SCALE_MAX
+// itself, so entering/exiting fullscreen (see the fullscreenchange listener
+// further down) can move the ceiling without touching the base constant
+// everything else here still clamps MIN against.
+let fontScaleMaxActive = FONT_SCALE_MAX;
 function getFontScale() {
   const v = parseFloat(getCookie(FONT_SCALE_KEY));
-  return !v || v < FONT_SCALE_MIN || v > FONT_SCALE_MAX ? 1 : v;
+  // No cookie at all -> the real default (1). An out-of-CURRENT-range
+  // cookie (e.g. a value saved while in fullscreen, now read back outside
+  // it) is CLAMPED to the active bounds, not discarded back to 1 -- the
+  // fullscreen close case ("der aktuelle Wert wird ggf. darauf reduziert")
+  // generalizes to any moment the active max is smaller than a stored
+  // value, including a plain page reload after a past fullscreen session,
+  // not just a live fullscreenchange transition.
+  if (!v) return 1;
+  return Math.min(fontScaleMaxActive, Math.max(FONT_SCALE_MIN, v));
 }
 function setFontScale(v) {
-  const clamped = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, v)).toFixed(2);
+  const clamped = Math.min(fontScaleMaxActive, Math.max(FONT_SCALE_MIN, v)).toFixed(2);
   document.documentElement.style.setProperty("--font-scale", clamped);
   setCookie(FONT_SCALE_KEY, clamped);
 }
-const fontDecrease = document.querySelector(".font-decrease");
-const fontIncrease = document.querySelector(".font-increase");
+// querySelectorAll, not querySelector (Nutzerwunsch 2026-08-04, fullscreen
+// mode) -- same reasoning as .theme-toggle above: .fullscreen-bar carries
+// its own copy of each button, both wired up identically here.
+const fontDecreaseBtns = document.querySelectorAll(".font-decrease");
+const fontIncreaseBtns = document.querySelectorAll(".font-increase");
 // Disable +/- at their respective limits (Nutzerwunsch 2026-07-31) -- run
 // once on load (cookie may already be at a limit) and again after every
 // click, since setFontScale's own clamp is what actually decides whether a
-// click moved the value at all.
+// click moved the value at all. Also re-run on every fullscreen enter/exit
+// (fontScaleMaxActive itself just changed).
 function updateFontButtonState() {
   const scale = getFontScale();
-  if (fontDecrease) fontDecrease.disabled = scale <= FONT_SCALE_MIN;
-  if (fontIncrease) fontIncrease.disabled = scale >= FONT_SCALE_MAX;
+  fontDecreaseBtns.forEach(function (b) { b.disabled = scale <= FONT_SCALE_MIN; });
+  fontIncreaseBtns.forEach(function (b) { b.disabled = scale >= fontScaleMaxActive; });
 }
 updateFontButtonState();
-if (fontDecrease) fontDecrease.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); });
-if (fontIncrease) fontIncrease.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); updateFontButtonState(); });
+fontDecreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); }); });
+fontIncreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); updateFontButtonState(); }); });
+
+// ---- Fullscreen mode (Nutzerwunsch 2026-08-04) ----
+// requestFullscreen/exitFullscreen are the only JS-driven part; everything
+// visual (hiding the sidebar/navbar/footer, the 10vw/10vh content margin,
+// showing .fullscreen-bar/.fullscreen-page) is pure CSS keyed off
+// body.is-fullscreen, kept in sync here via the "fullscreenchange" event
+// rather than directly in the click handlers below -- fullscreen can also
+// be exited by the browser itself (Esc key, F11, etc.), which fires
+// "fullscreenchange" but never runs .fullscreen-close's own click handler,
+// so this is the only place that's guaranteed to run on every transition
+// either direction.
+document.querySelectorAll(".fullscreen-toggle").forEach(function (btn) {
+  btn.addEventListener("click", function () { document.documentElement.requestFullscreen(); });
+});
+document.querySelectorAll(".fullscreen-close").forEach(function (btn) {
+  btn.addEventListener("click", function () { document.exitFullscreen(); });
+});
+document.addEventListener("fullscreenchange", function () {
+  const isFullscreen = !!document.fullscreenElement;
+  document.body.classList.toggle("is-fullscreen", isFullscreen);
+  fontScaleMaxActive = isFullscreen ? FONT_SCALE_MAX * 2 : FONT_SCALE_MAX;
+  // Unconditional re-apply, not "clamp only if over the limit": getFontScale()
+  // already clamps its OWN return value against the fontScaleMaxActive just
+  // set above, so a naive "if (getFontScale() > FONT_SCALE_MAX)" guard here
+  // would never fire -- getFontScale() can never itself report a value
+  // outside the current bounds, that's exactly what it's for. The actual
+  // problem this line fixes is that the COOKIE and the live --font-scale CSS
+  // property can still be sitting at the OLD (fullscreen-era, larger) value
+  // -- only setFontScale() ever WRITES either of those, so it has to run
+  // every time, using getFontScale()'s already-correctly-clamped read as its
+  // input, to actually persist the reduction ("der aktuelle Wert wird ggf.
+  // darauf reduziert").
+  setFontScale(getFontScale());
+  updateFontButtonState();
+});
+// Prev/next paging circles at the left/right screen edges (Nutzerwunsch
+// 2026-08-04) -- same book-order paging as the footer buttons/ArrowLeft-
+// ArrowRight (see pageBy above), just reachable without the footer that's
+// hidden in fullscreen.
+document.querySelectorAll(".fullscreen-page-prev").forEach(function (btn) { btn.addEventListener("click", function () { pageBy(-1); }); });
+document.querySelectorAll(".fullscreen-page-next").forEach(function (btn) { btn.addEventListener("click", function () { pageBy(1); }); });
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
