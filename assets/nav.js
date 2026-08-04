@@ -56,6 +56,11 @@ function swapContent(html, url) {
   // different container situation than the one just left, while already in
   // fullscreen.
   updateFullscreenContainerFlag();
+  // Same reasoning, Stream-Modus's own auto-open (Nutzerwunsch 2026-08-05
+  // gap, see applyStreamModeAutoOpen's own doc comment) -- only matters if
+  // Stream-Modus is already active, applyStreamModeAutoOpen itself doesn't
+  // check that, so it's gated here instead.
+  if (document.body.classList.contains("stream-mode")) applyStreamModeAutoOpen();
 
   const newFooter = doc.querySelector("#page-footer-nav");
   const currentFooter = document.querySelector("#page-footer-nav");
@@ -262,6 +267,21 @@ document.addEventListener("keydown", function (e) {
   const dir = (e.key === "ArrowDown" || e.key === "PageDown") ? 1 : -1;
   const amount = (e.key === "PageUp" || e.key === "PageDown") ? content.clientHeight * 0.9 : ARROW_SCROLL_AMOUNT;
   content.scrollBy({ top: dir * amount, behavior: "smooth" });
+});
+// Alt+Shift+F clears and focuses the search bar (Nutzerwunsch 2026-08-05).
+// Works regardless of what currently has focus -- unlike the other single-
+// key shortcuts above, this one is explicitly MEANT to work while some other
+// field/element has focus (that's the whole point, a fast way to jump into
+// search from anywhere), so it has no INPUT/TEXTAREA guard.
+document.addEventListener("keydown", function (e) {
+  if (e.key.toLowerCase() !== "f") return;
+  if (!e.altKey || !e.shiftKey || e.ctrlKey || e.metaKey) return;
+  const input = document.querySelector(".search-input");
+  if (!input) return;
+  e.preventDefault();
+  input.value = "";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.focus();
 });
 // Delegated on document (not bound to the buttons themselves) so it keeps
 // working after a client-side navigation replaces the footer's innerHTML
@@ -570,6 +590,14 @@ if (layoutToggle) {
 // on every fullscreenchange.
 const FONT_SCALE_KEY = "fontScale";
 const FONT_SCALE_KEY_FULLSCREEN = "fontScaleFullscreen";
+// Stream-Modus's own cookie (Nutzerwunsch 2026-08-05) -- shared between the
+// article-level stream mode AND a popover put into stream mode (see
+// enterPopoverStreamMode below): "die Schriftgröße des Stream-Modus
+// annehmen" for the popover case means literally the SAME stored value, not
+// an independent one, so a size change made from inside a stream-mode
+// popover also carries over to the article once the popover closes, and
+// vice versa.
+const FONT_SCALE_KEY_STREAM = "fontScaleStream";
 // FONT_SCALE_MIN lowered from 0.8 to 0.6 (Nutzerwunsch 2026-07-31: "Minus
 // soll noch zwei Stufen kleiner möglich sein") -- two more FONT_SCALE_STEPs
 // below the old floor. Keep in sync with the hardcoded 0.6 in the inline
@@ -582,28 +610,50 @@ const FONT_SCALE_STEP = 0.1;
 // 2026-08-04: "im Vollbildmodus kann man die Schrift nochmal deutlich
 // größer machen... der Max-Wert wird im Vollbildmodus verdoppelt").
 const FONT_SCALE_MAX_FULLSCREEN = FONT_SCALE_MAX * 2;
+// Stream-Modus bounds/step (Nutzerwunsch 2026-08-05: "Die Mindestgröße ist
+// 3x, die Maximalgröße ist 21x... ändern die Textgröße um jeweils 2.0") --
+// same --font-scale multiplier this whole system already uses everywhere
+// else, just a much bigger range/step, since Stream-Modus is built for
+// reading from across a room/stream viewers, not a normal screen distance.
+const FONT_SCALE_MIN_STREAM = 3;
+const FONT_SCALE_MAX_STREAM = 21;
+const FONT_SCALE_STEP_STREAM = 2;
+function isStreamModeActive() {
+  return document.body.classList.contains("stream-mode") || document.body.classList.contains("popover-stream-mode");
+}
 function fontScaleKeyActive() {
+  if (isStreamModeActive()) return FONT_SCALE_KEY_STREAM;
   return document.body.classList.contains("is-fullscreen") ? FONT_SCALE_KEY_FULLSCREEN : FONT_SCALE_KEY;
 }
+function fontScaleMinActive() {
+  return isStreamModeActive() ? FONT_SCALE_MIN_STREAM : FONT_SCALE_MIN;
+}
 function fontScaleMaxActive() {
+  if (isStreamModeActive()) return FONT_SCALE_MAX_STREAM;
   return document.body.classList.contains("is-fullscreen") ? FONT_SCALE_MAX_FULLSCREEN : FONT_SCALE_MAX;
+}
+function fontScaleStepActive() {
+  return isStreamModeActive() ? FONT_SCALE_STEP_STREAM : FONT_SCALE_STEP;
 }
 function getFontScale() {
   const v = parseFloat(getCookie(fontScaleKeyActive()));
-  // No cookie at all -> the real default (1). An out-of-range cookie (e.g.
-  // hand-edited, or the ceiling itself changed since it was saved) is
-  // CLAMPED to the active bounds, not discarded back to 1.
-  if (!v) return 1;
-  return Math.min(fontScaleMaxActive(), Math.max(FONT_SCALE_MIN, v));
+  // No cookie at all -> the mode's own floor (Stream-Modus has no sensible
+  // "1" default, unlike normal/fullscreen -- see fontScaleMinActive) rather
+  // than the OTHER modes' shared "no cookie yet" default of 1, which sits
+  // far outside Stream-Modus's own [3,21] range entirely.
+  if (!v) return fontScaleMinActive();
+  return Math.min(fontScaleMaxActive(), Math.max(fontScaleMinActive(), v));
 }
 function setFontScale(v) {
-  const clamped = Math.min(fontScaleMaxActive(), Math.max(FONT_SCALE_MIN, v)).toFixed(2);
+  const clamped = Math.min(fontScaleMaxActive(), Math.max(fontScaleMinActive(), v)).toFixed(2);
   document.documentElement.style.setProperty("--font-scale", clamped);
   setCookie(fontScaleKeyActive(), clamped);
 }
 // querySelectorAll, not querySelector (Nutzerwunsch 2026-08-04, fullscreen
 // mode) -- same reasoning as .theme-toggle above: .fullscreen-bar carries
-// its own copy of each button, both wired up identically here.
+// its own copy of each button, both wired up identically here. Stream-Modus
+// has no buttons of its own at all ("es gibt keine sonstigen Elemente") --
+// see the global "+"/"-" keydown handler further down instead.
 const fontDecreaseBtns = document.querySelectorAll(".font-decrease");
 const fontIncreaseBtns = document.querySelectorAll(".font-increase");
 // Disable +/- at their respective limits (Nutzerwunsch 2026-07-31) -- run
@@ -613,12 +663,28 @@ const fontIncreaseBtns = document.querySelectorAll(".font-increase");
 // (fontScaleMaxActive() itself now reads a different cookie/ceiling).
 function updateFontButtonState() {
   const scale = getFontScale();
-  fontDecreaseBtns.forEach(function (b) { b.disabled = scale <= FONT_SCALE_MIN; });
+  fontDecreaseBtns.forEach(function (b) { b.disabled = scale <= fontScaleMinActive(); });
   fontIncreaseBtns.forEach(function (b) { b.disabled = scale >= fontScaleMaxActive(); });
 }
 updateFontButtonState();
-fontDecreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() - FONT_SCALE_STEP); updateFontButtonState(); }); });
-fontIncreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() + FONT_SCALE_STEP); updateFontButtonState(); }); });
+fontDecreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() - fontScaleStepActive()); updateFontButtonState(); }); });
+fontIncreaseBtns.forEach(function (b) { b.addEventListener("click", function () { setFontScale(getFontScale() + fontScaleStepActive()); updateFontButtonState(); }); });
+// "+"/"-" as KEYBOARD shortcuts, in every mode (Nutzerwunsch 2026-08-05:
+// "die Regelung, dass die + und - Button die Textgröße ändern, soll ab
+// jetzt in jedem Modus gelten") -- the actual buttons already cover normal/
+// fullscreen via the click handlers above; this is what makes it reachable
+// in Stream-Modus too, which has no buttons at all. fontScaleStepActive()
+// already resolves to the right step size (2.0 in Stream-Modus, 0.1
+// otherwise) purely from body's current classes, same as every other
+// mode-aware font-scale function here.
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "+" && e.key !== "-") return;
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+  e.preventDefault();
+  setFontScale(getFontScale() + (e.key === "+" ? 1 : -1) * fontScaleStepActive());
+  updateFontButtonState();
+});
 
 // ---- Fullscreen mode (Nutzerwunsch 2026-08-04) ----
 // requestFullscreen/exitFullscreen are the only JS-driven part; everything
@@ -737,6 +803,147 @@ document.querySelectorAll(".fullscreen-page").forEach(function (btn) {
 });
 document.querySelectorAll(".fullscreen-page-prev").forEach(function (btn) { btn.addEventListener("click", function () { if (fullscreenPageSwiped) { fullscreenPageSwiped = false; return; } pageBy(-1); }); });
 document.querySelectorAll(".fullscreen-page-next").forEach(function (btn) { btn.addEventListener("click", function () { if (fullscreenPageSwiped) { fullscreenPageSwiped = false; return; } pageBy(1); }); });
+
+// ---- Stream-Modus (Nutzerwunsch 2026-08-05) ----
+// A separate, even more minimal mode than fullscreen ("noch krasser als der
+// Vollbildmodus") -- entered ONLY via Ctrl+Alt+W (no button, no other
+// trigger), left ONLY via Escape. Purely a body-class-driven CSS mode (see
+// body.stream-mode in site.scss) -- deliberately does NOT touch the
+// Fullscreen API at all, unlike .is-fullscreen; the two can coexist, and
+// where they visually conflict (e.g. .content's own margin) stream-mode's
+// own CSS rules win (see their source order in site.scss).
+//
+// The window-TITLE swap (Nutzerwunsch 2026-08-05) exists purely for OBS
+// Studio's own Window Capture source, which is configured there to match
+// the exact title "firefox.exe: Genesys&Terrinoth" -- so the capture only
+// ever shows the browser while genuinely in Stream-Modus (article or
+// popover), never fullscreen/normal/any other page. A single saved-title
+// variable covers both the article and popover entry points (they're
+// mutually exclusive per Ctrl+Alt+W's own dispatch below, so only one is
+// ever "open" needing a title to restore at a time).
+let streamModeSavedTitle = null;
+function enterStreamTitle() {
+  if (streamModeSavedTitle === null) streamModeSavedTitle = document.title;
+  document.title = "Genesys&Terrinoth";
+}
+function exitStreamTitle() {
+  if (streamModeSavedTitle !== null) {
+    document.title = streamModeSavedTitle;
+    streamModeSavedTitle = null;
+  }
+}
+
+// Infoboxes/Examples auto-expand in article-level Stream-Modus (Nutzerwunsch
+// 2026-08-05: "Infoboxen und Examples werden automatisch aufgeklappt") --
+// Tables need no such handling: their own <table> content is hidden by CSS
+// regardless of the surrounding <details>'s open/closed state (see
+// body.stream-mode in site.scss), so forcing them open would only ever
+// reveal an empty shell for no benefit. Only containers that were NOT
+// already open get force-opened, and only those get closed again on exit --
+// one a user had already opened by hand before entering stays open
+// afterwards too, exactly as they left it.
+let streamModeOpenedContainers = [];
+// Split out from enterArticleStreamMode (Nutzerwunsch 2026-08-05 gap found
+// while implementing: a client-side navigation to a different article WHILE
+// already in Stream-Modus -- clicking a link, ArrowLeft/ArrowRight paging --
+// swaps in a whole new .content via swapContent, whose OWN Infobox/Example
+// containers never got the initial force-open pass at all) -- called both
+// on entry and again from swapContent below whenever it lands while
+// body.stream-mode is already set.
+function applyStreamModeAutoOpen() {
+  document.querySelectorAll('.content details[data-kind="infobox"], .content details[data-kind="example"]').forEach(function (el) {
+    if (!el.open) {
+      el.open = true;
+      streamModeOpenedContainers.push(el);
+    }
+  });
+}
+function enterArticleStreamMode() {
+  document.body.classList.add("stream-mode");
+  enterStreamTitle();
+  streamModeOpenedContainers = [];
+  applyStreamModeAutoOpen();
+  // --font-scale itself doesn't change just because a class was toggled --
+  // it's a CSS custom property holding whatever number the LAST mode wrote
+  // there, and stays exactly that until something calls setFontScale()
+  // again. Without this, entering Stream-Modus would apply its 8px-margin
+  // layout immediately but keep rendering text at the previous mode's own
+  // (far smaller) --font-scale value until the user happened to press "+"/
+  // "-" for the first time. getFontScale() already resolves against the
+  // classes just added above, so this immediately snaps to the correct
+  // Stream-Modus value (or its floor, on first use).
+  setFontScale(getFontScale());
+  updateFontButtonState();
+}
+function exitArticleStreamMode() {
+  document.body.classList.remove("stream-mode");
+  exitStreamTitle();
+  streamModeOpenedContainers.forEach(function (el) { el.open = false; });
+  streamModeOpenedContainers = [];
+  // Same re-apply as on entry above, now snapping back to whatever
+  // normal/fullscreen already had stored -- otherwise the article would
+  // keep rendering at Stream-Modus's own (far larger) --font-scale value
+  // after leaving, until the user pressed "+"/"-" again.
+  setFontScale(getFontScale());
+  updateFontButtonState();
+}
+
+// A currently-open table-row popover (Feature 3) can be put into
+// Stream-Modus INSTEAD of the article behind it (Nutzerwunsch 2026-08-05:
+// "wenn ich dann Strg+Alt+W drücke, dann soll nicht das Wiki selbst, sondern
+// nur das Popover in den Stream-Modus gehen, also den kompletten Client
+// ausfüllen und die Schriftgröße des Stream-Modus annehmen") -- a class on
+// the popover's own overlay (sized/positioned via body.popover-stream-mode
+// .table-modal-overlay in site.scss) plus the same body-level class every
+// other Stream-Modus font-scale function already keys off (see
+// isStreamModeActive above), so getFontScale()/setFontScale() transparently
+// read/write the shared Stream-Modus cookie without needing to know or care
+// whether the popover or the article triggered it.
+function enterPopoverStreamMode(overlay) {
+  overlay.classList.add("popover-stream-mode");
+  document.body.classList.add("popover-stream-mode");
+  enterStreamTitle();
+  setFontScale(getFontScale());
+}
+function exitPopoverStreamMode(overlay) {
+  if (overlay) overlay.classList.remove("popover-stream-mode");
+  document.body.classList.remove("popover-stream-mode");
+  exitStreamTitle();
+  // Same re-apply as everywhere else in Stream-Modus (see
+  // enterArticleStreamMode above) -- snaps --font-scale back to whatever
+  // normal/fullscreen already had stored now that popover-stream-mode is
+  // gone from body's classes.
+  setFontScale(getFontScale());
+  updateFontButtonState();
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key.toLowerCase() !== "w") return;
+  if (!e.ctrlKey || !e.altKey || e.shiftKey || e.metaKey) return;
+  if (isStreamModeActive()) return;
+  e.preventDefault();
+  // A currently-open popover takes priority over the article (Nutzerwunsch
+  // 2026-08-05) -- ".table-modal-overlay" is a plain DOM query, not a
+  // closure reference into the popover's own IIFE further down, so this
+  // works regardless of where each piece of code happens to live in the
+  // file.
+  const openPopover = document.querySelector(".table-modal-overlay");
+  if (openPopover) {
+    enterPopoverStreamMode(openPopover);
+  } else {
+    enterArticleStreamMode();
+  }
+});
+// Escape exits article-level Stream-Modus -- the popover's OWN Escape
+// handler (see openTablePopover further down) checks popover-stream-mode
+// FIRST and exits that instead of closing the popover outright, so this
+// listener explicitly stays out of the popover-stream-mode case (that
+// would otherwise double-handle the same keypress via two listeners).
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape") return;
+  if (document.body.classList.contains("popover-stream-mode")) return;
+  if (document.body.classList.contains("stream-mode")) exitArticleStreamMode();
+});
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
@@ -940,11 +1147,29 @@ document.addEventListener("click", function (e) {
       '</div>';
     document.body.appendChild(overlay);
     function closeModal() {
+      // Belt-and-suspenders cleanup (Nutzerwunsch 2026-08-05 feature): a
+      // stream-mode popover is normally only ever closed via its own Escape
+      // branch above (which exits stream mode WITHOUT closing), but an
+      // outside click still reaches this function directly -- without this,
+      // that would remove the overlay while leaving body.popover-stream-mode
+      // and the swapped window title stuck behind for good.
+      if (overlay.classList.contains("popover-stream-mode")) exitPopoverStreamMode(overlay);
       overlay.remove();
       document.removeEventListener("keydown", onKeydown);
     }
     function onKeydown(ev) {
-      if (ev.key === "Escape") closeModal();
+      if (ev.key !== "Escape") return;
+      // Popover-level Stream-Modus (Nutzerwunsch 2026-08-05) intercepts
+      // Escape FIRST -- exits Stream-Modus only, leaves the popover itself
+      // open, exactly mirroring how Escape behaves for the article-level
+      // Stream-Modus (see the global keydown listener further up: it
+      // explicitly stays out of this case for the same reason, so only ONE
+      // of the two ever actually handles a given Escape press).
+      if (overlay.classList.contains("popover-stream-mode")) {
+        exitPopoverStreamMode(overlay);
+        return;
+      }
+      closeModal();
     }
     // Outside click (anywhere on the overlay backdrop, i.e. not inside
     // .table-modal itself) closes it -- the only way to close it now that
@@ -958,25 +1183,11 @@ document.addEventListener("click", function (e) {
     document.addEventListener("keydown", onKeydown);
   }
 
-  // Trigger: a single click is enough on a mouse, but touch needs a double
-  // tap (Nutzerwunsch 2026-08-04: "einfacher Klick genügt, aber bei Tap muss
-  // es doppelt sein") -- pointerdown (capturing, so it always runs first)
-  // remembers whether the LAST pointer interaction was touch; "click" only
-  // acts on it when it wasn't, "dblclick" only when it was. A real mouse
-  // double-click fires two "click" events before its own "dblclick" -- the
-  // first "click" already opens the popover in that case, and the dblclick
-  // handler's own touch-only guard skips its (otherwise redundant) second
-  // open. A double TAP fires two ignored "click" events (touch flag still
-  // set, no intervening pointerdown resets it) followed by one "dblclick",
-  // which is what actually opens it on touch.
-  let lastPointerWasTouch = false;
-  document.addEventListener("pointerdown", function (e) { lastPointerWasTouch = e.pointerType === "touch"; }, true);
-  document.addEventListener("click", function (e) {
-    if (lastPointerWasTouch) return;
-    openTablePopover(e);
-  });
-  document.addEventListener("dblclick", function (e) {
-    if (!lastPointerWasTouch) return;
-    openTablePopover(e);
-  });
+  // Trigger: double-click/double-tap ONLY (Nutzerwunsch 2026-08-05,
+  // reverting the 2026-08-04 "single click on mouse, double tap on touch"
+  // hybrid: "es wird NICHT MEHR per einfachem Klick, sondern wieder nur per
+  // Doppelklick ausgeführt") -- a single plain "dblclick" listener now
+  // covers both input types, since a double TAP on touch already synthesizes
+  // a real "dblclick" event on its own, no separate touch-path needed.
+  document.addEventListener("dblclick", openTablePopover);
 })();
