@@ -619,13 +619,14 @@ const FONT_SCALE_STEP = 0.1;
 const FONT_SCALE_MAX_FULLSCREEN = FONT_SCALE_MAX * 2;
 // Stream-Modus bounds/step -- REVISED 2026-08-05, same day: the original
 // 3x/21x/step-2.0 values ("waren unsinnig" per the user's own correction)
-// are replaced with 2x/8x/step-0.5. Same --font-scale multiplier this whole
-// system already uses everywhere else, just a bigger range/step than normal/
-// fullscreen, since Stream-Modus is built for reading from across a room/
-// stream viewers, not a normal screen distance.
+// are replaced with 2x/8x, step further reduced same day from 0.5 to 0.2 for
+// finer control. Same --font-scale multiplier this whole system already
+// uses everywhere else, just a bigger range than normal/fullscreen, since
+// Stream-Modus is built for reading from across a room/stream viewers, not a
+// normal screen distance.
 const FONT_SCALE_MIN_STREAM = 2;
 const FONT_SCALE_MAX_STREAM = 8;
-const FONT_SCALE_STEP_STREAM = 0.5;
+const FONT_SCALE_STEP_STREAM = 0.2;
 function isStreamModeActive() {
   return document.body.classList.contains("stream-mode") || document.body.classList.contains("popover-stream-mode");
 }
@@ -1005,17 +1006,39 @@ const AUTOSCROLL_PX_PER_SEC_PER_LEVEL = 6;
 let autoScrollLevel = 0;
 let autoScrollRafId = null;
 let autoScrollLastTs = null;
+// Sub-pixel carry between frames (Nutzerwunsch 2026-08-05 bugfix: "Erst nach
+// dem sechsten Drücken setzt es sich überhaupt in Bewegung") -- element.
+// scrollTop always reports/stores a whole pixel, rounding away any fraction
+// the instant it's read back. At low levels the per-frame delta is well
+// under 1px (level 1 = 6px/sec, ~0.1px per ~16ms frame), so doing
+// "content.scrollTop += delta" directly discarded that fraction EVERY
+// single frame -- it could never accumulate past a whole pixel on its own,
+// which is exactly why nothing visibly moved until a high enough level made
+// even a SINGLE frame's delta round up to 1px by itself (~level 6, matching
+// the reported symptom). Accumulating the fractional remainder in this
+// plain JS number instead (never read back from the DOM, so never rounded)
+// and only flushing whole pixels to scrollTop once they add up fixes this
+// for every level, including 1.
+let autoScrollRemainder = 0;
 function autoScrollTick(ts) {
   if (autoScrollLevel <= 0) {
     autoScrollRafId = null;
     autoScrollLastTs = null;
+    autoScrollRemainder = 0;
     return;
   }
   if (autoScrollLastTs === null) autoScrollLastTs = ts;
   const dt = (ts - autoScrollLastTs) / 1000;
   autoScrollLastTs = ts;
   const content = document.querySelector(".content");
-  if (content) content.scrollTop += autoScrollLevel * AUTOSCROLL_PX_PER_SEC_PER_LEVEL * dt;
+  if (content) {
+    autoScrollRemainder += autoScrollLevel * AUTOSCROLL_PX_PER_SEC_PER_LEVEL * dt;
+    const whole = Math.trunc(autoScrollRemainder);
+    if (whole !== 0) {
+      content.scrollTop += whole;
+      autoScrollRemainder -= whole;
+    }
+  }
   autoScrollRafId = requestAnimationFrame(autoScrollTick);
 }
 function stopAutoScroll() {
@@ -1025,6 +1048,7 @@ function stopAutoScroll() {
     autoScrollRafId = null;
   }
   autoScrollLastTs = null;
+  autoScrollRemainder = 0;
 }
 document.addEventListener("keydown", function (e) {
   if (e.key !== "ScrollLock") return;
