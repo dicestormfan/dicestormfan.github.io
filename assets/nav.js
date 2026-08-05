@@ -477,10 +477,17 @@ const SEARCH_INDEX = [{"title":"Genesys","titleHtml":"Genesys","url":"/","pathSe
   // Clears the field once a result is actually followed -- both a mouse
   // click and the Enter-key handler above end up dispatching a real click
   // on the result <a>, so this single listener covers both.
+  // Also drops focus out of the field (Nutzerwunsch 2026-08-05: "nachdem man
+  // im Suchfeld Enter gedrückt... oder einen Treffer... geklickt oder
+  // geentert hat, soll der Fokus aus dem Suchfeld entfernt werden") -- both
+  // paths (mouse click on a result, or Enter which dispatches a synthetic
+  // click on the active/first result, see the input's own keydown handler
+  // above) end up here, so one blur() covers both.
   results.addEventListener("click", function () {
     input.value = "";
     results.hidden = true;
     results.innerHTML = "";
+    input.blur();
   });
   document.addEventListener("click", function (e) {
     if (!e.target.closest(".navbar-search")) results.hidden = true;
@@ -610,14 +617,15 @@ const FONT_SCALE_STEP = 0.1;
 // 2026-08-04: "im Vollbildmodus kann man die Schrift nochmal deutlich
 // größer machen... der Max-Wert wird im Vollbildmodus verdoppelt").
 const FONT_SCALE_MAX_FULLSCREEN = FONT_SCALE_MAX * 2;
-// Stream-Modus bounds/step (Nutzerwunsch 2026-08-05: "Die Mindestgröße ist
-// 3x, die Maximalgröße ist 21x... ändern die Textgröße um jeweils 2.0") --
-// same --font-scale multiplier this whole system already uses everywhere
-// else, just a much bigger range/step, since Stream-Modus is built for
-// reading from across a room/stream viewers, not a normal screen distance.
-const FONT_SCALE_MIN_STREAM = 3;
-const FONT_SCALE_MAX_STREAM = 21;
-const FONT_SCALE_STEP_STREAM = 2;
+// Stream-Modus bounds/step -- REVISED 2026-08-05, same day: the original
+// 3x/21x/step-2.0 values ("waren unsinnig" per the user's own correction)
+// are replaced with 2x/8x/step-0.5. Same --font-scale multiplier this whole
+// system already uses everywhere else, just a bigger range/step than normal/
+// fullscreen, since Stream-Modus is built for reading from across a room/
+// stream viewers, not a normal screen distance.
+const FONT_SCALE_MIN_STREAM = 2;
+const FONT_SCALE_MAX_STREAM = 8;
+const FONT_SCALE_STEP_STREAM = 0.5;
 function isStreamModeActive() {
   return document.body.classList.contains("stream-mode") || document.body.classList.contains("popover-stream-mode");
 }
@@ -742,7 +750,17 @@ function updateFullscreenContainerFlag() {
 }
 document.addEventListener("fullscreenchange", function () {
   const isFullscreen = !!document.fullscreenElement;
-  document.body.classList.toggle("is-fullscreen", isFullscreen);
+  // Stream-Modus now also drives the real Fullscreen API (Nutzerwunsch
+  // 2026-08-05, see enterStreamFullscreen/exitStreamFullscreen further
+  // down) -- while it's active, this listener must NOT also flip on
+  // body.is-fullscreen, which would layer the separate Vollbildmodus UI
+  // (its own cursor: none, .fullscreen-bar, 10vh/10vw content margin) on
+  // top of Stream-Modus's own deliberately different look. isStreamModeActive
+  // is defined further down in this file but already hoisted (function
+  // declaration), so it's safe to call from here.
+  if (!isStreamModeActive()) {
+    document.body.classList.toggle("is-fullscreen", isFullscreen);
+  }
   updateFullscreenContainerFlag();
   // REGRESS 2026-08-05, fixed: this used to hand-assign a module-level
   // "fontScaleMaxActive" variable here -- stale leftover from BEFORE
@@ -821,6 +839,31 @@ document.querySelectorAll(".fullscreen-page-next").forEach(function (btn) { btn.
 // variable covers both the article and popover entry points (they're
 // mutually exclusive per Ctrl+Alt+W's own dispatch below, so only one is
 // ever "open" needing a title to restore at a time).
+// Real browser Fullscreen, same as the "f" Vollbildmodus toggle above
+// (Nutzerwunsch 2026-08-05: "Im Stream-Modus kommt kein echtes Vollbild...
+// soll ebenso wie im Vollbildmodus auf echtes Vollbild umstellen") -- unlike
+// the original design (see the removed comment on isStreamModeActive below),
+// Stream-Modus DOES now touch the Fullscreen API, it just never sets
+// body.is-fullscreen itself (guarded in the "fullscreenchange" listener
+// above) so its own, deliberately different CSS stays in effect instead of
+// Vollbildmodus's. is-fullscreen is force-removed here too, in case the user
+// was already in true Vollbildmodus (its own "f" toggle) before entering
+// Stream-Modus via Ctrl+Alt+W -- otherwise that stale class (added by an
+// EARLIER fullscreenchange, before this guard could apply) would linger and
+// still show cursor:none/the fullscreen-bar underneath. requestFullscreen's
+// promise rejection (e.g. a user gesture requirement not met) is swallowed:
+// Stream-Modus's own CSS mode still works perfectly well without real
+// fullscreen, this is purely an enhancement on top.
+function enterStreamFullscreen() {
+  document.body.classList.remove("is-fullscreen");
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function () {});
+  }
+}
+function exitStreamFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+}
+
 let streamModeSavedTitle = null;
 function enterStreamTitle() {
   if (streamModeSavedTitle === null) streamModeSavedTitle = document.title;
@@ -861,6 +904,7 @@ function applyStreamModeAutoOpen() {
 function enterArticleStreamMode() {
   document.body.classList.add("stream-mode");
   enterStreamTitle();
+  enterStreamFullscreen();
   streamModeOpenedContainers = [];
   applyStreamModeAutoOpen();
   // --font-scale itself doesn't change just because a class was toggled --
@@ -878,6 +922,7 @@ function enterArticleStreamMode() {
 function exitArticleStreamMode() {
   document.body.classList.remove("stream-mode");
   exitStreamTitle();
+  exitStreamFullscreen();
   streamModeOpenedContainers.forEach(function (el) { el.open = false; });
   streamModeOpenedContainers = [];
   // Same re-apply as on entry above, now snapping back to whatever
@@ -903,12 +948,14 @@ function enterPopoverStreamMode(overlay) {
   overlay.classList.add("popover-stream-mode");
   document.body.classList.add("popover-stream-mode");
   enterStreamTitle();
+  enterStreamFullscreen();
   setFontScale(getFontScale());
 }
 function exitPopoverStreamMode(overlay) {
   if (overlay) overlay.classList.remove("popover-stream-mode");
   document.body.classList.remove("popover-stream-mode");
   exitStreamTitle();
+  exitStreamFullscreen();
   // Same re-apply as everywhere else in Stream-Modus (see
   // enterArticleStreamMode above) -- snaps --font-scale back to whatever
   // normal/fullscreen already had stored now that popover-stream-mode is
@@ -944,6 +991,71 @@ document.addEventListener("keydown", function (e) {
   if (document.body.classList.contains("popover-stream-mode")) return;
   if (document.body.classList.contains("stream-mode")) exitArticleStreamMode();
 });
+
+// ---- "Rollen" (Scroll Lock) autoscroll (Nutzerwunsch 2026-08-05) ----
+// Not scoped to Stream-Modus -- works everywhere, on whatever ".content"
+// happens to be on screen. Each ScrollLock press raises the speed by one
+// level (level 0 = off); Shift+ScrollLock lowers it by one level, down to 0
+// (which stops the scroll). "Sehr sehr langsam" for level 1, "leicht erhöht"
+// each further level -- AUTOSCROLL_PX_PER_SEC_PER_LEVEL is that one-level
+// increment, applied via requestAnimationFrame with a real elapsed-time delta
+// (not a fixed per-tick pixel count) so the actual on-screen speed stays
+// consistent regardless of the display's refresh rate.
+const AUTOSCROLL_PX_PER_SEC_PER_LEVEL = 6;
+let autoScrollLevel = 0;
+let autoScrollRafId = null;
+let autoScrollLastTs = null;
+function autoScrollTick(ts) {
+  if (autoScrollLevel <= 0) {
+    autoScrollRafId = null;
+    autoScrollLastTs = null;
+    return;
+  }
+  if (autoScrollLastTs === null) autoScrollLastTs = ts;
+  const dt = (ts - autoScrollLastTs) / 1000;
+  autoScrollLastTs = ts;
+  const content = document.querySelector(".content");
+  if (content) content.scrollTop += autoScrollLevel * AUTOSCROLL_PX_PER_SEC_PER_LEVEL * dt;
+  autoScrollRafId = requestAnimationFrame(autoScrollTick);
+}
+function stopAutoScroll() {
+  autoScrollLevel = 0;
+  if (autoScrollRafId !== null) {
+    cancelAnimationFrame(autoScrollRafId);
+    autoScrollRafId = null;
+  }
+  autoScrollLastTs = null;
+}
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "ScrollLock") return;
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+  e.preventDefault();
+  autoScrollLevel = e.shiftKey ? Math.max(0, autoScrollLevel - 1) : autoScrollLevel + 1;
+  if (autoScrollLevel > 0 && autoScrollRafId === null) {
+    autoScrollLastTs = null;
+    autoScrollRafId = requestAnimationFrame(autoScrollTick);
+  } else if (autoScrollLevel <= 0) {
+    stopAutoScroll();
+  }
+});
+// Escape stops the Roll instead of closing a popover/exiting Stream-Modus
+// while Roll-Mode is active (Nutzerwunsch 2026-08-05: "Während des
+// Roll-Modus schließt sich bei ESCAPE nicht das Popover bzw. nicht der
+// Stream-Modus, sondern das Rollen wird beendet") -- registered with
+// capture: true, which always runs before ANY bubble-phase "keydown"
+// listener on document regardless of source-code order (capture happens
+// top-down, window -> document -> target, entirely before bubble even
+// starts), so stopPropagation() here reliably keeps the event from ever
+// reaching the popover's own Escape handler (see openTablePopover further
+// down) or the plain Stream-Modus one just above, both bubble-phase
+// listeners on document.
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape" || autoScrollLevel <= 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  stopAutoScroll();
+}, true);
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
@@ -1126,21 +1238,81 @@ document.addEventListener("click", function (e) {
     const headerCells = Array.from(table.querySelectorAll("thead th"));
     const cells = Array.from(tr.children);
     if (!cells.length) return;
+
+    // Stream-Modus popover column rules (Nutzerwunsch 2026-08-05, see
+    // POPOVER_HIDE_TITLE_COLS/POPOVER_HIDE_COLS in build-site.js, which
+    // stamps these as comma-separated data attributes at build time) --
+    // "Spaltentitel 'X' weg": only X's header/label is hidden, its value
+    // stays and spans the full row width. "Spalte 'X' weg": both header AND
+    // value are hidden entirely. Column names matched case-insensitively
+    // against each <th>'s own plain label text.
+    function parseColList(attr) {
+      return attr ? attr.split(",").map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean) : [];
+    }
+    const hideTitleCols = parseColList(table.dataset.popoverHideTitleCols);
+    const hideCols = parseColList(table.dataset.popoverHideCols);
+    function findCellByHeaderName(name) {
+      if (!name) return null;
+      const lower = name.trim().toLowerCase();
+      const idx = headerCells.findIndex(function (th) { return headerLabelText(th).trim().toLowerCase() === lower; });
+      return idx >= 0 ? cells[idx] : null;
+    }
+
     let rowsHtml = "";
     const clipboardLines = [];
     headerCells.forEach(function (th, i) {
       const cell = cells[i];
       if (!cell) return;
+      const headerName = headerLabelText(th).trim().toLowerCase();
+      const isHiddenCol = hideCols.indexOf(headerName) !== -1;
+      const isHiddenTitleOnly = !isHiddenCol && hideTitleCols.indexOf(headerName) !== -1;
       const label = popoverHeaderCase(headerLabelText(th));
-      rowsHtml += '<span class="table-modal-label">' + escapeHtml(label) + '</span>' +
-        '<span class="table-modal-value">' + stripLinksForPopover(cell.innerHTML) + '</span>';
-      clipboardLines.push(label + ": " + cell.textContent.trim());
+      const labelClass = "table-modal-label" + (isHiddenCol || isHiddenTitleOnly ? " table-modal-cell-hidden" : "");
+      const valueClass = "table-modal-value" +
+        (isHiddenCol ? " table-modal-cell-hidden" : "") +
+        (isHiddenTitleOnly ? " table-modal-value-full" : "");
+      rowsHtml += '<span class="' + labelClass + '">' + escapeHtml(label) + '</span>' +
+        '<span class="' + valueClass + '">' + stripLinksForPopover(cell.innerHTML) + '</span>';
+      if (!isHiddenCol) clipboardLines.push(label + ": " + cell.textContent.trim());
     });
+
+    // Popover title, with the two per-row title-rewrite rules layered on top
+    // of the plain data-dblclick-title (Nutzerwunsch 2026-08-05):
+    // data-popover-title-replace-col substitutes that column's OWN value in
+    // place of the title's pre-baked brace-prefix/-suffix split (the
+    // "Result Options" rule -- see computeDblclickTitleBraceSplit in
+    // build-site.js); data-popover-title-append-col appends ": " + that
+    // column's value straight onto the SAME title string (GC I.6-10's D100),
+    // which is what makes it inherit the title's own font/color/size --
+    // it's the exact same <h3>, no separate styled element involved.
+    let titleHtml = table.dataset.dblclickTitle;
+    if (table.dataset.popoverTitleReplaceCol) {
+      const cell = findCellByHeaderName(table.dataset.popoverTitleReplaceCol);
+      if (cell) {
+        // Fixed single space on each side, not whatever the build-time
+        // split happened to trim off (build-site.js's own prefix/suffix
+        // extraction trims BOTH ends of each half, since it has no reliable
+        // way to know how much of the original whitespace belonged at the
+        // cut point) -- every known use of this rule has the same "TEXT
+        // {notation} TEXT" shape, so a plain single space reads correctly
+        // on both sides regardless.
+        const prefix = table.dataset.popoverTitleBracePrefix || "";
+        const suffix = table.dataset.popoverTitleBraceSuffix || "";
+        titleHtml = (prefix ? prefix + " " : "") +
+          stripLinksForPopover(cell.innerHTML) +
+          (suffix ? " " + suffix : "");
+      }
+    }
+    if (table.dataset.popoverTitleAppendCol) {
+      const cell = findCellByHeaderName(table.dataset.popoverTitleAppendCol);
+      if (cell) titleHtml = titleHtml + ": " + stripLinksForPopover(cell.innerHTML);
+    }
+
     const overlay = document.createElement("div");
     overlay.className = "table-modal-overlay";
     overlay.innerHTML = '<div class="table-modal" role="dialog" aria-modal="true">' +
       '<div class="table-modal-header">' +
-      '<h3 class="table-modal-title">' + table.dataset.dblclickTitle + '</h3>' +
+      '<h3 class="table-modal-title">' + titleHtml + '</h3>' +
       '<button type="button" class="table-modal-copy" title="Copy values to clipboard" aria-label="Copy values to clipboard">' + COPY_ICON_SVG + '</button>' +
       '</div>' +
       '<div class="table-modal-rows">' + rowsHtml + '</div>' +
