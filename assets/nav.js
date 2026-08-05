@@ -50,6 +50,10 @@ function swapContent(html, url) {
 
   current.innerHTML = newContent.innerHTML;
   document.title = doc.title;
+  // "Rollen" (autoscroll) is always OFF on entering an article (Nutzerwunsch
+  // 2026-08-05 redesign) -- the speed VALUE persists across articles via
+  // cookie (see stopAutoScroll further down), only the on/off state resets.
+  stopAutoScroll();
   // Re-check for a container in the newly-swapped-in article (Nutzerwunsch
   // 2026-08-05, fullscreen cursor exception -- see updateFullscreenContainerFlag
   // further down) -- a client-side navigation can land on a page with a
@@ -993,17 +997,32 @@ document.addEventListener("keydown", function (e) {
   if (document.body.classList.contains("stream-mode")) exitArticleStreamMode();
 });
 
-// ---- "Rollen" (Scroll Lock) autoscroll (Nutzerwunsch 2026-08-05) ----
+// ---- "Rollen" (Scroll Lock) autoscroll (Nutzerwunsch 2026-08-05, redesigned
+// same day) ----
 // Not scoped to Stream-Modus -- works everywhere, on whatever ".content"
-// happens to be on screen. Each ScrollLock press raises the speed by one
-// level (level 0 = off); Shift+ScrollLock lowers it by one level, down to 0
-// (which stops the scroll). "Sehr sehr langsam" for level 1, "leicht erhöht"
-// each further level -- AUTOSCROLL_PX_PER_SEC_PER_LEVEL is that one-level
-// increment, applied via requestAnimationFrame with a real elapsed-time delta
-// (not a fixed per-tick pixel count) so the actual on-screen speed stays
-// consistent regardless of the display's refresh rate.
+// happens to be on screen. Two separate pieces of state:
+//   - autoScrollSpeed: the scroll speed VALUE (in levels), persisted across
+//     articles/sessions via cookie.
+//   - autoScrollOn: whether it's actively scrolling right now, in-memory
+//     only, always OFF on entering an article (see swapContent's
+//     stopAutoScroll() call above) regardless of the stored speed.
+// Space toggles autoScrollOn using the current autoScrollSpeed. While ON,
+// ScrollLock/Shift+ScrollLock raise/lower autoScrollSpeed (reaching 0 via
+// Shift+ScrollLock turns Rollen back OFF -- a speed of 0 with Rollen still
+// nominally "on" would be indistinguishable from off and just confusing).
+// While OFF, Shift+ScrollLock does nothing; plain ScrollLock resets
+// autoScrollSpeed to level 1 and turns Rollen ON (reset-and-start). Escape
+// plays no role here anymore (superseded 2026-08-05 redesign -- an earlier
+// version had Escape stop the scroll, removed together with the old
+// level-only design).
+// "Sehr sehr langsam" for level 1, "leicht erhöht" each further level --
+// AUTOSCROLL_PX_PER_SEC_PER_LEVEL is that one-level increment, applied via
+// requestAnimationFrame with a real elapsed-time delta (not a fixed
+// per-tick pixel count) so the actual on-screen speed stays consistent
+// regardless of the display's refresh rate.
 const AUTOSCROLL_PX_PER_SEC_PER_LEVEL = 6;
-let autoScrollLevel = 0;
+let autoScrollSpeed = parseInt(getCookie("autoScrollSpeed"), 10) || 0;
+let autoScrollOn = false;
 let autoScrollRafId = null;
 let autoScrollLastTs = null;
 // Sub-pixel carry between frames (Nutzerwunsch 2026-08-05 bugfix: "Erst nach
@@ -1020,8 +1039,11 @@ let autoScrollLastTs = null;
 // and only flushing whole pixels to scrollTop once they add up fixes this
 // for every level, including 1.
 let autoScrollRemainder = 0;
+function persistAutoScrollSpeed() {
+  setCookie("autoScrollSpeed", String(autoScrollSpeed));
+}
 function autoScrollTick(ts) {
-  if (autoScrollLevel <= 0) {
+  if (!autoScrollOn) {
     autoScrollRafId = null;
     autoScrollLastTs = null;
     autoScrollRemainder = 0;
@@ -1032,7 +1054,7 @@ function autoScrollTick(ts) {
   autoScrollLastTs = ts;
   const content = document.querySelector(".content");
   if (content) {
-    autoScrollRemainder += autoScrollLevel * AUTOSCROLL_PX_PER_SEC_PER_LEVEL * dt;
+    autoScrollRemainder += autoScrollSpeed * AUTOSCROLL_PX_PER_SEC_PER_LEVEL * dt;
     const whole = Math.trunc(autoScrollRemainder);
     if (whole !== 0) {
       content.scrollTop += whole;
@@ -1041,8 +1063,15 @@ function autoScrollTick(ts) {
   }
   autoScrollRafId = requestAnimationFrame(autoScrollTick);
 }
+function startAutoScroll() {
+  autoScrollOn = true;
+  if (autoScrollRafId === null) {
+    autoScrollLastTs = null;
+    autoScrollRafId = requestAnimationFrame(autoScrollTick);
+  }
+}
 function stopAutoScroll() {
-  autoScrollLevel = 0;
+  autoScrollOn = false;
   if (autoScrollRafId !== null) {
     cancelAnimationFrame(autoScrollRafId);
     autoScrollRafId = null;
@@ -1055,31 +1084,29 @@ document.addEventListener("keydown", function (e) {
   const active = document.activeElement;
   if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
   e.preventDefault();
-  autoScrollLevel = e.shiftKey ? Math.max(0, autoScrollLevel - 1) : autoScrollLevel + 1;
-  if (autoScrollLevel > 0 && autoScrollRafId === null) {
-    autoScrollLastTs = null;
-    autoScrollRafId = requestAnimationFrame(autoScrollTick);
-  } else if (autoScrollLevel <= 0) {
+  if (!autoScrollOn) {
+    if (e.shiftKey) return; // Shift+Rollen while OFF does nothing
+    autoScrollSpeed = 1;
+    startAutoScroll();
+  } else if (e.shiftKey) {
+    autoScrollSpeed = Math.max(0, autoScrollSpeed - 1);
+    if (autoScrollSpeed === 0) stopAutoScroll();
+  } else {
+    autoScrollSpeed += 1;
+  }
+  persistAutoScrollSpeed();
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key !== " " && e.code !== "Space") return;
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.tagName === "SELECT" || active.tagName === "BUTTON" || active.isContentEditable)) return;
+  e.preventDefault();
+  if (autoScrollOn) {
     stopAutoScroll();
+  } else {
+    startAutoScroll();
   }
 });
-// Escape stops the Roll instead of closing a popover/exiting Stream-Modus
-// while Roll-Mode is active (Nutzerwunsch 2026-08-05: "Während des
-// Roll-Modus schließt sich bei ESCAPE nicht das Popover bzw. nicht der
-// Stream-Modus, sondern das Rollen wird beendet") -- registered with
-// capture: true, which always runs before ANY bubble-phase "keydown"
-// listener on document regardless of source-code order (capture happens
-// top-down, window -> document -> target, entirely before bubble even
-// starts), so stopPropagation() here reliably keeps the event from ever
-// reaching the popover's own Escape handler (see openTablePopover further
-// down) or the plain Stream-Modus one just above, both bubble-phase
-// listeners on document.
-document.addEventListener("keydown", function (e) {
-  if (e.key !== "Escape" || autoScrollLevel <= 0) return;
-  e.preventDefault();
-  e.stopPropagation();
-  stopAutoScroll();
-}, true);
 
 // ---- Skills overview filter (Nutzerwunsch 2026-07-31, Genesys page only --
 // see buildSkillsOverviewHtml in build-site.js) ----
