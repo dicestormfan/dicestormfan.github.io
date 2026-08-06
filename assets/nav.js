@@ -751,7 +751,12 @@ document.addEventListener("keydown", function (e) {
 // fullscreenchange -- a different article can load, with or without a
 // collapsible section, while already in fullscreen.
 function updateFullscreenContainerFlag() {
-  document.body.classList.toggle("has-container", !!document.querySelector(".content .accordion-section"));
+  // Also true on the Mennara map page (Nutzerwunsch 2026-08-07: "natürlich
+  // muss der Mauszeiger im Vollbildmodus zu sehen sein") -- same class,
+  // same underlying reason (fullscreen's own cursor: none would otherwise
+  // hide the very cursor the hover interaction depends on), see .has-container
+  // in site.scss.
+  document.body.classList.toggle("has-container", !!document.querySelector(".content .accordion-section, .content .mennara-map"));
 }
 document.addEventListener("fullscreenchange", function () {
   const isFullscreen = !!document.fullscreenElement;
@@ -1413,4 +1418,30 @@ document.addEventListener("click", function (e) {
   // covers both input types, since a double TAP on touch already synthesizes
   // a real "dblclick" event on its own, no separate touch-path needed.
   document.addEventListener("dblclick", openTablePopover);
+
+  // Mennara map hover (Nutzerwunsch 2026-08-07): a delegated listener on
+  // document, not bound per-element, so it survives SPA content swaps
+  // untouched (same reasoning as the dblclick listener just above) -- the
+  // map's own markup only ever needs a data-region attribute, no rebinding
+  // after navigation. Every element carrying data-region inside .mennara-map
+  // is EITHER a (permanently invisible) Trigger hit-zone OR the visible
+  // text-label path for that same region (see buildMennaraMapHtml in
+  // build-site.js) -- hovering either one highlights the label(s) sharing
+  // its region key, since the Trigger's padded shape is what makes "just
+  // getting close" already count, while still working if the mouse happens
+  // to land on the visible text itself.
+  document.addEventListener("mouseover", function (e) {
+    const src = e.target.closest(".mennara-map [data-region]");
+    if (!src) return;
+    document.querySelectorAll('.mennara-map .mennara-region-label[data-region="' + src.dataset.region + '"]').forEach(function (el) {
+      el.classList.add("region-active");
+    });
+  });
+  document.addEventListener("mouseout", function (e) {
+    const src = e.target.closest(".mennara-map [data-region]");
+    if (!src || src.contains(e.relatedTarget)) return;
+    document.querySelectorAll('.mennara-map .mennara-region-label[data-region="' + src.dataset.region + '"]').forEach(function (el) {
+      el.classList.remove("region-active");
+    });
+  });
 })();
