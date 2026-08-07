@@ -1444,4 +1444,82 @@ document.addEventListener("click", function (e) {
       el.classList.remove("region-active");
     });
   });
+
+  // Mennara map scroll-wheel zoom + drag-to-pan (Nutzerwunsch 2026-08-07).
+  // Manipulates the <svg>'s own viewBox directly rather than a CSS transform
+  // -- the box's rendered CSS size (from site.scss's max-width/max-height
+  // fit-to-container rule) stays constant throughout, since width and height
+  // are always scaled by the exact same factor, so the aspect ratio (and
+  // therefore the fitted CSS size) never changes; only which portion of the
+  // map is visible does. The original viewBox is cached on the element itself
+  // (data-base-viewbox, lazily on first interaction) as the fixed reference
+  // for clamping -- panning/zooming can never reveal empty space beyond the
+  // map's own extent, and zooming out bottoms out at the original full view.
+  function mennaraBaseViewBox(svg) {
+    if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
+    // "\s" (doubled), not "s" -- same template-literal backslash-eating
+    // gotcha as computeDblclickTitle's "\d"/"\w" elsewhere in this file.
+    return svg.dataset.baseViewbox.split(/\s+/).map(Number);
+  }
+  document.addEventListener("wheel", function (e) {
+    const svg = e.target.closest(".mennara-map svg");
+    if (!svg) return;
+    e.preventDefault();
+    const [, , baseW, baseH] = mennaraBaseViewBox(svg);
+    const vb = svg.viewBox.baseVal;
+    const rect = svg.getBoundingClientRect();
+    // Cursor position as a fraction of the rendered box, then the point in
+    // current SVG user-space it sits over -- the zoom-to-cursor formula
+    // below re-derives x/y so that exact user-space point stays under the
+    // cursor after the resize, instead of the view just scaling around its
+    // own center.
+    const fx = (e.clientX - rect.left) / rect.width;
+    const fy = (e.clientY - rect.top) / rect.height;
+    const svgX = vb.x + fx * vb.width;
+    const svgY = vb.y + fy * vb.height;
+    const factor = e.deltaY < 0 ? 1 / 1.1 : 1.1;
+    const newW = Math.min(baseW, Math.max(baseW / 8, vb.width * factor));
+    const newH = Math.min(baseH, Math.max(baseH / 8, vb.height * factor));
+    const newX = Math.min(baseW - newW, Math.max(0, svgX - fx * newW));
+    const newY = Math.min(baseH - newH, Math.max(0, svgY - fy * newH));
+    svg.setAttribute("viewBox", [newX, newY, newW, newH].join(" "));
+  }, { passive: false });
+
+  let mennaraDrag = null;
+  document.addEventListener("mousedown", function (e) {
+    const svg = e.target.closest(".mennara-map svg");
+    if (!svg || e.button !== 0) return;
+    const [, , baseW, baseH] = mennaraBaseViewBox(svg);
+    const vb = svg.viewBox.baseVal;
+    mennaraDrag = { svg, baseW, baseH, startClientX: e.clientX, startClientY: e.clientY, startX: vb.x, startY: vb.y, w: vb.width, h: vb.height, moved: false };
+    svg.closest(".mennara-map").classList.add("is-grabbing");
+  });
+  document.addEventListener("mousemove", function (e) {
+    if (!mennaraDrag) return;
+    const dxClient = e.clientX - mennaraDrag.startClientX;
+    const dyClient = e.clientY - mennaraDrag.startClientY;
+    // Small-movement threshold (Nutzerwunsch-independent, same "was this
+    // actually a drag" guard the fullscreen page-swipe code elsewhere in
+    // this file already uses) -- below it, the upcoming mouseup is still
+    // treated as a plain click (region navigation), not a pan.
+    if (Math.abs(dxClient) > 3 || Math.abs(dyClient) > 3) mennaraDrag.moved = true;
+    if (!mennaraDrag.moved) return;
+    const rect = mennaraDrag.svg.getBoundingClientRect();
+    const newX = Math.min(mennaraDrag.baseW - mennaraDrag.w, Math.max(0, mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width)));
+    const newY = Math.min(mennaraDrag.baseH - mennaraDrag.h, Math.max(0, mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height)));
+    mennaraDrag.svg.setAttribute("viewBox", [newX, newY, mennaraDrag.w, mennaraDrag.h].join(" "));
+  });
+  document.addEventListener("mouseup", function () {
+    if (!mennaraDrag) return;
+    mennaraDrag.svg.closest(".mennara-map").classList.remove("is-grabbing");
+    if (mennaraDrag.moved) {
+      // Swallow the click a real drag-release still fires, one-shot capture
+      // listener ahead of the site's own bubbling <a> click interceptor
+      // further up -- otherwise releasing a drag over a Trigger would also
+      // navigate, which a plain pan was never meant to do.
+      const guard = function (ev) { ev.stopPropagation(); ev.preventDefault(); document.removeEventListener("click", guard, true); };
+      document.addEventListener("click", guard, true);
+    }
+    mennaraDrag = null;
+  });
 })();
