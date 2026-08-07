@@ -1453,27 +1453,56 @@ document.addEventListener("click", function (e) {
   // therefore the fitted CSS size) never changes; only which portion of the
   // map is visible does. The original viewBox is cached on the element itself
   // (data-base-viewbox, lazily on first interaction) as the fixed reference
-  // for clamping -- panning/zooming can never reveal empty space beyond the
-  // map's own extent, and zooming out bottoms out at the original full view.
+  // for clamping -- zooming out still bottoms out at the original full view,
+  // and zooming in tops out at 300% (Nutzerwunsch 2026-08-07), but panning
+  // CAN reveal empty space past the map's own edge now, up to half the
+  // current visible span either way (see the wheel/mousemove handlers).
   function mennaraBaseViewBox(svg) {
     if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
     // "\s" (doubled), not "s" -- same template-literal backslash-eating
     // gotcha as computeDblclickTitle's "\d"/"\w" elsewhere in this file.
     return svg.dataset.baseViewbox.split(/\s+/).map(Number);
   }
-  // Edge-fade vignette (Nutzerwunsch 2026-08-07): keeps #mennara-edge-mask-rect
-  // (site.scss's .mennara-map.is-zoomed mask, applied to the WRAPPER div, not
-  // the svg) sized to the wrapper's actual rendered pixels, inset 16px on
-  // each side (a 32px total fade band) with a fixed 64px corner radius --
-  // a %-based CSS mask can't express a fixed-px band independent of the
-  // element's own size, so this recomputes it in real pixels instead.
+  // Edge-fade vignette (Nutzerwunsch 2026-08-07, refined same day): keeps
+  // the .mennara-edge-ring/#mennara-edge-mask-solid geometry (site.scss's
+  // .mennara-map.is-zoomed mask, applied to the WRAPPER div, not the svg --
+  // see buildMennaraMapHtml in build-site.js for the ring markup and the
+  // alpha(s)=1-(1-s)^2 easing rationale) in sync with the wrapper's actual
+  // rendered pixels -- a %-based CSS mask can't express a fixed 20px band
+  // independent of the element's own size, so this recomputes every ring's
+  // position/size/corner-radius in real pixels instead, each time the
+  // wrapper's box can have changed (first zoom/pan, window resize).
   function updateMennaraEdgeMask(mapEl) {
-    const rect = document.getElementById("mennara-edge-mask-rect");
-    if (!rect) return;
+    const rings = document.querySelectorAll(".mennara-edge-ring");
+    if (!rings.length) return;
     const box = mapEl.getBoundingClientRect();
-    const inset = 16;
-    rect.setAttribute("width", Math.max(0, box.width - inset * 2));
-    rect.setAttribute("height", Math.max(0, box.height - inset * 2));
+    const BAND = 20;
+    const RADIUS = 20;
+    const step = BAND / rings.length;
+    rings.forEach(function (ring, i) {
+      const inset = i * step + step / 2;
+      const s = inset / BAND;
+      const alpha = 1 - Math.pow(1 - s, 2);
+      const rx = Math.max(0, RADIUS - inset);
+      ring.setAttribute("x", inset);
+      ring.setAttribute("y", inset);
+      ring.setAttribute("width", Math.max(0, box.width - inset * 2));
+      ring.setAttribute("height", Math.max(0, box.height - inset * 2));
+      ring.setAttribute("rx", rx);
+      ring.setAttribute("ry", rx);
+      ring.setAttribute("stroke-width", step);
+      ring.setAttribute("stroke-opacity", alpha);
+    });
+    const solid = document.getElementById("mennara-edge-mask-solid");
+    if (solid) {
+      const rx = Math.max(0, RADIUS - BAND);
+      solid.setAttribute("x", BAND);
+      solid.setAttribute("y", BAND);
+      solid.setAttribute("width", Math.max(0, box.width - BAND * 2));
+      solid.setAttribute("height", Math.max(0, box.height - BAND * 2));
+      solid.setAttribute("rx", rx);
+      solid.setAttribute("ry", rx);
+    }
   }
   window.addEventListener("resize", function () {
     document.querySelectorAll(".mennara-map.is-zoomed").forEach(updateMennaraEdgeMask);
@@ -1494,11 +1523,19 @@ document.addEventListener("click", function (e) {
     const fy = (e.clientY - rect.top) / rect.height;
     const svgX = vb.x + fx * vb.width;
     const svgY = vb.y + fy * vb.height;
+    // Max zoom 300% (Nutzerwunsch 2026-08-07, was 800%/baseW/8).
     const factor = e.deltaY < 0 ? 1 / 1.1 : 1.1;
-    const newW = Math.min(baseW, Math.max(baseW / 8, vb.width * factor));
-    const newH = Math.min(baseH, Math.max(baseH / 8, vb.height * factor));
-    const newX = Math.min(baseW - newW, Math.max(0, svgX - fx * newW));
-    const newY = Math.min(baseH - newH, Math.max(0, svgY - fy * newH));
+    const newW = Math.min(baseW, Math.max(baseW / 3, vb.width * factor));
+    const newH = Math.min(baseH, Math.max(baseH / 3, vb.height * factor));
+    // Over-pan (Nutzerwunsch 2026-08-07): the view is no longer clamped to
+    // [0, base-current] (which forced the map to always fully cover the
+    // viewport) -- it can now go up to half the CURRENT visible span past
+    // either edge, so at most half the viewport shows empty space and the
+    // map's own edge can be dragged exactly to the viewport's center,
+    // regardless of zoom level (newW/newH, not baseW/baseH, so the allowance
+    // shrinks and grows with zoom automatically).
+    const newX = Math.min(baseW - newW / 2, Math.max(-newW / 2, svgX - fx * newW));
+    const newY = Math.min(baseH - newH / 2, Math.max(-newH / 2, svgY - fy * newH));
     svg.setAttribute("viewBox", [newX, newY, newW, newH].join(" "));
     // The initial fit-to-container constraint only applies to the state the
     // article loads in (Nutzerwunsch 2026-08-07) -- any zoom interaction, in
@@ -1527,11 +1564,21 @@ document.addEventListener("click", function (e) {
     // actually a drag" guard the fullscreen page-swipe code elsewhere in
     // this file already uses) -- below it, the upcoming mouseup is still
     // treated as a plain click (region navigation), not a pan.
-    if (Math.abs(dxClient) > 3 || Math.abs(dyClient) > 3) mennaraDrag.moved = true;
+    if (!mennaraDrag.moved && (Math.abs(dxClient) > 3 || Math.abs(dyClient) > 3)) {
+      mennaraDrag.moved = true;
+      // A drag (not just wheel-zoom) also permanently switches to the full
+      // client area (Nutzerwunsch 2026-08-07) -- over-panning past the
+      // map's edge needs that extra room to actually show anything.
+      const mapEl = mennaraDrag.svg.closest(".mennara-map");
+      mapEl.classList.add("is-zoomed");
+      updateMennaraEdgeMask(mapEl);
+    }
     if (!mennaraDrag.moved) return;
     const rect = mennaraDrag.svg.getBoundingClientRect();
-    const newX = Math.min(mennaraDrag.baseW - mennaraDrag.w, Math.max(0, mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width)));
-    const newY = Math.min(mennaraDrag.baseH - mennaraDrag.h, Math.max(0, mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height)));
+    // Over-pan clamp matches the wheel handler's (Nutzerwunsch 2026-08-07) --
+    // see its comment for the "half the current visible span" reasoning.
+    const newX = Math.min(mennaraDrag.baseW - mennaraDrag.w / 2, Math.max(-mennaraDrag.w / 2, mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width)));
+    const newY = Math.min(mennaraDrag.baseH - mennaraDrag.h / 2, Math.max(-mennaraDrag.h / 2, mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height)));
     mennaraDrag.svg.setAttribute("viewBox", [newX, newY, mennaraDrag.w, mennaraDrag.h].join(" "));
   });
   document.addEventListener("mouseup", function () {
