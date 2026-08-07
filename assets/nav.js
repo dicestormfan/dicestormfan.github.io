@@ -1510,10 +1510,11 @@ document.addEventListener("click", function (e) {
     const rings = document.querySelectorAll(".mennara-edge-ring");
     if (!rings.length) return;
     const box = mapEl.getBoundingClientRect();
-    // 12px/12px (Nutzerwunsch 2026-08-07, was 20px/20px) -- must match
-    // MENNARA_EDGE_RING_COUNT's ring geometry in buildMennaraMapHtml.
-    const BAND = 12;
-    const RADIUS = 12;
+    // 20px/20px -- must match MENNARA_EDGE_RING_COUNT's ring geometry in
+    // buildMennaraMapHtml. (A same-day 12px/36-ring attempt was reverted as
+    // an optical regression -- see buildMennaraMapHtml's own comment.)
+    const BAND = 20;
+    const RADIUS = 20;
     const step = BAND / rings.length;
     rings.forEach(function (ring, i) {
       const inset = i * step + step / 2;
@@ -1586,10 +1587,22 @@ document.addEventListener("click", function (e) {
     // separate branch needed. It stops mattering once the view is already
     // dead-center (centeredX/Y == newX/Y), matching "wenn das Zentrum
     // erreicht ist, bewirkt rauszoomen nichts mehr".
+    //
+    // CORRECTED same day: a flat 0.2 pull was backwards in practice -- while
+    // still actively shrinking (newW moving a lot per tick, especially early
+    // on since the factor is multiplicative), centeredX/Y itself swings
+    // wildly each tick and rides along with that big per-tick change, making
+    // the recenter LOOK huge; once saturated at baseW/baseH, centeredX/Y goes
+    // static and a flat 20%-of-remaining-gap pull decays exponentially into
+    // near-nothing after a couple of ticks. The user wants the reverse: a
+    // gentle nudge while still actively zooming out, and a pronounced pull
+    // once further out-ticks are pure "recenter" requests (already at
+    // minimum magnification, nothing left to shrink).
     if (zoomingOut) {
       const centeredX = baseX + (baseW - newW) / 2;
       const centeredY = baseY + (baseH - newH) / 2;
-      const RECENTER_PULL = 0.2;
+      const atMinZoom = vb.width >= baseW - 0.5 && vb.height >= baseH - 0.5;
+      const RECENTER_PULL = atMinZoom ? 0.35 : 0.05;
       newX += (centeredX - newX) * RECENTER_PULL;
       newY += (centeredY - newY) * RECENTER_PULL;
     }
@@ -1616,6 +1629,19 @@ document.addEventListener("click", function (e) {
     if (!svg) return;
     const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     animateMennaraViewBox(svg, baseX, baseY, baseW, baseH, 400, easeOutCubic);
+  });
+
+  // Suppresses the browser's native HTML5 image drag-and-drop (Nutzerwunsch
+  // 2026-08-07: "ein Default-Drag-Verhalten... transparente Version der
+  // Karte... No-Drop-Verbotsschild als Cursor") -- the embedded raster
+  // <image> inside the SVG is exactly the kind of element browsers start a
+  // native drag from on mousedown+move if nothing stops them, which fights
+  // with (and visually corrupts) our own custom pan handler below. The
+  // site.scss -webkit-user-drag rule handles Chrome/Safari; this dragstart
+  // listener is what actually stops Firefox, which doesn't support that CSS
+  // property at all.
+  document.addEventListener("dragstart", function (e) {
+    if (e.target.closest(".mennara-map")) e.preventDefault();
   });
 
   let mennaraDrag = null;
