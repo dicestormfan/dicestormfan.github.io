@@ -1461,6 +1461,23 @@ document.addEventListener("click", function (e) {
     // gotcha as computeDblclickTitle's "\d"/"\w" elsewhere in this file.
     return svg.dataset.baseViewbox.split(/\s+/).map(Number);
   }
+  // Edge-fade vignette (Nutzerwunsch 2026-08-07): keeps #mennara-edge-mask-rect
+  // (site.scss's .mennara-map.is-zoomed mask, applied to the WRAPPER div, not
+  // the svg) sized to the wrapper's actual rendered pixels, inset 16px on
+  // each side (a 32px total fade band) with a fixed 64px corner radius --
+  // a %-based CSS mask can't express a fixed-px band independent of the
+  // element's own size, so this recomputes it in real pixels instead.
+  function updateMennaraEdgeMask(mapEl) {
+    const rect = document.getElementById("mennara-edge-mask-rect");
+    if (!rect) return;
+    const box = mapEl.getBoundingClientRect();
+    const inset = 16;
+    rect.setAttribute("width", Math.max(0, box.width - inset * 2));
+    rect.setAttribute("height", Math.max(0, box.height - inset * 2));
+  }
+  window.addEventListener("resize", function () {
+    document.querySelectorAll(".mennara-map.is-zoomed").forEach(updateMennaraEdgeMask);
+  });
   document.addEventListener("wheel", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg) return;
@@ -1483,6 +1500,14 @@ document.addEventListener("click", function (e) {
     const newX = Math.min(baseW - newW, Math.max(0, svgX - fx * newW));
     const newY = Math.min(baseH - newH, Math.max(0, svgY - fy * newH));
     svg.setAttribute("viewBox", [newX, newY, newW, newH].join(" "));
+    // The initial fit-to-container constraint only applies to the state the
+    // article loads in (Nutzerwunsch 2026-08-07) -- any zoom interaction, in
+    // either direction, permanently switches to using the map's full client
+    // area from then on (re-entering the "initial" state only happens via a
+    // fresh page load, not by zooming back out to 1:1).
+    const mapEl = svg.closest(".mennara-map");
+    mapEl.classList.add("is-zoomed");
+    updateMennaraEdgeMask(mapEl);
   }, { passive: false });
 
   let mennaraDrag = null;
