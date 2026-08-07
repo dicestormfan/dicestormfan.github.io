@@ -1454,14 +1454,48 @@ document.addEventListener("click", function (e) {
   // map is visible does. The original viewBox is cached on the element itself
   // (data-base-viewbox, lazily on first interaction) as the fixed reference
   // for clamping -- zooming out still bottoms out at the original full view,
-  // and zooming in tops out at 300% (Nutzerwunsch 2026-08-07), but panning
+  // and zooming in tops out at 400% (Nutzerwunsch 2026-08-07), but panning
   // CAN reveal empty space past the map's own edge now, up to half the
-  // current visible span either way (see the wheel/mousemove handlers).
+  // current visible span either way (elastically beyond that while actively
+  // dragging -- see the wheel/mousemove handlers).
   function mennaraBaseViewBox(svg) {
     if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
     // "\s" (doubled), not "s" -- same template-literal backslash-eating
     // gotcha as computeDblclickTitle's "\d"/"\w" elsewhere in this file.
     return svg.dataset.baseViewbox.split(/\s+/).map(Number);
+  }
+  // Shared by the double-click reset and the elastic drag's spring-back
+  // (Nutzerwunsch 2026-08-07): eases an svg's viewBox from wherever it
+  // currently is to a target box over durationMs, via requestAnimationFrame.
+  // Cancels any animation already in flight on the SAME svg first (stashed
+  // directly on the element) so overlapping triggers -- e.g. double-clicking
+  // again mid-animation, or grabbing the map while it's still springing
+  // back -- don't fight each other with two RAF loops both writing viewBox.
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+  function animateMennaraViewBox(svg, targetX, targetY, targetW, targetH, durationMs, easingFn) {
+    if (svg._mennaraAnimFrame) cancelAnimationFrame(svg._mennaraAnimFrame);
+    const start = svg.viewBox.baseVal;
+    const startX = start.x, startY = start.y, startW = start.width, startH = start.height;
+    const startTime = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / durationMs);
+      const e = easingFn(t);
+      svg.setAttribute(
+        "viewBox",
+        [startX + (targetX - startX) * e, startY + (targetY - startY) * e, startW + (targetW - startW) * e, startH + (targetH - startH) * e].join(" ")
+      );
+      svg._mennaraAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
+    }
+    svg._mennaraAnimFrame = requestAnimationFrame(step);
+  }
+  // Rubber-band/UIScrollView-style resistance curve (Nutzerwunsch
+  // 2026-08-07): approaches (but never reaches) resistance as excess grows,
+  // i.e. diminishing returns -- near-linear for small overshoot, increasingly
+  // damped the further past the boundary it goes.
+  function rubberBand(excess, resistance) {
+    return (excess * resistance) / (excess + resistance);
   }
   // Edge-fade vignette (Nutzerwunsch 2026-08-07, refined same day): keeps
   // the .mennara-edge-ring/#mennara-edge-mask-solid geometry (site.scss's
@@ -1476,8 +1510,10 @@ document.addEventListener("click", function (e) {
     const rings = document.querySelectorAll(".mennara-edge-ring");
     if (!rings.length) return;
     const box = mapEl.getBoundingClientRect();
-    const BAND = 20;
-    const RADIUS = 20;
+    // 12px/12px (Nutzerwunsch 2026-08-07, was 20px/20px) -- must match
+    // MENNARA_EDGE_RING_COUNT's ring geometry in buildMennaraMapHtml.
+    const BAND = 12;
+    const RADIUS = 12;
     const step = BAND / rings.length;
     rings.forEach(function (ring, i) {
       const inset = i * step + step / 2;
@@ -1511,7 +1547,8 @@ document.addEventListener("click", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg) return;
     e.preventDefault();
-    const [, , baseW, baseH] = mennaraBaseViewBox(svg);
+    if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
+    const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     const vb = svg.viewBox.baseVal;
     const rect = svg.getBoundingClientRect();
     // Cursor position as a fraction of the rendered box, then the point in
@@ -1523,19 +1560,39 @@ document.addEventListener("click", function (e) {
     const fy = (e.clientY - rect.top) / rect.height;
     const svgX = vb.x + fx * vb.width;
     const svgY = vb.y + fy * vb.height;
-    // Max zoom 300% (Nutzerwunsch 2026-08-07, was 800%/baseW/8).
-    const factor = e.deltaY < 0 ? 1 / 1.1 : 1.1;
-    const newW = Math.min(baseW, Math.max(baseW / 3, vb.width * factor));
-    const newH = Math.min(baseH, Math.max(baseH / 3, vb.height * factor));
-    // Over-pan (Nutzerwunsch 2026-08-07): the view is no longer clamped to
-    // [0, base-current] (which forced the map to always fully cover the
-    // viewport) -- it can now go up to half the CURRENT visible span past
-    // either edge, so at most half the viewport shows empty space and the
-    // map's own edge can be dragged exactly to the viewport's center,
-    // regardless of zoom level (newW/newH, not baseW/baseH, so the allowance
-    // shrinks and grows with zoom automatically).
-    const newX = Math.min(baseW - newW / 2, Math.max(-newW / 2, svgX - fx * newW));
-    const newY = Math.min(baseH - newH / 2, Math.max(-newH / 2, svgY - fy * newH));
+    // Max zoom 400% (Nutzerwunsch 2026-08-07, was 300%).
+    const zoomingOut = e.deltaY >= 0;
+    const factor = zoomingOut ? 1.1 : 1 / 1.1;
+    const newW = Math.min(baseW, Math.max(baseW / 4, vb.width * factor));
+    const newH = Math.min(baseH, Math.max(baseH / 4, vb.height * factor));
+    // Over-pan: the view is no longer clamped to [0, base-current] (which
+    // forced the map to always fully cover the viewport) -- it can now go up
+    // to half the CURRENT visible span past either edge, so at most half the
+    // viewport shows empty space and the map's own edge can be dragged
+    // exactly to the viewport's center, regardless of zoom level (newW/newH,
+    // not baseW/baseH, so the allowance shrinks and grows with zoom
+    // automatically).
+    let newX = Math.min(baseX + baseW - newW / 2, Math.max(baseX - newW / 2, svgX - fx * newW));
+    let newY = Math.min(baseY + baseH - newH / 2, Math.max(baseY - newH / 2, svgY - fy * newH));
+    // Subtle re-centering while zooming OUT (Nutzerwunsch 2026-08-07) -- zoom
+    // IN stays purely cursor-anchored (unchanged, matches the mouse position
+    // exactly). Zooming out additionally nudges the view a bit toward dead-
+    // center each tick, on top of the normal cursor math. Once newW/newH
+    // have already saturated at baseW/baseH (fully zoomed out, can't get any
+    // less magnified), this same nudge keeps running on every further
+    // out-tick with nothing else changing anymore -- exactly "wenn der
+    // Minimalzoom erreicht ist, soll weiteres Rauszoomen die Karte weiter
+    // ins Zentrum bewegen" falls out of this one mechanism for free, no
+    // separate branch needed. It stops mattering once the view is already
+    // dead-center (centeredX/Y == newX/Y), matching "wenn das Zentrum
+    // erreicht ist, bewirkt rauszoomen nichts mehr".
+    if (zoomingOut) {
+      const centeredX = baseX + (baseW - newW) / 2;
+      const centeredY = baseY + (baseH - newH) / 2;
+      const RECENTER_PULL = 0.2;
+      newX += (centeredX - newX) * RECENTER_PULL;
+      newY += (centeredY - newY) * RECENTER_PULL;
+    }
     svg.setAttribute("viewBox", [newX, newY, newW, newH].join(" "));
     // The initial fit-to-container constraint only applies to the state the
     // article loads in (Nutzerwunsch 2026-08-07) -- any zoom interaction, in
@@ -1547,13 +1604,28 @@ document.addEventListener("click", function (e) {
     updateMennaraEdgeMask(mapEl);
   }, { passive: false });
 
+  // Double-click reset (Nutzerwunsch 2026-08-07): back to the article's
+  // original zoom/position, eased over 0.4s instead of snapping instantly.
+  // A second, independent "dblclick" listener alongside openTablePopover's
+  // above -- both are plain document-level delegated listeners scoped by
+  // their own closest() check, so they coexist without interfering. Doesn't
+  // touch .is-zoomed -- "Zoom und Position" only, the full-client-area mode
+  // stays permanent once triggered (see the wheel handler's own comment).
+  document.addEventListener("dblclick", function (e) {
+    const svg = e.target.closest(".mennara-map svg");
+    if (!svg) return;
+    const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
+    animateMennaraViewBox(svg, baseX, baseY, baseW, baseH, 400, easeOutCubic);
+  });
+
   let mennaraDrag = null;
   document.addEventListener("mousedown", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg || e.button !== 0) return;
-    const [, , baseW, baseH] = mennaraBaseViewBox(svg);
+    if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
+    const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     const vb = svg.viewBox.baseVal;
-    mennaraDrag = { svg, baseW, baseH, startClientX: e.clientX, startClientY: e.clientY, startX: vb.x, startY: vb.y, w: vb.width, h: vb.height, moved: false };
+    mennaraDrag = { svg, baseX, baseY, baseW, baseH, startClientX: e.clientX, startClientY: e.clientY, startX: vb.x, startY: vb.y, w: vb.width, h: vb.height, moved: false };
     svg.closest(".mennara-map").classList.add("is-grabbing");
   });
   document.addEventListener("mousemove", function (e) {
@@ -1575,10 +1647,26 @@ document.addEventListener("click", function (e) {
     }
     if (!mennaraDrag.moved) return;
     const rect = mennaraDrag.svg.getBoundingClientRect();
-    // Over-pan clamp matches the wheel handler's (Nutzerwunsch 2026-08-07) --
-    // see its comment for the "half the current visible span" reasoning.
-    const newX = Math.min(mennaraDrag.baseW - mennaraDrag.w / 2, Math.max(-mennaraDrag.w / 2, mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width)));
-    const newY = Math.min(mennaraDrag.baseH - mennaraDrag.h / 2, Math.max(-mennaraDrag.h / 2, mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height)));
+    const minX = mennaraDrag.baseX - mennaraDrag.w / 2;
+    const maxX = mennaraDrag.baseX + mennaraDrag.baseW - mennaraDrag.w / 2;
+    const minY = mennaraDrag.baseY - mennaraDrag.h / 2;
+    const maxY = mennaraDrag.baseY + mennaraDrag.baseH - mennaraDrag.h / 2;
+    const rawX = mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width);
+    const rawY = mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height);
+    // Elastic over-drag (Nutzerwunsch 2026-08-07): the boundary above still
+    // marks the "real" edge (see mouseup's spring-back below), but crossing
+    // it no longer just stops dead -- extra mouse travel past it keeps
+    // moving the map, just with diminishing effect the further past it goes
+    // (classic rubber-band/UIScrollView-style bounce, see rubberBand's own
+    // comment), instead of a hard 1:1-then-nothing cutoff.
+    const RESIST_X = mennaraDrag.w * 0.3;
+    const RESIST_Y = mennaraDrag.h * 0.3;
+    const newX = rawX > maxX ? maxX + rubberBand(rawX - maxX, RESIST_X)
+      : rawX < minX ? minX - rubberBand(minX - rawX, RESIST_X)
+      : rawX;
+    const newY = rawY > maxY ? maxY + rubberBand(rawY - maxY, RESIST_Y)
+      : rawY < minY ? minY - rubberBand(minY - rawY, RESIST_Y)
+      : rawY;
     mennaraDrag.svg.setAttribute("viewBox", [newX, newY, mennaraDrag.w, mennaraDrag.h].join(" "));
   });
   document.addEventListener("mouseup", function () {
@@ -1591,6 +1679,21 @@ document.addEventListener("click", function (e) {
       // navigate, which a plain pan was never meant to do.
       const guard = function (ev) { ev.stopPropagation(); ev.preventDefault(); document.removeEventListener("click", guard, true); };
       document.addEventListener("click", guard, true);
+      // Spring back to the real boundary if released mid-over-drag
+      // (Nutzerwunsch 2026-08-07), eased rather than snapping -- the elastic
+      // reach above the boundary is only ever a drag-time visual, not a
+      // resting state.
+      const svg = mennaraDrag.svg;
+      const vb = svg.viewBox.baseVal;
+      const minX = mennaraDrag.baseX - mennaraDrag.w / 2;
+      const maxX = mennaraDrag.baseX + mennaraDrag.baseW - mennaraDrag.w / 2;
+      const minY = mennaraDrag.baseY - mennaraDrag.h / 2;
+      const maxY = mennaraDrag.baseY + mennaraDrag.baseH - mennaraDrag.h / 2;
+      const clampedX = Math.min(maxX, Math.max(minX, vb.x));
+      const clampedY = Math.min(maxY, Math.max(minY, vb.y));
+      if (clampedX !== vb.x || clampedY !== vb.y) {
+        animateMennaraViewBox(svg, clampedX, clampedY, vb.width, vb.height, 350, easeOutCubic);
+      }
     }
     mennaraDrag = null;
   });
