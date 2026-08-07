@@ -1429,21 +1429,118 @@ document.addEventListener("click", function (e) {
   // build-site.js) -- hovering either one highlights the label(s) sharing
   // its region key, since the Trigger's padded shape is what makes "just
   // getting close" already count, while still working if the mouse happens
-  // to land on the visible text itself.
+  // to land on the visible text itself. EXCEPTION: the "Mennara" region's
+  // Trigger is a raster <image> (the banner-scroll graphic), not an
+  // invisible padding shape -- see the pixel-precise block right below,
+  // which owns that one element's active-state instead.
+  function setMennaraRegionActive(el, active) {
+    document.querySelectorAll('.mennara-map .mennara-region-label[data-region="' + el.dataset.region + '"]').forEach(function (labelEl) {
+      labelEl.classList.toggle("region-active", active);
+    });
+  }
+  // The Mennara Trigger's raster <image> sits UNDER its own group's visible
+  // text (the "The Lands of Mennara" banner text is a separate sibling
+  // <path>, drawn after it so it paints on top) -- so a real pointer
+  // positioned over the text glyphs hit-tests to that <path>, not the
+  // <image>, even though both belong to the same data-region="mennara"
+  // group. Resolves either case (the image itself, or any element inside/
+  // around it that shares its data-region group) back to the one raster
+  // image the pixel-precise block below actually needs.
+  function mennaraTriggerImageFor(el) {
+    return el.matches("image.mennara-trigger") ? el : el.querySelector("image.mennara-trigger");
+  }
   document.addEventListener("mouseover", function (e) {
     const src = e.target.closest(".mennara-map [data-region]");
-    if (!src) return;
-    document.querySelectorAll('.mennara-map .mennara-region-label[data-region="' + src.dataset.region + '"]').forEach(function (el) {
-      el.classList.add("region-active");
-    });
+    if (!src || mennaraTriggerImageFor(src)) return;
+    setMennaraRegionActive(src, true);
   });
   document.addEventListener("mouseout", function (e) {
     const src = e.target.closest(".mennara-map [data-region]");
     if (!src || src.contains(e.relatedTarget)) return;
-    document.querySelectorAll('.mennara-map .mennara-region-label[data-region="' + src.dataset.region + '"]').forEach(function (el) {
-      el.classList.remove("region-active");
-    });
+    const triggerImg = mennaraTriggerImageFor(src);
+    if (triggerImg) {
+      triggerImg._mennaraPixelActive = false;
+      triggerImg.classList.remove("mennara-trigger-transparent");
+    }
+    setMennaraRegionActive(src, false);
   });
+
+  // Pixel-precise hit-test for the Mennara banner-scroll Trigger (Nutzerwunsch
+  // 2026-08-07: "nur wenn ein Bereich gehovert wird, der untransparente Pixel
+  // hat") -- unlike the other 12 regions' invisible padding-shape Triggers,
+  // this one IS the visible raster image itself (per the design comment in
+  // buildMennaraMapHtml: "it's visible/opaque, so it's already its own
+  // natural hit-test shape"). That reasoning doesn't actually hold for raster
+  // content, though -- SVG/CSS pointer-events hit-tests an <image>'s whole
+  // rectangular box, transparent export padding included, since alpha isn't
+  // "paintedness" as far as hit-testing is concerned. Fixed here in JS by
+  // loading a second, invisible copy of the exact same file into an offscreen
+  // canvas purely to read its alpha channel back out.
+  const mennaraAlphaCache = new Map();
+  function getMennaraAlphaEntry(href) {
+    let entry = mennaraAlphaCache.get(href);
+    if (entry) return entry;
+    entry = { ready: false, data: null, width: 0, height: 0 };
+    mennaraAlphaCache.set(href, entry);
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      entry.width = canvas.width = img.naturalWidth;
+      entry.height = canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      entry.data = ctx.getImageData(0, 0, entry.width, entry.height).data;
+      entry.ready = true;
+    };
+    img.src = href;
+    return entry;
+  }
+  // Alpha (0-255) under a client-space point, or null while the offscreen
+  // copy is still loading -- callers fail OPEN (treat as opaque/hit) on null,
+  // so the trigger stays clickable during that brief window instead of going
+  // dead; in practice it resolves near-instantly since the browser already
+  // has this exact file loaded for the visible SVG <image> itself.
+  function mennaraTriggerAlphaAt(imgEl, clientX, clientY) {
+    // SVGImageElement's own reflected .href.baseVal (SVGURIReference) works
+    // regardless of whether the markup used bare href or xlink:href --
+    // getAttribute("xlink:href") is the fallback for older engines only.
+    const href = (imgEl.href && imgEl.href.baseVal) || imgEl.getAttribute("xlink:href") || imgEl.getAttribute("href");
+    const entry = getMennaraAlphaEntry(href);
+    if (!entry.ready) return null;
+    const rect = imgEl.getBoundingClientRect();
+    const fx = (clientX - rect.left) / rect.width;
+    const fy = (clientY - rect.top) / rect.height;
+    if (fx < 0 || fx >= 1 || fy < 0 || fy >= 1) return 0;
+    const px = Math.min(entry.width - 1, Math.max(0, Math.floor(fx * entry.width)));
+    const py = Math.min(entry.height - 1, Math.max(0, Math.floor(fy * entry.height)));
+    return entry.data[(py * entry.width + px) * 4 + 3];
+  }
+  const MENNARA_ALPHA_HIT_THRESHOLD = 16;
+  document.addEventListener("mousemove", function (e) {
+    const src = e.target.closest(".mennara-map [data-region]");
+    const img = src && mennaraTriggerImageFor(src);
+    if (!img) return;
+    const alpha = mennaraTriggerAlphaAt(img, e.clientX, e.clientY);
+    const isOpaque = alpha === null || alpha > MENNARA_ALPHA_HIT_THRESHOLD;
+    if (isOpaque === img._mennaraPixelActive) return;
+    img._mennaraPixelActive = isOpaque;
+    img.classList.toggle("mennara-trigger-transparent", !isOpaque);
+    setMennaraRegionActive(img, isOpaque);
+  });
+  // Blocks the wrapping <a>'s navigation when the actual click lands on a
+  // transparent pixel -- capture phase, ahead of the site's own bubbling <a>
+  // click interceptor (same "capture beats bubble" pattern as the drag-
+  // release click-swallow above). Only blocks a click definitively resolved
+  // as transparent (=== false); undefined (e.g. a touch tap with no prior
+  // mousemove) fails open so touch navigation isn't collateral damage.
+  document.addEventListener("click", function (e) {
+    const src = e.target.closest(".mennara-map [data-region]");
+    const img = src && mennaraTriggerImageFor(src);
+    if (img && img._mennaraPixelActive === false) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
 
   // Mennara map scroll-wheel zoom + drag-to-pan (Nutzerwunsch 2026-08-07).
   // Manipulates the <svg>'s own viewBox directly rather than a CSS transform
@@ -1678,6 +1775,19 @@ document.addEventListener("click", function (e) {
       const mapEl = mennaraDrag.svg.closest(".mennara-map");
       mapEl.classList.add("is-zoomed");
       updateMennaraEdgeMask(mapEl);
+      // Body-wide counterpart to .is-grabbing (Nutzerwunsch 2026-08-07: "wenn
+      // man mit gedrueckter Maustaste andere Bereiche erreicht, soll der
+      // Cursor bleiben... und keine Hover-Ereignisse ausgeloest werden") --
+      // see its own doc comment in site.scss for the pointer-events
+      // mechanism. Deliberately gated on real movement, NOT added eagerly
+      // on mousedown like .is-grabbing above: pointer-events:none takes
+      // effect on the very element under the cursor, and a plain click
+      // (mousedown+mouseup with no movement) still needs that same element
+      // hit-testable for its own "click" event to resolve to the actual
+      // <a>/Trigger instead of falling through to <body> -- verified this
+      // the hard way, a first version added it on mousedown and silently
+      // broke every region link's click-to-navigate.
+      document.body.classList.add("mennara-dragging");
     }
     if (!mennaraDrag.moved) return;
     const rect = mennaraDrag.svg.getBoundingClientRect();
@@ -1706,6 +1816,7 @@ document.addEventListener("click", function (e) {
   document.addEventListener("mouseup", function () {
     if (!mennaraDrag) return;
     mennaraDrag.svg.closest(".mennara-map").classList.remove("is-grabbing");
+    document.body.classList.remove("mennara-dragging");
     if (mennaraDrag.moved) {
       // Swallow the click a real drag-release still fires, one-shot capture
       // listener ahead of the site's own bubbling <a> click interceptor
