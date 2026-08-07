@@ -1648,6 +1648,14 @@ document.addEventListener("click", function (e) {
   document.addEventListener("mousedown", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg || e.button !== 0) return;
+    // Without this, a fast drag that leaves the SVG's own bounds (Nutzerwunsch
+    // 2026-08-07: "wenn ich beim Ziehen ueber den Rand komme, wird Text in der
+    // Navigation markiert") starts the browser's native text-selection drag --
+    // mousemove is document-wide (see below) so the cursor regularly ends up
+    // over the sidebar nav while the button is still held. preventDefault on
+    // mousedown is the standard way to suppress that without disabling
+    // selection everywhere on the page.
+    e.preventDefault();
     if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
     const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     const vb = svg.viewBox.baseVal;
