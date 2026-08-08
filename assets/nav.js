@@ -927,6 +927,14 @@ function enterArticleStreamMode() {
   enterStreamFullscreen();
   streamModeOpenedContainers = [];
   applyStreamModeAutoOpen();
+  // Terrinoth-Karte (Nutzerwunsch 2026-08-08): die zoomabhaengige Label-
+  // Groesse/Sichtbarkeit ist exklusiv Stream-Modus vorbehalten -- eine
+  // bereits offene freie Kartenansicht muss das sofort beim Betreten
+  // annehmen, nicht erst beim naechsten Zoom/Pan-Tick (siehe
+  // updateTerrinothZoomLabels weiter unten).
+  if (typeof updateTerrinothZoomLabels === "function") {
+    document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
+  }
   // --font-scale itself doesn't change just because a class was toggled --
   // it's a CSS custom property holding whatever number the LAST mode wrote
   // there, and stays exactly that until something calls setFontScale()
@@ -945,6 +953,12 @@ function exitArticleStreamMode() {
   exitStreamFullscreen();
   streamModeOpenedContainers.forEach(function (el) { el.open = false; });
   streamModeOpenedContainers = [];
+  // Same reasoning as enterArticleStreamMode's own call above -- reset the
+  // Terrinoth zoom-label state immediately on exit too, rather than leaving
+  // it in its last Stream-Modus state until the next zoom/pan tick.
+  if (typeof updateTerrinothZoomLabels === "function") {
+    document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
+  }
   // Same re-apply as on entry above, now snapping back to whatever
   // normal/fullscreen already had stored -- otherwise the article would
   // keep rendering at Stream-Modus's own (far larger) --font-scale value
@@ -1946,7 +1960,8 @@ function setupTerrinothMapTriggers() {
 setupTerrinothMapTriggers();
 
 // ---- Terrinoth map: zoom-dependent label sizing (Nutzerwunsch 2026-08-08,
-// free map page ONLY, NOT the "Show on map" popover -- confirmed) ----
+// free map page ONLY, exclusively while Stream-Modus is active -- NOT the
+// "Show on map" popover, and NOT the normal map view either) ----
 // Must match build-site.js's TERRINOTH_IMPORTANT_REGIONS Set exactly (kept
 // as two separate literals rather than one shared source since NAV_JS is a
 // plain string template with no server-side interpolation used anywhere
@@ -1966,6 +1981,22 @@ const TERRINOTH_MAX_ZOOM_PERCENT = 600;
 function updateTerrinothZoomLabels(svg) {
   const mapEl = svg.closest(".terrinoth-map");
   if (!mapEl || mapEl.classList.contains("terrinoth-popover-map")) return;
+  // Nutzerwunsch 2026-08-08 (nachtraeglich klargestellt, urspruenglich
+  // faelschlich fuer JEDE freie Kartenansicht gebaut): die gesamte
+  // Zoom-Groessen-/Sichtbarkeits-Logik unten (inverse Skalierung der 13
+  // wichtigen Orte + 200%-Fade der restlichen 54) war nie fuer den normalen
+  // Modus gedacht, ausschliesslich fuer Stream-Modus. Ausserhalb davon:
+  // beide Effekte zuruecksetzen (--zoom-scale weg -> Formel in site.scss
+  // faellt auf ihren Default 1 zurueck, zoom-label-hidden weg -> Label folgt
+  // wieder nur noch dem normalen Hover-Verhalten) und gar nicht erst zoomen/
+  // rechnen.
+  if (!document.body.classList.contains("stream-mode")) {
+    mapEl.querySelectorAll(".mennara-region-label[data-region]").forEach(function (label) {
+      label.style.removeProperty("--zoom-scale");
+      label.classList.remove("zoom-label-hidden");
+    });
+    return;
+  }
   if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
   // "\s" (doubled), not "s" -- same template-literal backslash-eating
   // gotcha as mennaraBaseViewBox's own split() above (a single backslash
