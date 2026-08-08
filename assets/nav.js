@@ -2035,7 +2035,13 @@ function terrinothHiddenRegionSet() {
 // bbox trigger rect both carry it) -- hiding both together means a hidden
 // place is neither seen nor hoverable/clickable, not just invisible.
 function applyTerrinothRegionVisibility(key, hidden) {
-  document.querySelectorAll('.terrinoth-map [data-region="' + key + '"]').forEach(function (el) {
+  // Scoped to "svg [data-region]" specifically (Nutzerwunsch 2026-08-09,
+  // real bug: was ".terrinoth-map [data-region]", which ALSO matched the
+  // filter panel's own <li data-region> -- the filter panel is a plain
+  // sibling <div> of the <svg> inside the same .terrinoth-map wrapper (see
+  // buildTerrinothMapHtml), so unchecking a place made its OWN checkbox row
+  // vanish from the list instead of just hiding the label on the map).
+  document.querySelectorAll('.terrinoth-map svg [data-region="' + key + '"]').forEach(function (el) {
     el.classList.toggle("map-region-hidden", hidden);
   });
 }
