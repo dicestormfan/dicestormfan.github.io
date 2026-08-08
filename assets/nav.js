@@ -65,6 +65,16 @@ function swapContent(html, url) {
   // Stream-Modus is already active, applyStreamModeAutoOpen itself doesn't
   // check that, so it's gated here instead.
   if (document.body.classList.contains("stream-mode")) applyStreamModeAutoOpen();
+  // Terrinoth map re-init (Nutzerwunsch 2026-08-08): a client-side swap
+  // landing on/leaving the map page replaces .content's innerHTML wholesale,
+  // so any bbox-trigger rects or filter-panel listeners from a PREVIOUS
+  // visit are gone with it -- re-run both setup functions unconditionally,
+  // each is a no-op if their target markup isn't present this time.
+  if (typeof setupTerrinothMapTriggers === "function") setupTerrinothMapTriggers();
+  if (typeof setupTerrinothFilterPanel === "function") setupTerrinothFilterPanel();
+  if (typeof updateTerrinothZoomLabels === "function") {
+    document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
+  }
 
   const newFooter = doc.querySelector("#page-footer-nav");
   const currentFooter = document.querySelector("#page-footer-nav");
@@ -1583,6 +1593,10 @@ document.addEventListener("click", function (e) {
         "viewBox",
         [startX + (targetX - startX) * e, startY + (targetY - startY) * e, startW + (targetW - startW) * e, startH + (targetH - startH) * e].join(" ")
       );
+      // updateTerrinothZoomLabels is a top-level function declared further
+      // down (see its own doc comment) -- hoisted, so it's already callable
+      // here despite being defined textually after this IIFE.
+      updateTerrinothZoomLabels(svg);
       svg._mennaraAnimFrame = t < 1 ? requestAnimationFrame(step) : null;
     }
     svg._mennaraAnimFrame = requestAnimationFrame(step);
@@ -1603,6 +1617,15 @@ document.addEventListener("click", function (e) {
   // independent of the element's own size, so this recomputes every ring's
   // position/size/corner-radius in real pixels instead, each time the
   // wrapper's box can have changed (first zoom/pan, window resize).
+  // Exposed on window (Nutzerwunsch 2026-08-08 "Show on map" popover): the
+  // popover-open code is top-level (see its own doc comment further down,
+  // same reasoning as setupTerrinothMapTriggers/swapContent needing to call
+  // each other across this IIFE boundary) and needs to trigger this same
+  // edge-fade recompute right after injecting a freshly-fetched copy of the
+  // map markup. The function itself is already fully self-contained (only
+  // touches the DOM, no closure over any other Mennara-IIFE-local state), so
+  // this is a safe, minimal bridge rather than relocating it.
+  window.updateMennaraEdgeMask = updateMennaraEdgeMask;
   function updateMennaraEdgeMask(mapEl) {
     const rings = document.querySelectorAll(".mennara-edge-ring");
     if (!rings.length) return;
@@ -1646,6 +1669,11 @@ document.addEventListener("click", function (e) {
     if (!svg) return;
     e.preventDefault();
     if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
+    // "Show on map" popover map (Nutzerwunsch 2026-08-08): "man kann NICHT
+    // über den Rand ziehen, und beim Herauszoomen gibt es keine
+    // Zentrierbewegung" -- both are gated on this single flag rather than a
+    // second copy of the whole handler, see its two uses below.
+    const isPopover = !!svg.closest(".terrinoth-popover-map");
     const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     const vb = svg.viewBox.baseVal;
     const rect = svg.getBoundingClientRect();
@@ -1658,20 +1686,28 @@ document.addEventListener("click", function (e) {
     const fy = (e.clientY - rect.top) / rect.height;
     const svgX = vb.x + fx * vb.width;
     const svgY = vb.y + fy * vb.height;
-    // Max zoom 400% (Nutzerwunsch 2026-08-07, was 300%).
+    // Max zoom 400% (Nutzerwunsch 2026-08-07, was 300%) for Mennara; 600%
+    // for Terrinoth (Nutzerwunsch 2026-08-08, applies to both the free
+    // Terrinoth map and its "Show on map" popover -- same shared handler,
+    // both carry the "terrinoth-map" class).
     const zoomingOut = e.deltaY >= 0;
     const factor = zoomingOut ? 1.1 : 1 / 1.1;
-    const newW = Math.min(baseW, Math.max(baseW / 4, vb.width * factor));
-    const newH = Math.min(baseH, Math.max(baseH / 4, vb.height * factor));
+    const zoomMinDivisor = svg.closest(".terrinoth-map") ? 6 : 4;
+    const newW = Math.min(baseW, Math.max(baseW / zoomMinDivisor, vb.width * factor));
+    const newH = Math.min(baseH, Math.max(baseH / zoomMinDivisor, vb.height * factor));
     // Over-pan: the view is no longer clamped to [0, base-current] (which
     // forced the map to always fully cover the viewport) -- it can now go up
     // to half the CURRENT visible span past either edge, so at most half the
     // viewport shows empty space and the map's own edge can be dragged
     // exactly to the viewport's center, regardless of zoom level (newW/newH,
     // not baseW/baseH, so the allowance shrinks and grows with zoom
-    // automatically).
-    let newX = Math.min(baseX + baseW - newW / 2, Math.max(baseX - newW / 2, svgX - fx * newW));
-    let newY = Math.min(baseY + baseH - newH / 2, Math.max(baseY - newH / 2, svgY - fy * newH));
+    // automatically). The popover map (Nutzerwunsch 2026-08-08) gets none of
+    // this slack -- slackX/Y collapse to 0, which turns the exact same
+    // min/max formula below into a hard clamp at the true edge.
+    const slackX = isPopover ? 0 : newW / 2;
+    const slackY = isPopover ? 0 : newH / 2;
+    let newX = Math.min(baseX + baseW - newW + slackX, Math.max(baseX - slackX, svgX - fx * newW));
+    let newY = Math.min(baseY + baseH - newH + slackY, Math.max(baseY - slackY, svgY - fy * newH));
     // Subtle re-centering while zooming OUT (Nutzerwunsch 2026-08-07) -- zoom
     // IN stays purely cursor-anchored (unchanged, matches the mouse position
     // exactly). Zooming out additionally nudges the view a bit toward dead-
@@ -1695,7 +1731,10 @@ document.addEventListener("click", function (e) {
     // gentle nudge while still actively zooming out, and a pronounced pull
     // once further out-ticks are pure "recenter" requests (already at
     // minimum magnification, nothing left to shrink).
-    if (zoomingOut) {
+    // Popover map (Nutzerwunsch 2026-08-08): "beim Herauszoomen gibt es keine
+    // Zentrierbewegung" -- skip the recenter pull entirely, zoom stays purely
+    // cursor-anchored in both directions.
+    if (zoomingOut && !isPopover) {
       const centeredX = baseX + (baseW - newW) / 2;
       const centeredY = baseY + (baseH - newH) / 2;
       const atMinZoom = vb.width >= baseW - 0.5 && vb.height >= baseH - 0.5;
@@ -1712,6 +1751,7 @@ document.addEventListener("click", function (e) {
     const mapEl = svg.closest(".mennara-map");
     mapEl.classList.add("is-zoomed");
     updateMennaraEdgeMask(mapEl);
+    updateTerrinothZoomLabels(svg);
   }, { passive: false });
 
   // Double-click reset (Nutzerwunsch 2026-08-07): back to the article's
@@ -1756,7 +1796,11 @@ document.addEventListener("click", function (e) {
     if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
     const [baseX, baseY, baseW, baseH] = mennaraBaseViewBox(svg);
     const vb = svg.viewBox.baseVal;
-    mennaraDrag = { svg, baseX, baseY, baseW, baseH, startClientX: e.clientX, startClientY: e.clientY, startX: vb.x, startY: vb.y, w: vb.width, h: vb.height, moved: false };
+    // Popover map (Nutzerwunsch 2026-08-08): captured once per drag here,
+    // read again in the mousemove handler below to hard-clamp instead of
+    // allowing the free map's elastic over-drag.
+    const isPopover = !!svg.closest(".terrinoth-popover-map");
+    mennaraDrag = { svg, baseX, baseY, baseW, baseH, startClientX: e.clientX, startClientY: e.clientY, startX: vb.x, startY: vb.y, w: vb.width, h: vb.height, moved: false, isPopover };
     svg.closest(".mennara-map").classList.add("is-grabbing");
   });
   document.addEventListener("mousemove", function (e) {
@@ -1791,10 +1835,16 @@ document.addEventListener("click", function (e) {
     }
     if (!mennaraDrag.moved) return;
     const rect = mennaraDrag.svg.getBoundingClientRect();
-    const minX = mennaraDrag.baseX - mennaraDrag.w / 2;
-    const maxX = mennaraDrag.baseX + mennaraDrag.baseW - mennaraDrag.w / 2;
-    const minY = mennaraDrag.baseY - mennaraDrag.h / 2;
-    const maxY = mennaraDrag.baseY + mennaraDrag.baseH - mennaraDrag.h / 2;
+    // Popover map (Nutzerwunsch 2026-08-08: "man kann NICHT über den Rand
+    // ziehen") -- slack collapses to 0, same technique as the wheel
+    // handler's slackX/Y above, which turns the exact boundary formula below
+    // into a hard clamp at the true edge instead of an over-pan allowance.
+    const dragSlackX = mennaraDrag.isPopover ? 0 : mennaraDrag.w / 2;
+    const dragSlackY = mennaraDrag.isPopover ? 0 : mennaraDrag.h / 2;
+    const minX = mennaraDrag.baseX - dragSlackX;
+    const maxX = mennaraDrag.baseX + mennaraDrag.baseW - mennaraDrag.w + dragSlackX;
+    const minY = mennaraDrag.baseY - dragSlackY;
+    const maxY = mennaraDrag.baseY + mennaraDrag.baseH - mennaraDrag.h + dragSlackY;
     const rawX = mennaraDrag.startX - dxClient * (mennaraDrag.w / rect.width);
     const rawY = mennaraDrag.startY - dyClient * (mennaraDrag.h / rect.height);
     // Elastic over-drag (Nutzerwunsch 2026-08-07): the boundary above still
@@ -1802,16 +1852,23 @@ document.addEventListener("click", function (e) {
     // it no longer just stops dead -- extra mouse travel past it keeps
     // moving the map, just with diminishing effect the further past it goes
     // (classic rubber-band/UIScrollView-style bounce, see rubberBand's own
-    // comment), instead of a hard 1:1-then-nothing cutoff.
+    // comment), instead of a hard 1:1-then-nothing cutoff. The popover map
+    // gets none of this elasticity -- a plain clamp, matching "kann NICHT
+    // über den Rand ziehen" literally (mouseup's spring-back below then
+    // never has anything to correct, since newX/newY can never leave
+    // [minX,maxX]/[minY,maxY] in the first place).
     const RESIST_X = mennaraDrag.w * 0.3;
     const RESIST_Y = mennaraDrag.h * 0.3;
-    const newX = rawX > maxX ? maxX + rubberBand(rawX - maxX, RESIST_X)
+    const newX = mennaraDrag.isPopover ? Math.min(maxX, Math.max(minX, rawX))
+      : rawX > maxX ? maxX + rubberBand(rawX - maxX, RESIST_X)
       : rawX < minX ? minX - rubberBand(minX - rawX, RESIST_X)
       : rawX;
-    const newY = rawY > maxY ? maxY + rubberBand(rawY - maxY, RESIST_Y)
+    const newY = mennaraDrag.isPopover ? Math.min(maxY, Math.max(minY, rawY))
+      : rawY > maxY ? maxY + rubberBand(rawY - maxY, RESIST_Y)
       : rawY < minY ? minY - rubberBand(minY - rawY, RESIST_Y)
       : rawY;
     mennaraDrag.svg.setAttribute("viewBox", [newX, newY, mennaraDrag.w, mennaraDrag.h].join(" "));
+    updateTerrinothZoomLabels(mennaraDrag.svg);
   });
   document.addEventListener("mouseup", function () {
     if (!mennaraDrag) return;
@@ -1843,3 +1900,315 @@ document.addEventListener("click", function (e) {
     mennaraDrag = null;
   });
 })();
+
+// ---- Terrinoth map: bbox-based hit-test triggers (Nutzerwunsch 2026-08-08
+// bugfix -- see buildTerrinothMapHtml's Pass 1 doc comment in build-site.js
+// for the grow/shrink flicker loop this replaces) ----
+// Deliberately TOP-LEVEL (not nested in the Mennara IIFE above), same as
+// getCookie/setCookie further up -- swapContent (also top-level) needs to
+// call setupTerrinothMapTriggers/setupTerrinothFilterPanel by name on every
+// client-side navigation, which a same-name declaration nested inside a
+// different IIFE would put out of scope entirely.
+//
+// Synthesizes, once per label, an invisible <rect> sized to that label's own
+// STATIONARY bounding box (getBBox(), read before any hover has ever scaled
+// it) and inserts it as the label's next sibling -- inside the same <a>
+// wrapper if the region is linked, so the site's existing global <a> click
+// interception picks it up for free. This rect (not the label path itself)
+// becomes "mennara-trigger": hover/click now hit-test against a fixed box
+// that never moves, decoupled from the label's own 100%->125% hover-grow
+// animation. Idempotent per element via a dataset flag -- called again after
+// every client-side navigation (see swapContent below), but swapContent
+// always replaces .content's innerHTML wholesale, so in practice every call
+// always sees fresh, never-yet-processed labels.
+function setupTerrinothMapTriggers() {
+  document.querySelectorAll(".terrinoth-map .mennara-region-label[data-region]").forEach(function (label) {
+    if (label.dataset.bboxTriggerDone) return;
+    label.dataset.bboxTriggerDone = "1";
+    const bbox = label.getBBox();
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", bbox.x);
+    rect.setAttribute("y", bbox.y);
+    rect.setAttribute("width", bbox.width);
+    rect.setAttribute("height", bbox.height);
+    rect.setAttribute("class", "mennara-trigger");
+    rect.setAttribute("data-region", label.dataset.region);
+    // Same "opacity:0, otherwise unstyled" convention as Mennara's own
+    // hand-drawn Trigger shapes (see buildMennaraMapHtml's doc comment) -- a
+    // fill value (any color) is required for SVG's default "visiblePainted"
+    // pointer-events to hit-test this shape at all; opacity:0 is what
+    // actually keeps it invisible on top of that.
+    rect.setAttribute("fill", "#000");
+    rect.style.opacity = "0";
+    label.after(rect);
+  });
+}
+setupTerrinothMapTriggers();
+
+// ---- Terrinoth map: zoom-dependent label sizing (Nutzerwunsch 2026-08-08,
+// free map page ONLY, NOT the "Show on map" popover -- confirmed) ----
+// Must match build-site.js's TERRINOTH_IMPORTANT_REGIONS Set exactly (kept
+// as two separate literals rather than one shared source since NAV_JS is a
+// plain string template with no server-side interpolation used anywhere
+// else in it).
+const TERRINOTH_IMPORTANT_REGIONS = new Set([
+  "the-aymhelin", "dunwarr-mountains", "the-mistlands", "strangehaven",
+  "highmont", "grünstollen", "thelgrim", "greyhaven", "archaut",
+  "tamalir", "forge", "vynelvale", "dawnsmoor",
+]);
+// Must match the wheel handler's zoomMinDivisor=6 for Terrinoth above (100
+// / (1/6) = 600).
+const TERRINOTH_MAX_ZOOM_PERCENT = 600;
+// Called after every viewBox change on a Terrinoth map (wheel, drag,
+// animateMennaraViewBox's own rAF step) -- cheap enough (a few dozen
+// elements, one style property or classList check each) to just recompute
+// on every tick rather than trying to diff what actually changed.
+function updateTerrinothZoomLabels(svg) {
+  const mapEl = svg.closest(".terrinoth-map");
+  if (!mapEl || mapEl.classList.contains("terrinoth-popover-map")) return;
+  if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
+  // "\s" (doubled), not "s" -- same template-literal backslash-eating
+  // gotcha as mennaraBaseViewBox's own split() above (a single backslash
+  // here silently becomes a literal "s" in the compiled nav.js, matching
+  // zero characters, so .split() never splits at all -- caught the hard way
+  // via a NaN transform: split()[2] was undefined, Number(undefined) is
+  // NaN, and calc() with a NaN operand invalidates the whole transform).
+  const baseW = Number(svg.dataset.baseViewbox.split(/\s+/)[2]);
+  const zoomPercent = (baseW / svg.viewBox.baseVal.width) * 100;
+  mapEl.querySelectorAll(".mennara-region-label[data-region]").forEach(function (label) {
+    if (TERRINOTH_IMPORTANT_REGIONS.has(label.dataset.region)) {
+      // Inverse-proportional to zoom (Nutzerwunsch 2026-08-08): at 100%
+      // zoom (fully zoomed out) this is TERRINOTH_MAX_ZOOM_PERCENT/100 (6x
+      // at the current 600% max); at the max zoom itself it's exactly 1
+      // (normal size) -- Math.max(zoomPercent,100) is just a defensive
+      // floor, zoomPercent should never actually go below 100.
+      label.style.setProperty("--zoom-scale", TERRINOTH_MAX_ZOOM_PERCENT / Math.max(zoomPercent, 100));
+    } else if (label.classList.contains("zoom-gated")) {
+      label.classList.toggle("zoom-label-hidden", zoomPercent < 200);
+    }
+  });
+}
+document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
+
+// ---- Terrinoth map filter panel (Nutzerwunsch 2026-08-08) ----
+// Fixed-position HTML overlay (see its own doc comment in
+// buildTerrinothMapHtml/build-site.js and its CSS in site.scss) -- doesn't
+// touch the SVG viewBox at all, so none of the Mennara IIFE's pan/zoom code
+// needs to know it exists.
+const TERRINOTH_HIDDEN_COOKIE = "terrinoth-map-hidden-regions";
+function terrinothHiddenRegionSet() {
+  const raw = getCookie(TERRINOTH_HIDDEN_COOKIE);
+  return new Set(raw ? raw.split(",").filter(Boolean) : []);
+}
+// Toggles every element sharing this data-region (the visible label AND its
+// bbox trigger rect both carry it) -- hiding both together means a hidden
+// place is neither seen nor hoverable/clickable, not just invisible.
+function applyTerrinothRegionVisibility(key, hidden) {
+  document.querySelectorAll('.terrinoth-map [data-region="' + key + '"]').forEach(function (el) {
+    el.classList.toggle("map-region-hidden", hidden);
+  });
+}
+function setupTerrinothFilterPanel() {
+  const panel = document.getElementById("terrinoth-filter-panel");
+  if (!panel || panel.dataset.setupDone) return;
+  panel.dataset.setupDone = "1";
+  const hidden = terrinothHiddenRegionSet();
+  panel.querySelectorAll(".terrinoth-filter-checkbox").forEach(function (cb) {
+    if (hidden.has(cb.dataset.region)) {
+      cb.checked = false;
+      applyTerrinothRegionVisibility(cb.dataset.region, true);
+    }
+  });
+  panel.addEventListener("change", function (e) {
+    const cb = e.target.closest(".terrinoth-filter-checkbox");
+    if (!cb) return;
+    const key = cb.dataset.region;
+    const isHidden = !cb.checked;
+    applyTerrinothRegionVisibility(key, isHidden);
+    const set = terrinothHiddenRegionSet();
+    if (isHidden) set.add(key); else set.delete(key);
+    setCookie(TERRINOTH_HIDDEN_COOKIE, Array.from(set).join(","));
+  });
+  const input = panel.querySelector(".terrinoth-filter-input");
+  input.addEventListener("input", function () {
+    const q = input.value.trim().toLowerCase();
+    panel.querySelectorAll(".terrinoth-filter-list > li").forEach(function (li) {
+      const text = li.querySelector(".terrinoth-filter-item-label").textContent.toLowerCase();
+      li.classList.toggle("filtered-out", q !== "" && text.indexOf(q) === -1);
+    });
+  });
+  panel.addEventListener("mouseenter", function () { panel.classList.add("expanded"); });
+  panel.addEventListener("mouseleave", function () { panel.classList.remove("expanded"); });
+}
+setupTerrinothFilterPanel();
+
+// Idle/active fade (Nutzerwunsch 2026-08-08: "fadet aus, wenn die Maus ein
+// paar Sekunden nicht bewegt wurde... fadet schnell ein, wenn sie bewegt
+// wird") -- scoped to movement inside .terrinoth-map specifically (this is
+// map UI, not a page-wide idle concept). The actual fast-in/slow-out
+// asymmetry is pure CSS (two different transition-durations on the base vs
+// .idle-hidden state, see site.scss) -- this timer only ever adds/removes
+// the class.
+let terrinothIdleTimer = null;
+function resetTerrinothIdleTimer() {
+  const panel = document.getElementById("terrinoth-filter-panel");
+  if (!panel) return;
+  panel.classList.remove("idle-hidden");
+  if (terrinothIdleTimer) clearTimeout(terrinothIdleTimer);
+  terrinothIdleTimer = setTimeout(function () { panel.classList.add("idle-hidden"); }, 3000);
+}
+document.addEventListener("mousemove", function (e) {
+  if (e.target.closest(".terrinoth-map")) resetTerrinothIdleTimer();
+});
+
+// ---- "Show on map" popover (Nutzerwunsch 2026-08-08) ----
+// Deliberately top-level, same reasoning as setupTerrinothMapTriggers etc.
+// above -- the two capture-phase click listeners further down need to call
+// this by name, and (unlike those two) it also needs window.
+// updateMennaraEdgeMask, exposed for exactly this from inside the Mennara
+// IIFE above.
+let terrinothMapPopoverOverlay = null;
+function closeTerrinothMapPopover() {
+  if (!terrinothMapPopoverOverlay) return;
+  terrinothMapPopoverOverlay.remove();
+  terrinothMapPopoverOverlay = null;
+  document.removeEventListener("keydown", onTerrinothMapPopoverKeydown);
+}
+function onTerrinothMapPopoverKeydown(ev) {
+  if (ev.key === "Escape") closeTerrinothMapPopover();
+}
+// Fetches href's main.content into pane -- used both for the popover's
+// initial article (the page its own "Show on map" link was clicked from)
+// and every subsequent in-popover click on a different linked label.
+function loadTerrinothMapPopoverArticle(pane, href) {
+  return fetch(href).then(function (r) { return r.text(); }).then(function (html) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const content = doc.querySelector("main.content");
+    if (!content) return;
+    pane.innerHTML = content.innerHTML;
+    pane.scrollTop = 0;
+  });
+}
+// Exactly one label (or none) pulses at a time (Nutzerwunsch 2026-08-08:
+// "von dann an ist es das neue Label, das animiert wird").
+function retargetTerrinothMapPopoverPulse(mapPane, regionKey) {
+  mapPane.querySelectorAll(".pulse-target").forEach(function (el) { el.classList.remove("pulse-target"); });
+  mapPane.querySelectorAll('.mennara-region-label[data-region="' + regionKey + '"]').forEach(function (el) {
+    el.classList.add("pulse-target");
+  });
+}
+// Opens the popover centered/zoomed x3 on regionKey (Nutzerwunsch
+// 2026-08-08). Fetches the REAL map page and reuses its .terrinoth-map
+// markup wholesale (plus its sibling edge-fade defs <svg>, a separate
+// top-level element in that page -- see buildTerrinothMapHtml's own return
+// statement in build-site.js) rather than ever duplicating the map inline on
+// every article page. "terrinoth-popover-map" is what makes the free map's
+// own shared wheel/drag handlers (Mennara IIFE above) hard-clamp panning and
+// skip the zoom-out recenter pull here instead of the free map's elastic
+// over-drag -- see their own "isPopover" checks. Establishing svg.dataset.
+// baseViewbox from the map's OWN native viewBox BEFORE ever zooming in means
+// the shared zoom-out floor/pan-boundary logic (mennaraBaseViewBox et al.,
+// all keyed off that same dataset field) treats the whole map as the floor,
+// not this popover's 3x-zoomed starting point -- "man kann auch rauszoomen"
+// needs that floor to be the full map, not stuck at 3x.
+function openTerrinothMapPopover(regionKey, mapHref, articleHref) {
+  closeTerrinothMapPopover();
+  const overlay = document.createElement("div");
+  overlay.className = "terrinoth-map-popover-overlay";
+  overlay.innerHTML =
+    '<div class="terrinoth-map-popover" role="dialog" aria-modal="true">' +
+    '<div class="terrinoth-map-popover-map"></div>' +
+    '<div class="terrinoth-map-popover-article"></div>' +
+    "</div>";
+  document.body.appendChild(overlay);
+  terrinothMapPopoverOverlay = overlay;
+  // Outside click closes it (no visible X button, matching the table
+  // popover's own convention -- see openTablePopover's doc comment).
+  overlay.addEventListener("click", function (ev) {
+    if (ev.target === overlay) closeTerrinothMapPopover();
+  });
+  document.addEventListener("keydown", onTerrinothMapPopoverKeydown);
+
+  const mapPane = overlay.querySelector(".terrinoth-map-popover-map");
+  const articlePane = overlay.querySelector(".terrinoth-map-popover-article");
+  loadTerrinothMapPopoverArticle(articlePane, articleHref);
+
+  fetch(mapHref).then(function (r) { return r.text(); }).then(function (html) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const mapWrapper = doc.querySelector(".terrinoth-map");
+    // NOT svg[aria-hidden="true"] -- that also matches ordinary decorative
+    // header icons (search/fullscreen/theme-toggle, also 24x24 aria-hidden
+    // svgs) that appear EARLIER in the fetched document, so querySelector's
+    // first-match-wins would silently grab one of THOSE instead (caught via
+    // Puppeteer: the popover's edge-fade mask referenced a #mennara-edge-mask
+    // id that was never actually injected, since the wrong icon svg doesn't
+    // contain it -- CSS mask-image pointing at a missing id id makes the
+    // whole masked element invisible, which would have made the popover map
+    // render fully blank). Anchored on the mask id itself instead, which is
+    // unique to the real edge-fade defs svg.
+    const edgeMask = doc.getElementById("mennara-edge-mask");
+    const edgeDefs = edgeMask ? edgeMask.closest("svg") : null;
+    if (!mapWrapper) return;
+    mapPane.innerHTML = (edgeDefs ? edgeDefs.outerHTML : "") + mapWrapper.outerHTML;
+    const svg = mapPane.querySelector(".terrinoth-map svg");
+    const wrapper = mapPane.querySelector(".terrinoth-map");
+    wrapper.classList.add("terrinoth-popover-map", "is-zoomed");
+    svg.dataset.baseViewbox = svg.getAttribute("viewBox");
+    setupTerrinothMapTriggers();
+    // "\s" (doubled), not "s" -- same template-literal backslash-eating
+    // gotcha as updateTerrinothZoomLabels's own split() above.
+    const base = svg.dataset.baseViewbox.split(/\s+/).map(Number);
+    const baseX = base[0], baseY = base[1], baseW = base[2], baseH = base[3];
+    const label = wrapper.querySelector('.mennara-region-label[data-region="' + regionKey + '"]');
+    let cx = baseX + baseW / 2, cy = baseY + baseH / 2;
+    if (label) {
+      const bbox = label.getBBox();
+      cx = bbox.x + bbox.width / 2;
+      cy = bbox.y + bbox.height / 2;
+    }
+    // Zoom x3 (Nutzerwunsch 2026-08-08), clamped so the requested center
+    // never pushes the view past the map's own edge -- unlike the free map,
+    // this popover never over-pans even on this INITIAL framing.
+    const zoomW = baseW / 3, zoomH = baseH / 3;
+    const clampedX = Math.min(baseX + baseW - zoomW, Math.max(baseX, cx - zoomW / 2));
+    const clampedY = Math.min(baseY + baseH - zoomH, Math.max(baseY, cy - zoomH / 2));
+    svg.setAttribute("viewBox", [clampedX, clampedY, zoomW, zoomH].join(" "));
+    window.updateMennaraEdgeMask(wrapper);
+    retargetTerrinothMapPopoverPulse(mapPane, regionKey);
+  });
+}
+// Opens the popover (capture phase, ahead of the site's own bubbling <a>
+// click interceptor further up -- same "capture beats bubble" pattern
+// already used for the Mennara IIFE's drag-release click-swallow).
+document.addEventListener("click", function (e) {
+  const link = e.target.closest(".show-on-map-link");
+  if (!link) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openTerrinothMapPopover(link.dataset.region, link.getAttribute("href"), location.pathname);
+}, true);
+// Clicking a DIFFERENT linked label INSIDE an open popover (Nutzerwunsch
+// 2026-08-08: "bei Klick bleibt das Popover wie es ist, aber im Body wird
+// der passende Artikel geöffnet... Von dann an ist es das neue Label, das
+// animiert wird. Wenn es keinen Artikel gibt, dann bleibt das alte Label
+// und der alte Artikel unverändert") -- a hover-only label (no <a> wrapper
+// at all) simply doesn't match the closest() check below, so that case is
+// already a correct no-op with no extra branch needed. Capture phase, same
+// reasoning as the "Show on map" listener just above.
+document.addEventListener("click", function (e) {
+  const a = e.target.closest(".terrinoth-map-popover-map a");
+  if (!a) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const href = a.getAttribute("href");
+  const regionEl = a.querySelector("[data-region]");
+  const regionKey = regionEl && regionEl.dataset.region;
+  if (!href || !regionKey) return;
+  const overlay = a.closest(".terrinoth-map-popover-overlay");
+  if (!overlay) return;
+  const mapPane = overlay.querySelector(".terrinoth-map-popover-map");
+  const articlePane = overlay.querySelector(".terrinoth-map-popover-article");
+  loadTerrinothMapPopoverArticle(articlePane, href).then(function () {
+    retargetTerrinothMapPopoverPulse(mapPane, regionKey);
+  });
+}, true);
