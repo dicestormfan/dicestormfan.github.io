@@ -2308,6 +2308,26 @@ document.addEventListener("mousemove", function (e) {
 // above ever sees it. stopPropagation here halts the event's path entirely
 // (it never reaches the target or the bubble phase), which is what stops
 // that handler from starting its own pan-drag while the brush tool is active.
+// REAL BUG fix (Nutzerwunsch 2026-08-09, "wird RIESIG wenn man zu malen
+// anfängt"): stroke-width was written straight from TERRINOTH_DRAW_SIZES as
+// a raw viewBox-unit number, with no relation to the CURRENT zoom level --
+// the picker's own preview dots (4/8/14px, doubled to 8/16/28px) are fixed
+// SCREEN pixels, setting an expectation of "roughly this thick on screen"
+// that a flat viewBox-unit width can't honor. Strokes live in the exact same
+// coordinate space as the map artwork (see the "terrinoth-draw-layer"
+// insertion point above), so they zoom WITH the map just like any other
+// SVG content -- the same raw width that looked "medium" at 100% zoom
+// covers proportionally more actual screen pixels the further in you're
+// zoomed, exactly matching the report. terrinothCurrentZoomRatio (same
+// baseW/currentWidth formula updateTerrinothZoomLabels already uses for
+// zoomPercent, just as a plain ratio) divides the chosen size down at
+// stroke-creation time so its ON-SCREEN thickness stays constant regardless
+// of current zoom, matching what the preview dots actually promise.
+function terrinothCurrentZoomRatio(svg) {
+  if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
+  const baseW = Number(svg.dataset.baseViewbox.split(/\s+/)[2]);
+  return baseW / svg.viewBox.baseVal.width;
+}
 document.addEventListener("mousedown", function (e) {
   if (!terrinothDrawModeActive || e.button !== 0) return;
   if (!document.body.classList.contains("stream-mode")) return;
@@ -2323,7 +2343,7 @@ document.addEventListener("mousedown", function (e) {
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", terrinothDrawColor);
   path.setAttribute("stroke-opacity", terrinothDrawSolid ? "1" : "0.5");
-  path.setAttribute("stroke-width", String(terrinothDrawSize));
+  path.setAttribute("stroke-width", String(terrinothDrawSize / terrinothCurrentZoomRatio(svg)));
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   path.setAttribute("pointer-events", "stroke");
