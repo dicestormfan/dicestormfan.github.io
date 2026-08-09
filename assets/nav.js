@@ -1696,6 +1696,17 @@ document.addEventListener("click", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg) return;
     e.preventDefault();
+    // REAL BUG fix (Nutzerwunsch 2026-08-09, "sobald ich das Mausrad
+    // betätige wird der Pinsel groß"): a stroke's width is computed ONCE at
+    // mousedown (see terrinothCurrentZoomRatio's own doc comment) and never
+    // re-derived afterward -- wheel-zooming the viewBox WHILE a stroke is
+    // actively being extended (mouse still held down) changes what that
+    // fixed raw viewBox-unit width actually represents on screen without
+    // ever updating it, so the in-progress stroke visibly swells or shrinks
+    // as you scroll. Simplest correct fix: freeze zoom entirely while a
+    // stroke is in progress -- preventDefault above still stops the page
+    // itself from scrolling, only the viewBox change is skipped.
+    if (terrinothDrawStroke) return;
     if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
     // "Show on map" popover map (Nutzerwunsch 2026-08-08): "man kann NICHT
     // über den Rand ziehen, und beim Herauszoomen gibt es keine
