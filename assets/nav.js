@@ -2146,7 +2146,8 @@ document.addEventListener("mousemove", function (e) {
   terrinothScheduleFilterHide();
 });
 
-// ---- Terrinoth map draw tool (Nutzerwunsch 2026-08-09) ----
+// ---- Terrinoth map draw tool (Nutzerwunsch 2026-08-09, redesigned same
+// day) ----
 // Simple stream-mode-only freehand annotation tool. Strokes are appended as
 // plain <path> children of the "terrinoth-draw-layer" <g> that already lives
 // inside the map's own <svg> (see buildTerrinothMapHtml) -- since that <g> is
@@ -2154,19 +2155,24 @@ document.addEventListener("mousemove", function (e) {
 // (which only ever rewrites that one shared viewBox, see the Mennara IIFE
 // above) moves/scales already-drawn strokes right along with the map for
 // free, no separate transform bookkeeping needed. Deliberately session-only
-// ("temporäre Objekte", Nutzerwunsch) -- no cookie/localStorage, a strokes
-// just live in the DOM as long as this exact SVG instance does; a client-
-// side navigation away and back rebuilds the map from the server-rendered
-// markup (see swapContent's re-init block above) and starts with an empty
-// layer again, same as any other client-side-only UI state on this page.
+// ("temporäre Objekte", Nutzerwunsch) -- no cookie/localStorage, strokes just
+// live in the DOM as long as this exact SVG instance does; a client-side
+// navigation away and back rebuilds the map from the server-rendered markup
+// (see swapContent's re-init block above) and starts with an empty layer
+// again, same as any other client-side-only UI state on this page.
 const TERRINOTH_DRAW_SIZES = { small: 3, medium: 7, large: 14 };
 let terrinothDrawColor = "#000000";
 let terrinothDrawSize = TERRINOTH_DRAW_SIZES.medium;
-// Whether the pen tool is the active interaction mode for the map (left-
-// drag draws instead of panning) -- distinct from whether the swatch picker
-// itself is currently VISIBLE (see setTerrinothDrawToolOpen's own doc
-// comment: starting an actual stroke hides the picker without turning this
-// off, so the next click on the map keeps painting instead of panning).
+let terrinothDrawSolid = false;
+// Whether the brush tool is the active interaction mode for the map (left-
+// drag draws instead of panning, cursor is a crosshair) -- toggled ONLY by
+// clicking the tab (see setupTerrinothDrawTool below), deliberately
+// independent of whether the swatch body is currently visible/hovered. The
+// two used to be coupled (a first version toggled both from one click); now
+// that the tab's hover-to-reveal behavior mirrors the filter panel's tab
+// exactly (Nutzerwunsch: "genauso... vom Verhalten"), coupling them would
+// mean just brushing the mouse past the corner arms painting, which the
+// confirmed design explicitly rejected in favor of an explicit click.
 let terrinothDrawModeActive = false;
 let terrinothDrawStroke = null;
 
@@ -2179,36 +2185,28 @@ function terrinothClientToSvgPoint(svg, clientX, clientY) {
   const svgPt = pt.matrixTransform(ctm.inverse());
   return { x: svgPt.x, y: svgPt.y };
 }
-// Toggling the picker's visibility is kept separate from toggling draw mode
-// itself (see terrinothDrawModeActive's doc comment) -- the pen icon click
-// handler below changes both together, but the mousedown handler further
-// down only ever calls this half (to close the picker the instant painting
-// starts, Nutzerwunsch: "In dem Moment, wo ich zu malen anfange, schließen
-// sich die Kreise") without touching terrinothDrawModeActive.
-function setTerrinothDrawToolOpen(tool, open) {
-  tool.classList.toggle("picker-open", open);
+function setTerrinothDrawModeActive(active) {
+  terrinothDrawModeActive = active;
+  document.querySelectorAll(".terrinoth-map").forEach(function (m) {
+    m.classList.toggle("draw-mode-active", active);
+  });
+  const tool = document.getElementById("terrinoth-draw-tool");
+  if (tool) {
+    tool.classList.toggle("draw-active", active);
+    const tab = tool.querySelector(".terrinoth-draw-tool-tab");
+    if (tab) tab.setAttribute("aria-pressed", String(active));
+  }
 }
 function terrinothResetDrawTool() {
-  terrinothDrawModeActive = false;
+  setTerrinothDrawModeActive(false);
   terrinothDrawStroke = null;
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (tool) setTerrinothDrawToolOpen(tool, false);
-  document.querySelectorAll(".terrinoth-map").forEach(function (m) {
-    m.classList.remove("draw-mode-active");
-  });
 }
 function setupTerrinothDrawTool() {
   const tool = document.getElementById("terrinoth-draw-tool");
   if (!tool || tool.dataset.setupDone) return;
   tool.dataset.setupDone = "1";
-  const toggleBtn = tool.querySelector(".terrinoth-draw-tool-toggle");
-  toggleBtn.addEventListener("click", function () {
-    const open = !tool.classList.contains("picker-open");
-    setTerrinothDrawToolOpen(tool, open);
-    terrinothDrawModeActive = open;
-    document.querySelectorAll(".terrinoth-map").forEach(function (m) {
-      m.classList.toggle("draw-mode-active", open);
-    });
+  tool.querySelector(".terrinoth-draw-tool-tab").addEventListener("click", function () {
+    setTerrinothDrawModeActive(!terrinothDrawModeActive);
   });
   tool.querySelectorAll(".terrinoth-draw-swatch").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -2224,15 +2222,60 @@ function setupTerrinothDrawTool() {
       terrinothDrawSize = Number(btn.dataset.size);
     });
   });
+  tool.querySelector(".terrinoth-draw-solid-checkbox").addEventListener("change", function (e) {
+    terrinothDrawSolid = e.target.checked;
+  });
+  // Hover-driven expand/collapse (Nutzerwunsch: matches the filter panel's
+  // own mouseenter/mouseleave exactly, including the same idle-fade calls --
+  // see terrinothShowDrawTool/terrinothScheduleDrawToolHide below, parallel
+  // to terrinothShowFilterPanel/terrinothScheduleFilterHide above). Moving
+  // the mouse from the tab/body onto the map to actually start painting
+  // naturally crosses out of this hover area first, which is what closes the
+  // body the instant painting starts ("In dem Moment, wo ich zu malen
+  // anfange, schließen sich die Kreise") -- no separate JS force-close
+  // needed, unlike the click-toggle version this replaces.
+  tool.addEventListener("mouseenter", function () {
+    tool.classList.add("expanded");
+    terrinothShowDrawTool();
+  });
+  tool.addEventListener("mouseleave", function () {
+    tool.classList.remove("expanded");
+    terrinothScheduleDrawToolHide();
+  });
 }
 setupTerrinothDrawTool();
+
+let terrinothDrawIdleTimer = null;
+function terrinothClearDrawIdleTimer() {
+  if (terrinothDrawIdleTimer) { clearTimeout(terrinothDrawIdleTimer); terrinothDrawIdleTimer = null; }
+}
+function terrinothShowDrawTool() {
+  const tool = document.getElementById("terrinoth-draw-tool");
+  if (!tool) return;
+  tool.classList.remove("idle-hidden");
+  terrinothClearDrawIdleTimer();
+}
+function terrinothScheduleDrawToolHide() {
+  const tool = document.getElementById("terrinoth-draw-tool");
+  if (!tool) return;
+  terrinothClearDrawIdleTimer();
+  terrinothDrawIdleTimer = setTimeout(function () { tool.classList.add("idle-hidden"); }, 3000);
+}
+document.addEventListener("mousemove", function (e) {
+  if (!e.target.closest(".terrinoth-map")) return;
+  const tool = document.getElementById("terrinoth-draw-tool");
+  if (tool && tool.contains(e.target)) return;
+  terrinothShowDrawTool();
+  terrinothScheduleDrawToolHide();
+});
+
 // Capture-phase on document (Nutzerwunsch 2026-08-09) -- capture-phase
 // listeners always run before ANY bubble-phase listener anywhere on the same
 // event, regardless of source-code order, so this reliably intercepts the
 // mousedown BEFORE the Mennara IIFE's own bubble-phase mousedown handler
 // above ever sees it. stopPropagation here halts the event's path entirely
 // (it never reaches the target or the bubble phase), which is what stops
-// that handler from starting its own pan-drag while the pen tool is active.
+// that handler from starting its own pan-drag while the brush tool is active.
 document.addEventListener("mousedown", function (e) {
   if (!terrinothDrawModeActive || e.button !== 0) return;
   if (!document.body.classList.contains("stream-mode")) return;
@@ -2240,8 +2283,6 @@ document.addEventListener("mousedown", function (e) {
   if (!svg) return;
   e.preventDefault();
   e.stopPropagation();
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (tool) setTerrinothDrawToolOpen(tool, false);
   const layer = svg.querySelector(".terrinoth-draw-layer");
   if (!layer) return;
   const pt = terrinothClientToSvgPoint(svg, e.clientX, e.clientY);
@@ -2249,7 +2290,7 @@ document.addEventListener("mousedown", function (e) {
   path.setAttribute("class", "terrinoth-drawn-stroke");
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", terrinothDrawColor);
-  path.setAttribute("stroke-opacity", "0.5");
+  path.setAttribute("stroke-opacity", terrinothDrawSolid ? "1" : "0.5");
   path.setAttribute("stroke-width", String(terrinothDrawSize));
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
@@ -2268,14 +2309,24 @@ document.addEventListener("mousemove", function (e) {
 document.addEventListener("mouseup", function () {
   terrinothDrawStroke = null;
 });
-// Right-click to delete a stroke (Nutzerwunsch 2026-08-09) -- deliberately
-// not gated on terrinothDrawModeActive/stream-mode: a stroke someone wants
-// gone should stay removable even after closing the tool.
+// Right-click (Nutzerwunsch 2026-08-09): a stroke right-clicked directly is
+// always deleted, in or out of Mal-Modus ("auch im Nicht-Mal-Modus"). Beyond
+// that, while Mal-Modus is active, right-clicking anywhere on the map (not
+// just on a stroke) suppresses the native browser context menu and ends Mal-
+// Modus instead ("Stattdessen soll rechter Mausklick den Mal-Modus
+// beenden"). Outside Mal-Modus and off any stroke, the native menu is left
+// alone -- nothing in the request asks for it to be suppressed there too.
 document.addEventListener("contextmenu", function (e) {
   const stroke = e.target.closest(".terrinoth-drawn-stroke");
-  if (!stroke) return;
-  e.preventDefault();
-  stroke.remove();
+  if (stroke) {
+    e.preventDefault();
+    stroke.remove();
+    return;
+  }
+  if (terrinothDrawModeActive && e.target.closest(".terrinoth-map svg")) {
+    e.preventDefault();
+    setTerrinothDrawModeActive(false);
+  }
 });
 
 // ---- "Show on map" popover (Nutzerwunsch 2026-08-08) ----
