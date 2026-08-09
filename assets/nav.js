@@ -2769,12 +2769,23 @@ document.addEventListener("click", function (e) {
       tokens.forEach(function (tok) {
         const url = URL.createObjectURL(tok.blob);
         const item = document.createElement("div");
-        item.className = "canvas-gallery-item";
+        item.className = "canvas-gallery-item" + (tok.isDefault ? " is-default" : "");
         item.innerHTML =
           '<button type="button" class="canvas-gallery-delete" aria-label="Delete">×</button>' +
           '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
+          '<div class="canvas-token-default-badge" aria-label="Default token">✓</div>' +
           '<div class="canvas-gallery-caption"></div>';
         item.querySelector(".canvas-gallery-caption").textContent = tok.name;
+        // Default-token toggle (Nutzerwunsch 2026-08-10): click the
+        // thumbnail itself (tokens have no "open viewer" action the way
+        // image thumbnails do) to flag/unflag it -- a flagged token gets
+        // auto-placed on every map that doesn't already have an instance
+        // of it, see canvasApplyDefaultTokens.
+        item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
+          tok.isDefault = !tok.isDefault;
+          item.classList.toggle("is-default", tok.isDefault);
+          canvasIdbAdd("tokens", tok);
+        });
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
           canvasIdbDelete("tokens", tok.id).then(renderCanvasTokenGrid);
@@ -2829,6 +2840,7 @@ document.addEventListener("click", function (e) {
         width: dims.width,
         height: dims.height,
         createdAt: Date.now(),
+        isDefault: false,
       });
     }).then(function () {
       e.target.value = "";
@@ -2855,6 +2867,17 @@ document.addEventListener("click", function (e) {
   let canvasActiveStroke = null;
   let canvasPanState = null;
   let canvasDraggingToken = null;
+  // Token handling additions (Nutzerwunsch 2026-08-10): selection (multi-,
+  // toggled by a plain no-move click), left-click-vs-drag distinguished by
+  // movement distance, and manual double-click/double-right-click timing
+  // (native dblclick/"dblcontextmenu" aren't reliable here since every
+  // click already does its own immediate single-click action -- see
+  // canvasMakeTokenDraggable's own doc comment for the exact reasoning).
+  let canvasSelectedIds = new Set();
+  let canvasLastLeftClick = null; // { id, time }
+  let canvasLastRightClick = null; // { id, time }
+  const CANVAS_DBLCLICK_WINDOW_MS = 350;
+  const CANVAS_CLICK_MOVE_THRESHOLD = 4; // px, below this a pointerdown/up pair counts as a click, not a drag
 
   // Opening an image enters the site's real, single Stream-Modus (the same
   // one Ctrl+Alt+W triggers everywhere else) instead of a separate custom
@@ -2870,7 +2893,9 @@ document.addEventListener("click", function (e) {
     canvasIdbGetAll("images").then(function (images) {
       const img = images.find(function (i) { return i.id === imageId; });
       if (!img) return;
+      if (!img.ringColor) img.ringColor = "black";
       canvasCurrentImage = img;
+      canvasSelectedIds = new Set();
       history.replaceState(null, "", "#canvas-image-" + imageId);
       const url = URL.createObjectURL(img.blob);
       bgImageEl.src = url;
@@ -2883,12 +2908,22 @@ document.addEventListener("click", function (e) {
       drawSvgEl.setAttribute("viewBox", "0 0 " + img.width + " " + img.height);
       drawSvgEl.innerHTML = "";
       tokenLayerEl.innerHTML = "";
+      canvasPlacementRegistry.clear();
+      canvasUpdateRingColorButtons();
       galleryEl.hidden = true;
       viewerEl.hidden = false;
+      // REAL BUG fix (Nutzerwunsch 2026-08-10, "wenn ich Escape drücke..."
+      // was the symptom report that led here, but the actual bug was on
+      // ENTRY): this used to call canvasFitToStage() BEFORE
+      // enterArticleStreamMode() -- fitting against the stage's still-
+      // normal-mode size (sidebar/navbar/footer still visible) a moment
+      // before Stream-Modus's own CSS hides them and the stage actually
+      // grows to fill the viewport. Reordered so the fit happens against
+      // the FINAL, already-fullscreen stage size.
+      enterArticleStreamMode();
       canvasFitToStage();
       canvasLoadStrokes(imageId);
       canvasLoadPlacements(imageId);
-      enterArticleStreamMode();
     });
   }
   // Pure DOM-side cleanup (viewer -> gallery), deliberately NOT calling
@@ -2898,9 +2933,18 @@ document.addEventListener("click", function (e) {
   // comment. Exposed on window so that guard can reach it; calling it
   // directly here as well would be harmless (idempotent) but is never
   // needed since Escape is the only exit path (no back button anymore,
-  // Nutzerwunsch 2026-08-09).
+  // Nutzerwunsch 2026-08-09). Resets every piece of viewer-local state
+  // (Nutzerwunsch 2026-08-10: "stelle wieder den ganz normalen Modus her,
+  // und zwar mit dem ganz normalen Inhalt") so a later re-open never
+  // inherits stale selection/draw-mode state from a previous image.
   function canvasCloseViewer() {
     canvasCurrentImage = null;
+    canvasSelectedIds = new Set();
+    canvasSetDrawModeActive(false);
+    canvasPanState = null;
+    canvasDraggingToken = null;
+    canvasLastLeftClick = null;
+    canvasLastRightClick = null;
     viewerEl.hidden = true;
     galleryEl.hidden = false;
     if (location.hash.indexOf("#canvas-image-") === 0) history.replaceState(null, "", location.pathname + location.search);
@@ -2908,6 +2952,13 @@ document.addEventListener("click", function (e) {
   }
   window.canvasCloseViewer = canvasCloseViewer;
 
+  // "Contain" fit: whichever axis is the binding constraint fills its full
+  // dimension edge-to-edge, the other is centered with the remaining space
+  // split evenly either side (Nutzerwunsch 2026-08-10, made explicit:
+  // "die größere Achse komplett ausfüllen... zentriert" -- this Math.min
+  // formula already does exactly that, a taller-than-stage image is bound
+  // by height and touches top+bottom, a wider one is bound by width and
+  // touches left+right).
   function canvasFitToStage() {
     if (!canvasCurrentImage) return;
     const rect = stageEl.getBoundingClientRect();
@@ -2980,9 +3031,12 @@ document.addEventListener("click", function (e) {
     stageEl.classList.remove("is-grabbing");
   });
 
-  // Right-click: directly on a stroke/token always removes just that one
-  // (in or out of Mal-Modus); anywhere else on the stage toggles Mal-Modus
-  // both ways -- same split behavior as the Terrinoth map's own draw tool.
+  // Right-click on a token no longer deletes it outright (Nutzerwunsch
+  // 2026-08-10) -- a single right-click now toggles "permanently inactive"
+  // (disabled), a right DOUBLE-click deletes. Native contextmenu has no
+  // dblclick equivalent, so double-right-click is detected manually via
+  // canvasLastRightClick (same-target-within-window), exactly parallel to
+  // canvasLastLeftClick for the ordinary left double-click below.
   stageEl.addEventListener("contextmenu", function (e) {
     const stroke = e.target.closest(".canvas-drawn-stroke");
     if (stroke) {
@@ -2996,13 +3050,215 @@ document.addEventListener("click", function (e) {
     if (token) {
       e.preventDefault();
       const id = token.dataset.placementId;
-      token.remove();
-      if (id) canvasIdbDelete("placements", id);
+      const now = Date.now();
+      const isDoubleClick = canvasLastRightClick && canvasLastRightClick.id === id && (now - canvasLastRightClick.time) < CANVAS_DBLCLICK_WINDOW_MS;
+      canvasLastRightClick = isDoubleClick ? null : { id: id, time: now };
+      if (isDoubleClick) {
+        canvasSelectedIds.delete(id);
+        canvasPlacementRegistry.delete(id);
+        token.remove();
+        canvasIdbDelete("placements", id);
+        return;
+      }
+      canvasIdbGet("placements", id).then(function (row) {
+        if (!row || !token.isConnected) return;
+        row.disabled = !row.disabled;
+        canvasIdbAdd("placements", row);
+        const entry = canvasPlacementRegistry.get(id);
+        if (entry) entry.placement = row;
+        canvasRefreshTokenVisual(id);
+      });
       return;
     }
     e.preventDefault();
     canvasSetDrawModeActive(!canvasDrawModeActive);
   });
+
+  // -- Token visual registry (Nutzerwunsch 2026-08-10) --
+  // Every placed token (image-backed or blank-ring) is tracked here by
+  // placement id: { el, placement, tok }. "tok" is the tokens-store record
+  // for image-kind placements (null for blank ones) -- kept around so the
+  // ring can be rebuilt (color/selection/disabled change) without a fresh
+  // IndexedDB round-trip each time. Cleared wholesale on every
+  // canvasOpenViewer (see there) so a previous image's entries never leak
+  // into the next one.
+  const canvasPlacementRegistry = new Map();
+  // Ring geometry, shared by every token regardless of kind (Nutzerwunsch
+  // 2026-08-10: "Mach die Width der Ring-Border nur halb so groß" -- halved
+  // from the original 9 to 4.5 -- and the new selection-ring/disabled-X
+  // marks all derive their own thickness from this same base value so they
+  // stay proportional to it). R_OUTER=40 (not the old blank-token r=42)
+  // specifically leaves enough of the fixed 0-100 viewBox spare to fit the
+  // optional outer selection ring without it clipping at the viewBox edge.
+  const CANVAS_RING_BORDER = 4.5;
+  const CANVAS_RING_R_OUTER = 40;
+  const CANVAS_RING_R_INNER = CANVAS_RING_R_OUTER - CANVAS_RING_BORDER;
+  const CANVAS_SELECTION_COLOR = "#f0e6da";
+  function canvasRingColor() {
+    return (canvasCurrentImage && canvasCurrentImage.ringColor) || "black";
+  }
+  // Builds the complete visual for one token instance: primary ring, its
+  // content (cropped-to-circle image OR blank fill+name text), an optional
+  // outer selection ring, and an optional disabled "X". Used both at
+  // creation and on every later refresh (select/deselect, active/disabled
+  // toggle, ring-color change) -- always rebuilt from scratch rather than
+  // patched in place, since so many of these can change independently that
+  // incremental patching would need to duplicate this same logic anyway.
+  function canvasBuildRingTokenSvg(opts) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    const ringColor = opts.ringColor === "white" ? "#ffffff" : "#000000";
+    // Ad-hoc (blank) tokens invert their fill/text with the ring color
+    // (Nutzerwunsch 2026-08-10: "bei weißem Ring dann natürlich schwarzer
+    // Inhalt... und weiße Schrift") -- image tokens have no such inversion,
+    // the ring is just drawn in ringColor around the actual photo.
+    const contentColor = opts.ringColor === "white" ? "#000000" : "#ffffff";
+    const textColor = opts.ringColor === "white" ? "#ffffff" : "#000000";
+    if (opts.kind === "blank") {
+      const fillCircle = document.createElementNS(svgNS, "circle");
+      fillCircle.setAttribute("cx", "50");
+      fillCircle.setAttribute("cy", "50");
+      fillCircle.setAttribute("r", String(CANVAS_RING_R_INNER));
+      fillCircle.setAttribute("fill", contentColor);
+      fillCircle.setAttribute("fill-opacity", "0.8");
+      svg.appendChild(fillCircle);
+      if (opts.name) {
+        const text = document.createElementNS(svgNS, "text");
+        text.setAttribute("x", "50");
+        text.setAttribute("y", "50");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "central");
+        text.setAttribute("fill", textColor);
+        text.setAttribute("font-family", "RoT_Heading");
+        text.textContent = opts.name;
+        // Maximize font size against BOTH available width and height
+        // (Nutzerwunsch 2026-08-10: "die Font-Größe... maximiert... so
+        // groß, dass die Zeichen fast bis an den Ring stoßen" -- the
+        // earlier version only scaled off measured text WIDTH with an
+        // arbitrary cap, which under-sized the common case of a single
+        // character). getBBox (not getComputedTextLength) gives both axes
+        // in one measurement; briefly attaching off-screen for real
+        // layout, same technique as before.
+        const initialSize = 40;
+        text.setAttribute("font-size", String(initialSize));
+        svg.appendChild(text);
+        svg.style.position = "absolute";
+        svg.style.visibility = "hidden";
+        document.body.appendChild(svg);
+        const bbox = text.getBBox();
+        document.body.removeChild(svg);
+        svg.style.position = "";
+        svg.style.visibility = "";
+        const available = CANVAS_RING_R_INNER * 2 * 0.92; // "fast" touching, not literally
+        let fontSize = initialSize;
+        if (bbox.width > 0 && bbox.height > 0) {
+          fontSize = initialSize * Math.min(available / bbox.width, available / bbox.height);
+        }
+        text.setAttribute("font-size", String(fontSize));
+      }
+    } else {
+      // Image kind: center-crop the source image to a circle (Nutzerwunsch
+      // 2026-08-10 -- replaces the old workflow of hand-crafting pre-
+      // cropped circular token art). "Innendurchmesser = kleinerer Wert von
+      // Breite/Höhe" -> cropSize = min(w,h) maps exactly to the ring's
+      // inner diameter; the LARGER axis is simply centered (an image wider
+      // than it is tall ends up wider than 2*R_INNER at this scale, and
+      // gets symmetrically clipped left/right by the circular clip path --
+      // exactly "auf dieser zentrierst Du den Ring").
+      const clipId = "canvas-ring-clip-" + canvasUid();
+      const defs = document.createElementNS(svgNS, "defs");
+      const clipPath = document.createElementNS(svgNS, "clipPath");
+      clipPath.setAttribute("id", clipId);
+      const clipCircle = document.createElementNS(svgNS, "circle");
+      clipCircle.setAttribute("cx", "50");
+      clipCircle.setAttribute("cy", "50");
+      clipCircle.setAttribute("r", String(CANVAS_RING_R_INNER));
+      clipPath.appendChild(clipCircle);
+      defs.appendChild(clipPath);
+      svg.appendChild(defs);
+      const cropSize = Math.min(opts.aspectW, opts.aspectH);
+      const scale = (2 * CANVAS_RING_R_INNER) / cropSize;
+      const rw = opts.aspectW * scale, rh = opts.aspectH * scale;
+      const image = document.createElementNS(svgNS, "image");
+      image.setAttributeNS("http://www.w3.org/1999/xlink", "href", opts.imageUrl);
+      image.setAttribute("href", opts.imageUrl);
+      image.setAttribute("x", String(50 - rw / 2));
+      image.setAttribute("y", String(50 - rh / 2));
+      image.setAttribute("width", String(rw));
+      image.setAttribute("height", String(rh));
+      image.setAttribute("preserveAspectRatio", "none");
+      image.setAttribute("clip-path", "url(#" + clipId + ")");
+      svg.appendChild(image);
+    }
+    const ring = document.createElementNS(svgNS, "circle");
+    ring.setAttribute("cx", "50");
+    ring.setAttribute("cy", "50");
+    ring.setAttribute("r", String((CANVAS_RING_R_INNER + CANVAS_RING_R_OUTER) / 2));
+    ring.setAttribute("fill", "none");
+    ring.setAttribute("stroke", ringColor);
+    ring.setAttribute("stroke-width", String(CANVAS_RING_BORDER));
+    svg.appendChild(ring);
+    if (opts.selected) {
+      // Second, outer ring (Nutzerwunsch 2026-08-10): half the primary
+      // ring's border width, with a gap of also half that width between
+      // the two.
+      const gap = CANVAS_RING_BORDER / 2;
+      const selBorder = CANVAS_RING_BORDER / 2;
+      const selR = CANVAS_RING_R_OUTER + gap + selBorder / 2;
+      const selRing = document.createElementNS(svgNS, "circle");
+      selRing.setAttribute("cx", "50");
+      selRing.setAttribute("cy", "50");
+      selRing.setAttribute("r", String(selR));
+      selRing.setAttribute("fill", "none");
+      selRing.setAttribute("stroke", CANVAS_SELECTION_COLOR);
+      selRing.setAttribute("stroke-width", String(selBorder));
+      svg.appendChild(selRing);
+    }
+    if (opts.disabled) {
+      // "Ausgext": a cross through the token, arm width = the primary
+      // ring's own border width, corner-to-corner within the primary ring.
+      const inset = CANVAS_RING_R_OUTER / Math.SQRT2;
+      [[50 - inset, 50 - inset, 50 + inset, 50 + inset], [50 - inset, 50 + inset, 50 + inset, 50 - inset]].forEach(function (coords) {
+        const line = document.createElementNS(svgNS, "line");
+        line.setAttribute("x1", String(coords[0]));
+        line.setAttribute("y1", String(coords[1]));
+        line.setAttribute("x2", String(coords[2]));
+        line.setAttribute("y2", String(coords[3]));
+        line.setAttribute("stroke", ringColor);
+        line.setAttribute("stroke-width", String(CANVAS_RING_BORDER));
+        svg.appendChild(line);
+      });
+    }
+    return svg;
+  }
+  // Rebuilds one token's visual from its current registry state -- called
+  // after ANY change to selection/active/disabled/ring-color, rather than
+  // trying to patch the SVG in place for each individual kind of change.
+  function canvasRefreshTokenVisual(id) {
+    const entry = canvasPlacementRegistry.get(id);
+    if (!entry || !entry.el.isConnected) return;
+    const p = entry.placement;
+    const svg = canvasBuildRingTokenSvg({
+      kind: p.kind === "blank" ? "blank" : "image",
+      imageUrl: entry.tok ? entry.tok._canvasUrl : null,
+      aspectW: entry.tok ? entry.tok.width : null,
+      aspectH: entry.tok ? entry.tok.height : null,
+      name: p.kind === "blank" ? p.name : null,
+      ringColor: canvasRingColor(),
+      selected: canvasSelectedIds.has(id),
+      disabled: !!p.disabled,
+    });
+    entry.el.innerHTML = "";
+    entry.el.appendChild(svg);
+    entry.el.style.opacity = (p.disabled || p.active === false) ? "0.6" : "1";
+    entry.el.style.zIndex = String(p.z || 0);
+  }
+  function canvasRefreshAllTokenVisuals() {
+    canvasPlacementRegistry.forEach(function (entry) { canvasRefreshTokenVisual(entry.placement.id); });
+  }
 
   function canvasSetDrawModeActive(active) {
     canvasDrawModeActive = active;
@@ -3140,6 +3396,38 @@ document.addEventListener("click", function (e) {
     canvasSetTokenScale(canvasGetTokenScale() / 1.15);
   });
 
+  // -- Ring color (Nutzerwunsch 2026-08-10): per-image, persisted on the
+  // images record, default black. Flips ring/fill/text colors for every
+  // token already on this map plus every future one.
+  function canvasUpdateRingColorButtons() {
+    document.querySelectorAll(".canvas-ring-color-btn").forEach(function (btn) {
+      btn.classList.toggle("selected", btn.dataset.ringColor === canvasRingColor());
+    });
+  }
+  document.querySelectorAll(".canvas-ring-color-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (!canvasCurrentImage) return;
+      canvasCurrentImage.ringColor = btn.dataset.ringColor;
+      canvasUpdateRingColorButtons();
+      canvasIdbAdd("images", canvasCurrentImage);
+      canvasRefreshAllTokenVisuals();
+    });
+  });
+
+  // -- Start-over (Nutzerwunsch 2026-08-10): every merely-inactive token on
+  // THIS map goes back to active; permanently-inactive (disabled, set via
+  // right-click) tokens are untouched.
+  document.getElementById("canvas-start-over-btn").addEventListener("click", function () {
+    canvasPlacementRegistry.forEach(function (entry) {
+      const p = entry.placement;
+      if (p.active === false && !p.disabled) {
+        p.active = true;
+        canvasIdbAdd("placements", p);
+        canvasRefreshTokenVisual(p.id);
+      }
+    });
+  });
+
   // -- Token tray (global library) + drag-to-place onto the current image --
   function canvasRenderTokenTray(tokens) {
     const items = document.getElementById("canvas-token-tray-items");
@@ -3187,9 +3475,9 @@ document.addEventListener("click", function (e) {
       if (name === null) return;
       const pt = canvasClientToImagePoint(e.clientX, e.clientY);
       const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: name.trim(), cx: pt.x, cy: pt.y, w: w, h: w };
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: name.trim(), cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: 0 };
       canvasIdbAdd("placements", placement).then(function () {
-        canvasAddBlankTokenElement(placement);
+        canvasAddPlacementElement(placement, null);
       });
       return;
     }
@@ -3202,20 +3490,30 @@ document.addEventListener("click", function (e) {
       // when zooming (like a real miniature on a table), unlike brush
       // strokes above which deliberately stay constant on-screen instead.
       // This is the UNSCALED base the global token-size control above
-      // multiplies at render time, not the final on-screen size.
+      // multiplies at render time, not the final on-screen size. Square
+      // (h=w) now regardless of the source image's own aspect ratio
+      // (Nutzerwunsch 2026-08-10): the ring always crops to a circle, so
+      // the bounding box is always a circle's square, not the photo's
+      // original proportions.
       const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-      const h = w * (tok.height / tok.width);
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: h };
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: 0 };
       canvasIdbAdd("placements", placement).then(function () {
-        canvasAddTokenElement(placement, tok);
+        canvasAddPlacementElement(placement, tok);
       });
     });
   });
 
-  // Shared by both token kinds (image-backed <img> and blank-ring <div>) --
-  // both are just some visual content inside an absolutely positioned
-  // container sized via canvasRenderTokenElement, so drag/persist logic
-  // doesn't need to know which one it's moving.
+  // Shared by both token kinds -- both are just some visual content inside
+  // an absolutely positioned container sized via canvasRenderTokenElement.
+  // Handles, in order of precedence: (1) a plain no-movement click toggles
+  // selection, or -- if it lands within CANVAS_DBLCLICK_WINDOW_MS of the
+  // PREVIOUS click on the SAME token -- toggles active instead (Nutzerwunsch
+  // 2026-08-10: "Doppelklick toggelt Aktivitätsstatus"; the first click's
+  // own selection-toggle still happened immediately, only the second one is
+  // reinterpreted, see the module doc comment on canvasLastLeftClick).
+  // (2) a real drag moves this token AND every other currently-selected one
+  // by the same delta ("wenn man einen markierten Token bewegt, dann
+  // bewegen sich alle anderen markierten Token auf gleiche Weise").
   function canvasMakeTokenDraggable(el, placement) {
     el.addEventListener("pointerdown", function (e) {
       // REAL BUG fix (found via Puppeteer, 2026-08-09): pointerdown fires
@@ -3230,134 +3528,154 @@ document.addEventListener("click", function (e) {
       e.stopPropagation();
       e.preventDefault();
       const startImg = canvasClientToImagePoint(e.clientX, e.clientY);
+      const group = canvasSelectedIds.has(placement.id)
+        ? Array.from(canvasSelectedIds).map(function (id) { return canvasPlacementRegistry.get(id); }).filter(Boolean)
+        : [canvasPlacementRegistry.get(placement.id)].filter(Boolean);
       canvasDraggingToken = {
         el: el,
-        offsetX: Number(el.dataset.cx) - startImg.x,
-        offsetY: Number(el.dataset.cy) - startImg.y,
+        placement: placement,
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        moved: false,
+        members: group.map(function (entry) {
+          return { el: entry.el, placement: entry.placement, offsetX: Number(entry.el.dataset.cx) - startImg.x, offsetY: Number(entry.el.dataset.cy) - startImg.y };
+        }),
       };
       el.setPointerCapture(e.pointerId);
     });
     el.addEventListener("pointermove", function (e) {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
+      const d = canvasDraggingToken;
+      if (!d.moved) {
+        const dist = Math.hypot(e.clientX - d.startClientX, e.clientY - d.startClientY);
+        if (dist < CANVAS_CLICK_MOVE_THRESHOLD) return;
+        d.moved = true;
+      }
       const pt = canvasClientToImagePoint(e.clientX, e.clientY);
-      el.dataset.cx = String(pt.x + canvasDraggingToken.offsetX);
-      el.dataset.cy = String(pt.y + canvasDraggingToken.offsetY);
-      canvasRenderTokenElement(el);
+      d.members.forEach(function (m) {
+        m.el.dataset.cx = String(pt.x + m.offsetX);
+        m.el.dataset.cy = String(pt.y + m.offsetY);
+        canvasRenderTokenElement(m.el);
+      });
     });
     el.addEventListener("pointerup", function () {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
+      const d = canvasDraggingToken;
       canvasDraggingToken = null;
-      const cx = Number(el.dataset.cx), cy = Number(el.dataset.cy);
-      // REAL BUG fix (found via Puppeteer, 2026-08-09): this used to be
-      // canvasIdbGetAll(...).then(rows => rows.find(...)) -- a full-table
-      // scan slow enough that a right-click delete fired immediately
-      // afterward (contextmenu handler above) could complete its OWN
-      // delete BEFORE this stale-data save landed, resurrecting the just-
-      // deleted token. A direct keyed get() is far faster, and the
-      // el.isConnected re-check right before writing catches the deletion
-      // even if it still slips in during the remaining (now much smaller)
-      // async gap -- token.remove() in the contextmenu handler detaches el
-      // synchronously, so isConnected reliably reflects "was this deleted
-      // in the meantime" at whatever later moment we actually check it.
-      canvasIdbGet("placements", placement.id).then(function (row) {
-        if (!row || !el.isConnected) return;
-        row.cx = cx;
-        row.cy = cy;
-        canvasIdbAdd("placements", row);
+      if (!d.moved) {
+        // Plain click: toggle selection, or (if this is the second click
+        // within the double-click window on the SAME token) toggle active
+        // instead -- see this function's own doc comment above.
+        const now = Date.now();
+        const isDoubleClick = canvasLastLeftClick && canvasLastLeftClick.id === placement.id && (now - canvasLastLeftClick.time) < CANVAS_DBLCLICK_WINDOW_MS;
+        if (isDoubleClick) {
+          canvasLastLeftClick = null;
+          canvasIdbGet("placements", placement.id).then(function (row) {
+            if (!row || !el.isConnected) return;
+            row.active = row.active === false ? true : false;
+            canvasIdbAdd("placements", row);
+            const entry = canvasPlacementRegistry.get(placement.id);
+            if (entry) entry.placement = row;
+            canvasRefreshTokenVisual(placement.id);
+          });
+        } else {
+          canvasLastLeftClick = { id: placement.id, time: now };
+          if (canvasSelectedIds.has(placement.id)) canvasSelectedIds.delete(placement.id);
+          else canvasSelectedIds.add(placement.id);
+          canvasRefreshTokenVisual(placement.id);
+        }
+        return;
+      }
+      // Real drag: persist every moved member's new position. Same
+      // REAL BUG fix as before (Puppeteer, 2026-08-09) applied per member --
+      // a fast keyed get() plus a fresh el.isConnected check right before
+      // writing, so a concurrent delete on ANY dragged member can't be
+      // resurrected by this save landing after it.
+      d.members.forEach(function (m) {
+        const cx = Number(m.el.dataset.cx), cy = Number(m.el.dataset.cy);
+        canvasIdbGet("placements", m.placement.id).then(function (row) {
+          if (!row || !m.el.isConnected) return;
+          row.cx = cx;
+          row.cy = cy;
+          canvasIdbAdd("placements", row);
+          const entry = canvasPlacementRegistry.get(m.placement.id);
+          if (entry) entry.placement = row;
+        });
       });
     });
   }
-  function canvasAddTokenElement(placement, tok) {
-    const url = URL.createObjectURL(tok.blob);
-    const el = document.createElement("img");
-    el.className = "canvas-token";
-    el.src = url;
-    el.alt = tok.name;
-    el.draggable = false;
-    el.dataset.placementId = placement.id;
-    el.dataset.cx = String(placement.cx);
-    el.dataset.cy = String(placement.cy);
-    el.dataset.baseW = String(placement.w);
-    el.dataset.baseH = String(placement.h);
-    canvasRenderTokenElement(el);
-    canvasMakeTokenDraggable(el, placement);
-    tokenLayerEl.appendChild(el);
-  }
-  // Black ring, 80%-opaque white fill, the placement's own name centered
-  // inside, auto-sized to fill the ring without touching it (Nutzerwunsch
-  // 2026-08-09). A fixed 0-100 viewBox means the SAME font-size (computed
-  // ONCE here, in viewBox units) stays correctly proportioned at any
-  // on-screen size -- the outer <div>'s width/height (set by
-  // canvasRenderTokenElement, identical mechanism to image tokens) is what
-  // the global token-scale control and zoom actually resize; the SVG just
-  // scales along with it for free, no per-resize recomputation needed.
-  function canvasBuildBlankTokenSvg(name) {
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS, "svg");
-    svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("height", "100%");
-    const circle = document.createElementNS(svgNS, "circle");
-    circle.setAttribute("cx", "50");
-    circle.setAttribute("cy", "50");
-    circle.setAttribute("r", "42");
-    circle.setAttribute("fill", "#ffffff");
-    circle.setAttribute("fill-opacity", "0.8");
-    circle.setAttribute("stroke", "#000000");
-    circle.setAttribute("stroke-width", "9");
-    svg.appendChild(circle);
-    if (name) {
-      const text = document.createElementNS(svgNS, "text");
-      text.setAttribute("x", "50");
-      text.setAttribute("y", "50");
-      text.setAttribute("text-anchor", "middle");
-      text.setAttribute("dominant-baseline", "central");
-      text.setAttribute("fill", "#000000");
-      text.textContent = name;
-      const initialSize = 40;
-      text.setAttribute("font-size", String(initialSize));
-      svg.appendChild(text);
-      // getComputedTextLength needs real layout -- briefly attach off-
-      // screen (synchronous, removed again before this function returns,
-      // so nothing is ever actually painted in this state).
-      svg.style.position = "absolute";
-      svg.style.visibility = "hidden";
-      document.body.appendChild(svg);
-      const measured = text.getComputedTextLength();
-      document.body.removeChild(svg);
-      svg.style.position = "";
-      svg.style.visibility = "";
-      const availableWidth = 66; // stays clear of the ring's inner edge
-      const maxFontSize = 38; // cap so a 1-2 letter name doesn't blow up vertically
-      if (measured > 0) {
-        text.setAttribute("font-size", String(Math.min(maxFontSize, initialSize * (availableWidth / measured))));
-      }
-    }
-    return svg;
-  }
-  function canvasAddBlankTokenElement(placement) {
+  // Creates the DOM element for one placement (image-backed or blank),
+  // registers it, and renders its initial visual -- shared by drop, load,
+  // and default-token auto-placement.
+  function canvasAddPlacementElement(placement, tok) {
+    if (tok && !tok._canvasUrl) tok._canvasUrl = URL.createObjectURL(tok.blob);
     const el = document.createElement("div");
-    el.className = "canvas-token canvas-token-blank";
+    el.className = "canvas-token" + (placement.kind === "blank" ? " canvas-token-blank" : "");
     el.dataset.placementId = placement.id;
     el.dataset.cx = String(placement.cx);
     el.dataset.cy = String(placement.cy);
     el.dataset.baseW = String(placement.w);
     el.dataset.baseH = String(placement.h);
-    el.appendChild(canvasBuildBlankTokenSvg(placement.name));
     canvasRenderTokenElement(el);
     canvasMakeTokenDraggable(el, placement);
     tokenLayerEl.appendChild(el);
+    canvasPlacementRegistry.set(placement.id, { el: el, placement: placement, tok: tok || null });
+    canvasRefreshTokenVisual(placement.id);
+  }
+  // Default tokens (Nutzerwunsch 2026-08-10): a token flagged "default" in
+  // the gallery (green checkmark) is auto-placed on every map that doesn't
+  // already have an instance of it -- "sofern er noch nicht vorhanden ist"
+  // is checked fresh every open, not a one-time flag, so manually removing
+  // an auto-added default lets it be re-added on the next open. Stacked
+  // vertically along the right edge.
+  function canvasApplyDefaultTokens(existingPlacements, tokens) {
+    const defaults = tokens.filter(function (t) { return t.isDefault; });
+    if (!defaults.length) return;
+    const existingTokenIds = new Set(existingPlacements.filter(function (p) { return p.kind !== "blank"; }).map(function (p) { return p.tokenId; }));
+    const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
+    let slot = 0;
+    defaults.forEach(function (tok) {
+      if (existingTokenIds.has(tok.id)) return;
+      const cx = canvasCurrentImage.width - w * 0.7 - w / 2;
+      const cy = w * 0.7 + w / 2 + slot * w * 1.2;
+      slot++;
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: cx, cy: cy, w: w, h: w, active: true, disabled: false, z: 0 };
+      canvasIdbAdd("placements", placement).then(function () {
+        canvasAddPlacementElement(placement, tok);
+      });
+    });
   }
   function canvasLoadPlacements(imageId) {
     Promise.all([canvasIdbGetByIndex("placements", "imageId", imageId), canvasIdbGetAll("tokens")]).then(function (res) {
       const placements = res[0], tokens = res[1];
       placements.forEach(function (p) {
-        if (p.kind === "blank") { canvasAddBlankTokenElement(p); return; }
+        if (p.active === undefined) p.active = true;
+        if (p.disabled === undefined) p.disabled = false;
+        if (p.z === undefined) p.z = 0;
+        if (p.kind === "blank") { canvasAddPlacementElement(p, null); return; }
         const tok = tokens.find(function (t) { return t.id === p.tokenId; });
-        if (tok) canvasAddTokenElement(p, tok);
+        if (tok) canvasAddPlacementElement(p, tok);
       });
+      canvasApplyDefaultTokens(placements, tokens);
     });
   }
+
+  // Z-order (Nutzerwunsch 2026-08-10: "Betätigen von Bild-Hoch und Bild-
+  // Runter ändert den Z-Achsen-Wert aller markierten Token um 1") -- scoped
+  // to the Canvas viewer only, no-op whenever no image is open.
+  document.addEventListener("keydown", function (e) {
+    if (!canvasCurrentImage || !canvasSelectedIds.size) return;
+    if (e.key !== "PageUp" && e.key !== "PageDown") return;
+    e.preventDefault();
+    const delta = e.key === "PageUp" ? 1 : -1;
+    canvasSelectedIds.forEach(function (id) {
+      const entry = canvasPlacementRegistry.get(id);
+      if (!entry) return;
+      entry.placement.z = (entry.placement.z || 0) + delta;
+      canvasIdbAdd("placements", entry.placement);
+      canvasRefreshTokenVisual(id);
+    });
+  });
 
   // Deep-link support: reloading while a specific image is open re-opens the
   // same image (Nutzerwunsch: Bilder/Striche/Token bleiben über Neuladen und
