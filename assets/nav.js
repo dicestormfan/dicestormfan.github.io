@@ -2608,3 +2608,547 @@ document.addEventListener("click", function (e) {
     retargetTerrinothMapPopoverPulse(mapPane, regionKey);
   });
 }, true);
+
+// ---- Canvas (Nutzerwunsch 2026-08-09) ----
+// Everything below is scoped by the "#canvas-gallery" existence check --
+// it's a no-op on every other page. Deliberately independent of the Mennara/
+// Terrinoth map code above: no shared state, no shared DOM, own IndexedDB
+// database. Zoom/pan uses plain JS-owned tx/ty/scale numbers (not SVG
+// viewBox/getScreenCTM) since the only SVG here is a small draw-only overlay
+// with no foreign coordinate system to fight -- screen<->image-space is a
+// one-line formula (see clientToImagePoint) instead of matrix inversion.
+(function () {
+  const galleryEl = document.getElementById("canvas-gallery");
+  if (!galleryEl) return;
+
+  // -- IndexedDB (per-browser, per-device only -- never uploaded anywhere) --
+  const CANVAS_DB_NAME = "terrinothCanvas";
+  const CANVAS_DB_VERSION = 1;
+  let canvasDbPromise = null;
+  function canvasOpenDb() {
+    if (canvasDbPromise) return canvasDbPromise;
+    canvasDbPromise = new Promise(function (resolve, reject) {
+      const req = indexedDB.open(CANVAS_DB_NAME, CANVAS_DB_VERSION);
+      req.onupgradeneeded = function () {
+        const db = req.result;
+        if (!db.objectStoreNames.contains("images")) db.createObjectStore("images", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("tokens")) db.createObjectStore("tokens", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("strokes")) {
+          db.createObjectStore("strokes", { keyPath: "id" }).createIndex("imageId", "imageId");
+        }
+        if (!db.objectStoreNames.contains("placements")) {
+          db.createObjectStore("placements", { keyPath: "id" }).createIndex("imageId", "imageId");
+        }
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+    return canvasDbPromise;
+  }
+  function canvasIdbAdd(storeName, value) {
+    return canvasOpenDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).put(value);
+        tx.oncomplete = function () { resolve(value); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function canvasIdbDelete(storeName, id) {
+    return canvasOpenDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).delete(id);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function canvasIdbGetAll(storeName) {
+    return canvasOpenDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function canvasIdbGetByIndex(storeName, indexName, value) {
+    return canvasOpenDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const req = db.transaction(storeName, "readonly").objectStore(storeName).index(indexName).getAll(value);
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function canvasUid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+  function canvasBlobDimensions(blob) {
+    return new Promise(function (resolve, reject) {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = function () {
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = function (e) { URL.revokeObjectURL(url); reject(e); };
+      img.src = url;
+    });
+  }
+
+  // -- Gallery (management view) --
+  const imageGrid = document.getElementById("canvas-image-grid");
+  const tokenGrid = document.getElementById("canvas-token-grid");
+  const viewerEl = document.getElementById("canvas-viewer");
+  const backBtn = document.getElementById("canvas-back-btn");
+
+  function canvasDeleteImageCascade(imageId) {
+    // A deleted image's own strokes/placements are otherwise orphaned rows
+    // that would silently accumulate in IndexedDB forever (never surfaced
+    // anywhere, since both stores are only ever queried by imageId).
+    return Promise.all([
+      canvasIdbDelete("images", imageId),
+      canvasIdbGetByIndex("strokes", "imageId", imageId).then(function (rows) {
+        return Promise.all(rows.map(function (r) { return canvasIdbDelete("strokes", r.id); }));
+      }),
+      canvasIdbGetByIndex("placements", "imageId", imageId).then(function (rows) {
+        return Promise.all(rows.map(function (r) { return canvasIdbDelete("placements", r.id); }));
+      }),
+    ]);
+  }
+
+  function renderCanvasImageGrid() {
+    canvasIdbGetAll("images").then(function (images) {
+      images.sort(function (a, b) { return b.createdAt - a.createdAt; });
+      imageGrid.innerHTML = "";
+      images.forEach(function (img) {
+        const url = URL.createObjectURL(img.blob);
+        const item = document.createElement("div");
+        item.className = "canvas-gallery-item";
+        item.innerHTML =
+          '<button type="button" class="canvas-gallery-delete" aria-label="Löschen">×</button>' +
+          '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
+          '<div class="canvas-gallery-caption"></div>';
+        item.querySelector(".canvas-gallery-caption").textContent = img.caption;
+        item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
+          canvasOpenViewer(img.id);
+        });
+        item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (!confirm('Bild "' + img.caption + '" wirklich löschen?')) return;
+          canvasDeleteImageCascade(img.id).then(renderCanvasImageGrid);
+        });
+        imageGrid.appendChild(item);
+      });
+    });
+  }
+  function renderCanvasTokenGrid() {
+    canvasIdbGetAll("tokens").then(function (tokens) {
+      tokens.sort(function (a, b) { return b.createdAt - a.createdAt; });
+      tokenGrid.innerHTML = "";
+      tokens.forEach(function (tok) {
+        const url = URL.createObjectURL(tok.blob);
+        const item = document.createElement("div");
+        item.className = "canvas-gallery-item";
+        item.innerHTML =
+          '<button type="button" class="canvas-gallery-delete" aria-label="Löschen">×</button>' +
+          '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
+          '<div class="canvas-gallery-caption"></div>';
+        item.querySelector(".canvas-gallery-caption").textContent = tok.name;
+        item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (!confirm('Token "' + tok.name + '" wirklich löschen?')) return;
+          canvasIdbDelete("tokens", tok.id).then(renderCanvasTokenGrid);
+        });
+        tokenGrid.appendChild(item);
+      });
+      canvasRenderTokenTray(tokens);
+    });
+  }
+
+  document.getElementById("canvas-image-upload-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const captionInput = document.getElementById("canvas-image-caption");
+    const fileInput = document.getElementById("canvas-image-file");
+    const file = fileInput.files[0];
+    if (!file) return;
+    canvasBlobDimensions(file).then(function (dims) {
+      return canvasIdbAdd("images", {
+        id: canvasUid(),
+        caption: captionInput.value.trim() || file.name,
+        blob: file,
+        width: dims.width,
+        height: dims.height,
+        createdAt: Date.now(),
+      });
+    }).then(function () {
+      form.reset();
+      renderCanvasImageGrid();
+    });
+  });
+  document.getElementById("canvas-token-upload-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const nameInput = document.getElementById("canvas-token-name");
+    const fileInput = document.getElementById("canvas-token-file");
+    const file = fileInput.files[0];
+    if (!file) return;
+    canvasBlobDimensions(file).then(function (dims) {
+      return canvasIdbAdd("tokens", {
+        id: canvasUid(),
+        name: nameInput.value.trim() || file.name,
+        blob: file,
+        width: dims.width,
+        height: dims.height,
+        createdAt: Date.now(),
+      });
+    }).then(function () {
+      form.reset();
+      renderCanvasTokenGrid();
+    });
+  });
+
+  renderCanvasImageGrid();
+  renderCanvasTokenGrid();
+
+  // -- Viewer: zoom/pan/paint/token-drag on one selected image --
+  const stageEl = document.getElementById("canvas-stage");
+  const transformEl = document.getElementById("canvas-transform");
+  const bgImageEl = document.getElementById("canvas-bg-image");
+  const drawSvgEl = document.getElementById("canvas-draw-svg");
+  const tokenLayerEl = document.getElementById("canvas-token-layer");
+  const drawTool = document.getElementById("canvas-draw-tool");
+  const tokenTray = document.getElementById("canvas-token-tray");
+
+  let canvasCurrentImage = null;
+  let canvasScale = 1, canvasTx = 0, canvasTy = 0, canvasMinScale = 0.05, canvasMaxScale = 8;
+  let canvasDrawModeActive = false;
+  let canvasDrawColor = "#000000", canvasDrawSize = 16, canvasDrawSolid = false;
+  let canvasActiveStroke = null;
+  let canvasPanState = null;
+  let canvasDraggingToken = null;
+
+  function canvasOpenViewer(imageId) {
+    canvasIdbGetAll("images").then(function (images) {
+      const img = images.find(function (i) { return i.id === imageId; });
+      if (!img) return;
+      canvasCurrentImage = img;
+      history.replaceState(null, "", "#canvas-image-" + imageId);
+      const url = URL.createObjectURL(img.blob);
+      bgImageEl.src = url;
+      bgImageEl.style.width = img.width + "px";
+      bgImageEl.style.height = img.height + "px";
+      transformEl.style.width = img.width + "px";
+      transformEl.style.height = img.height + "px";
+      drawSvgEl.setAttribute("width", img.width);
+      drawSvgEl.setAttribute("height", img.height);
+      drawSvgEl.setAttribute("viewBox", "0 0 " + img.width + " " + img.height);
+      drawSvgEl.innerHTML = "";
+      tokenLayerEl.innerHTML = "";
+      galleryEl.hidden = true;
+      viewerEl.hidden = false;
+      canvasFitToStage();
+      canvasLoadStrokes(imageId);
+      canvasLoadPlacements(imageId);
+    });
+  }
+  function canvasCloseViewer() {
+    canvasCurrentImage = null;
+    viewerEl.hidden = true;
+    galleryEl.hidden = false;
+    if (location.hash.indexOf("#canvas-image-") === 0) history.replaceState(null, "", location.pathname + location.search);
+    renderCanvasImageGrid();
+  }
+  backBtn.addEventListener("click", canvasCloseViewer);
+
+  function canvasFitToStage() {
+    if (!canvasCurrentImage) return;
+    const rect = stageEl.getBoundingClientRect();
+    const s = Math.min(rect.width / canvasCurrentImage.width, rect.height / canvasCurrentImage.height);
+    canvasScale = s;
+    canvasMinScale = s;
+    canvasTx = (rect.width - canvasCurrentImage.width * s) / 2;
+    canvasTy = (rect.height - canvasCurrentImage.height * s) / 2;
+    canvasApplyTransform();
+  }
+  function canvasApplyTransform() {
+    transformEl.style.transform = "translate(" + canvasTx + "px," + canvasTy + "px) scale(" + canvasScale + ")";
+    canvasRefreshStrokeWidths();
+  }
+  // Stroke thickness stays constant in on-screen pixels regardless of zoom
+  // (Nutzerwunsch: "genauso ... malen wie bei der Terrinoth-Karte", which
+  // keeps its own strokes zoom-compensated the same way) -- each stroke
+  // keeps its ORIGINAL target screen-px size on data-draw-size, re-derived
+  // into a viewBox-unit stroke-width on every scale change.
+  function canvasRefreshStrokeWidths() {
+    drawSvgEl.querySelectorAll(".canvas-drawn-stroke").forEach(function (p) {
+      const size = Number(p.dataset.drawSize);
+      if (size) p.setAttribute("stroke-width", String(size / canvasScale));
+    });
+  }
+  function canvasClientToImagePoint(clientX, clientY) {
+    const rect = stageEl.getBoundingClientRect();
+    return { x: (clientX - rect.left - canvasTx) / canvasScale, y: (clientY - rect.top - canvasTy) / canvasScale };
+  }
+
+  // Wheel-Zoom, centered on the cursor (same "point under the cursor stays
+  // under the cursor" formula as any standard zoom-to-cursor implementation).
+  stageEl.addEventListener("wheel", function (e) {
+    if (!canvasCurrentImage) return;
+    e.preventDefault();
+    const rect = stageEl.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const imgX = (mx - canvasTx) / canvasScale, imgY = (my - canvasTy) / canvasScale;
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    const newScale = Math.min(canvasMaxScale, Math.max(canvasMinScale, canvasScale * factor));
+    canvasTx = mx - imgX * newScale;
+    canvasTy = my - imgY * newScale;
+    canvasScale = newScale;
+    canvasApplyTransform();
+  }, { passive: false });
+
+  stageEl.addEventListener("pointerdown", function (e) {
+    if (e.button !== 0 || !canvasCurrentImage) return;
+    if (e.target.closest(".canvas-token")) return;
+    if (canvasDrawModeActive) {
+      canvasStartStroke(e);
+    } else {
+      canvasPanState = { startX: e.clientX, startY: e.clientY, startTx: canvasTx, startTy: canvasTy };
+      stageEl.classList.add("is-grabbing");
+    }
+    stageEl.setPointerCapture(e.pointerId);
+  });
+  stageEl.addEventListener("pointermove", function (e) {
+    if (canvasActiveStroke) {
+      canvasExtendStroke(e);
+    } else if (canvasPanState) {
+      canvasTx = canvasPanState.startTx + (e.clientX - canvasPanState.startX);
+      canvasTy = canvasPanState.startTy + (e.clientY - canvasPanState.startY);
+      canvasApplyTransform();
+    }
+  });
+  stageEl.addEventListener("pointerup", function () {
+    if (canvasActiveStroke) canvasEndStroke();
+    canvasPanState = null;
+    stageEl.classList.remove("is-grabbing");
+  });
+
+  // Right-click: directly on a stroke/token always removes just that one
+  // (in or out of Mal-Modus); anywhere else on the stage toggles Mal-Modus
+  // both ways -- same split behavior as the Terrinoth map's own draw tool.
+  stageEl.addEventListener("contextmenu", function (e) {
+    const stroke = e.target.closest(".canvas-drawn-stroke");
+    if (stroke) {
+      e.preventDefault();
+      const id = stroke.dataset.strokeId;
+      stroke.remove();
+      if (id) canvasIdbDelete("strokes", id);
+      return;
+    }
+    const token = e.target.closest(".canvas-token");
+    if (token) {
+      e.preventDefault();
+      const id = token.dataset.placementId;
+      token.remove();
+      if (id) canvasIdbDelete("placements", id);
+      return;
+    }
+    e.preventDefault();
+    canvasSetDrawModeActive(!canvasDrawModeActive);
+  });
+
+  function canvasSetDrawModeActive(active) {
+    canvasDrawModeActive = active;
+    stageEl.classList.toggle("draw-mode-active", active);
+    drawTool.classList.toggle("draw-active", active);
+    const tab = drawTool.querySelector(".canvas-draw-tool-tab");
+    if (tab) tab.setAttribute("aria-pressed", String(active));
+  }
+
+  function canvasMakeStrokePath(id, size, color, solid) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("class", "canvas-drawn-stroke");
+    path.dataset.drawSize = String(size);
+    path.dataset.strokeId = id;
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", color);
+    path.setAttribute("stroke-opacity", solid ? "1" : "0.5");
+    path.setAttribute("stroke-width", String(size / canvasScale));
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("pointer-events", "stroke");
+    return path;
+  }
+  function canvasStartStroke(e) {
+    const pt = canvasClientToImagePoint(e.clientX, e.clientY);
+    const id = canvasUid();
+    const path = canvasMakeStrokePath(id, canvasDrawSize, canvasDrawColor, canvasDrawSolid);
+    const d = "M " + pt.x + " " + pt.y;
+    path.setAttribute("d", d);
+    drawSvgEl.appendChild(path);
+    canvasActiveStroke = { id, path, d, color: canvasDrawColor, size: canvasDrawSize, solid: canvasDrawSolid };
+  }
+  function canvasExtendStroke(e) {
+    const pt = canvasClientToImagePoint(e.clientX, e.clientY);
+    canvasActiveStroke.d += " L " + pt.x + " " + pt.y;
+    canvasActiveStroke.path.setAttribute("d", canvasActiveStroke.d);
+  }
+  function canvasEndStroke() {
+    if (!canvasActiveStroke || !canvasCurrentImage) { canvasActiveStroke = null; return; }
+    canvasIdbAdd("strokes", {
+      id: canvasActiveStroke.id,
+      imageId: canvasCurrentImage.id,
+      d: canvasActiveStroke.d,
+      color: canvasActiveStroke.color,
+      size: canvasActiveStroke.size,
+      solid: canvasActiveStroke.solid,
+    });
+    canvasActiveStroke = null;
+  }
+  function canvasLoadStrokes(imageId) {
+    canvasIdbGetByIndex("strokes", "imageId", imageId).then(function (rows) {
+      rows.forEach(function (r) {
+        const path = canvasMakeStrokePath(r.id, r.size, r.color, r.solid);
+        path.setAttribute("d", r.d);
+        drawSvgEl.appendChild(path);
+      });
+    });
+  }
+
+  // -- Draw tool panel: same color/size/solid picker as the Terrinoth map's
+  // own draw tool, but its own classes (.canvas-draw-tool-* vs. .terrinoth-
+  // draw-tool-*) and always visible here -- unlike the map, Canvas's zoom/
+  // pan/paint view is NOT gated behind the site's Stream-Modus toggle
+  // (Nutzerwunsch 2026-08-09: "unabhängig, immer Vollbild-Stil").
+  drawTool.querySelector(".canvas-draw-tool-tab").addEventListener("click", function () {
+    canvasSetDrawModeActive(!canvasDrawModeActive);
+  });
+  drawTool.querySelectorAll(".canvas-draw-swatch").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      drawTool.querySelectorAll(".canvas-draw-swatch").forEach(function (b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      canvasDrawColor = btn.dataset.color;
+      canvasSetDrawModeActive(true);
+    });
+  });
+  drawTool.querySelectorAll(".canvas-draw-size").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      drawTool.querySelectorAll(".canvas-draw-size").forEach(function (b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      canvasDrawSize = Number(btn.dataset.size);
+      canvasSetDrawModeActive(true);
+    });
+  });
+  drawTool.querySelector(".canvas-draw-solid-checkbox").addEventListener("change", function (e) {
+    canvasDrawSolid = e.target.checked;
+    canvasSetDrawModeActive(true);
+  });
+  drawTool.addEventListener("mouseenter", function () { drawTool.classList.add("expanded"); });
+  drawTool.addEventListener("mouseleave", function () { drawTool.classList.remove("expanded"); });
+
+  // -- Token tray (global library) + drag-to-place onto the current image --
+  function canvasRenderTokenTray(tokens) {
+    const body = tokenTray.querySelector(".canvas-token-tray-body");
+    body.innerHTML = "";
+    tokens.forEach(function (tok) {
+      const url = URL.createObjectURL(tok.blob);
+      const el = document.createElement("img");
+      el.className = "canvas-token-tray-item";
+      el.src = url;
+      el.title = tok.name;
+      el.draggable = true;
+      el.dataset.tokenId = tok.id;
+      el.addEventListener("dragstart", function (e) {
+        e.dataTransfer.setData("text/plain", tok.id);
+      });
+      body.appendChild(el);
+    });
+  }
+  tokenTray.addEventListener("mouseenter", function () { tokenTray.classList.add("expanded"); });
+  tokenTray.addEventListener("mouseleave", function () { tokenTray.classList.remove("expanded"); });
+
+  stageEl.addEventListener("dragover", function (e) { e.preventDefault(); });
+  stageEl.addEventListener("drop", function (e) {
+    e.preventDefault();
+    const tokenId = e.dataTransfer.getData("text/plain");
+    if (!tokenId || !canvasCurrentImage) return;
+    canvasIdbGetAll("tokens").then(function (tokens) {
+      const tok = tokens.find(function (t) { return t.id === tokenId; });
+      if (!tok) return;
+      const pt = canvasClientToImagePoint(e.clientX, e.clientY);
+      // Default token size: 8% of the background image's shorter side, in
+      // that image's own natural-pixel space -- so a token scales WITH the
+      // map when zooming (like a real miniature on a table), unlike brush
+      // strokes above which deliberately stay constant on-screen instead.
+      const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
+      const h = w * (tok.height / tok.width);
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, x: pt.x - w / 2, y: pt.y - h / 2, w: w, h: h };
+      canvasIdbAdd("placements", placement).then(function () {
+        canvasAddTokenElement(placement, tok);
+      });
+    });
+  });
+
+  function canvasAddTokenElement(placement, tok) {
+    const url = URL.createObjectURL(tok.blob);
+    const el = document.createElement("img");
+    el.className = "canvas-token";
+    el.src = url;
+    el.alt = tok.name;
+    el.draggable = false;
+    el.dataset.placementId = placement.id;
+    el.style.left = placement.x + "px";
+    el.style.top = placement.y + "px";
+    el.style.width = placement.w + "px";
+    el.style.height = placement.h + "px";
+    el.addEventListener("pointerdown", function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      const startImg = canvasClientToImagePoint(e.clientX, e.clientY);
+      canvasDraggingToken = {
+        el: el,
+        offsetX: startImg.x - parseFloat(el.style.left),
+        offsetY: startImg.y - parseFloat(el.style.top),
+      };
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener("pointermove", function (e) {
+      if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
+      const pt = canvasClientToImagePoint(e.clientX, e.clientY);
+      el.style.left = (pt.x - canvasDraggingToken.offsetX) + "px";
+      el.style.top = (pt.y - canvasDraggingToken.offsetY) + "px";
+    });
+    el.addEventListener("pointerup", function () {
+      if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
+      canvasDraggingToken = null;
+      canvasIdbGetAll("placements").then(function (rows) {
+        const row = rows.find(function (r) { return r.id === placement.id; });
+        if (!row) return;
+        row.x = parseFloat(el.style.left);
+        row.y = parseFloat(el.style.top);
+        canvasIdbAdd("placements", row);
+      });
+    });
+    tokenLayerEl.appendChild(el);
+  }
+  function canvasLoadPlacements(imageId) {
+    Promise.all([canvasIdbGetByIndex("placements", "imageId", imageId), canvasIdbGetAll("tokens")]).then(function (res) {
+      const placements = res[0], tokens = res[1];
+      placements.forEach(function (p) {
+        const tok = tokens.find(function (t) { return t.id === p.tokenId; });
+        if (tok) canvasAddTokenElement(p, tok);
+      });
+    });
+  }
+
+  // Deep-link support: reloading while a specific image is open re-opens the
+  // same image (Nutzerwunsch: Bilder/Striche/Token bleiben über Neuladen und
+  // Neustart erhalten).
+  if (location.hash.indexOf("#canvas-image-") === 0) {
+    canvasOpenViewer(location.hash.slice("#canvas-image-".length));
+  }
+})();
