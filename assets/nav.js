@@ -2066,6 +2066,25 @@ function setupTerrinothFilterPanel() {
     if (isHidden) set.add(key); else set.delete(key);
     setCookie(TERRINOTH_HIDDEN_COOKIE, Array.from(set).join(","));
   });
+  // Select All / Select None (Nutzerwunsch 2026-08-09) -- bulk-sets every
+  // region's checkbox + map visibility in one go, independent of whatever
+  // the filter text box currently narrows the list down to (acts on ALL
+  // regions, not just the ones currently shown by the search filter).
+  function setAllTerrinothRegionsVisibility(hideAll) {
+    const set = new Set();
+    panel.querySelectorAll(".terrinoth-filter-checkbox").forEach(function (cb) {
+      cb.checked = !hideAll;
+      applyTerrinothRegionVisibility(cb.dataset.region, hideAll);
+      if (hideAll) set.add(cb.dataset.region);
+    });
+    setCookie(TERRINOTH_HIDDEN_COOKIE, Array.from(set).join(","));
+  }
+  panel.querySelector(".terrinoth-filter-select-all").addEventListener("click", function () {
+    setAllTerrinothRegionsVisibility(false);
+  });
+  panel.querySelector(".terrinoth-filter-select-none").addEventListener("click", function () {
+    setAllTerrinothRegionsVisibility(true);
+  });
   const input = panel.querySelector(".terrinoth-filter-input");
   input.addEventListener("input", function () {
     const q = input.value.trim().toLowerCase();
