@@ -2200,6 +2200,11 @@ function setTerrinothDrawModeActive(active) {
 function terrinothResetDrawTool() {
   setTerrinothDrawModeActive(false);
   terrinothDrawStroke = null;
+  // Wipe every drawn stroke (Nutzerwunsch 2026-08-09: "das Malen ist nur für
+  // den Streammodus, also entferne alles Gekritzel wenn ich den Streammodus
+  // schließe") -- called only from exitArticleStreamMode, so this never runs
+  // while strokes are still meant to be visible.
+  document.querySelectorAll(".terrinoth-drawn-stroke").forEach(function (el) { el.remove(); });
 }
 function setupTerrinothDrawTool() {
   const tool = document.getElementById("terrinoth-draw-tool");
@@ -2208,11 +2213,16 @@ function setupTerrinothDrawTool() {
   tool.querySelector(".terrinoth-draw-tool-tab").addEventListener("click", function () {
     setTerrinothDrawModeActive(!terrinothDrawModeActive);
   });
+  // Making ANY selection here also arms Mal-Modus (Nutzerwunsch 2026-08-09:
+  // "Das Treffen einer Auswahl im Panel aktiviere automatisch den Draw-
+  // Mode") -- always forces it ON, not a toggle, since picking a color while
+  // already painting obviously shouldn't switch painting back off.
   tool.querySelectorAll(".terrinoth-draw-swatch").forEach(function (btn) {
     btn.addEventListener("click", function () {
       tool.querySelectorAll(".terrinoth-draw-swatch").forEach(function (b) { b.classList.remove("selected"); });
       btn.classList.add("selected");
       terrinothDrawColor = btn.dataset.color;
+      setTerrinothDrawModeActive(true);
     });
   });
   tool.querySelectorAll(".terrinoth-draw-size").forEach(function (btn) {
@@ -2220,10 +2230,12 @@ function setupTerrinothDrawTool() {
       tool.querySelectorAll(".terrinoth-draw-size").forEach(function (b) { b.classList.remove("selected"); });
       btn.classList.add("selected");
       terrinothDrawSize = Number(btn.dataset.size);
+      setTerrinothDrawModeActive(true);
     });
   });
   tool.querySelector(".terrinoth-draw-solid-checkbox").addEventListener("change", function (e) {
     terrinothDrawSolid = e.target.checked;
+    setTerrinothDrawModeActive(true);
   });
   // Hover-driven expand/collapse (Nutzerwunsch: matches the filter panel's
   // own mouseenter/mouseleave exactly, including the same idle-fade calls --
