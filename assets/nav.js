@@ -981,6 +981,16 @@ function exitArticleStreamMode() {
   // (now invisible, CSS display:none) picker could leave draw mode "stuck"
   // on and hijack the next left-drag on the map in normal mode.
   if (typeof terrinothResetDrawTool === "function") terrinothResetDrawTool();
+  // Canvas (Nutzerwunsch 2026-08-09): opening an image on /canvas/ now
+  // enters this SAME real Stream-Modus (see the click handler in the
+  // Canvas IIFE further down) instead of a separate custom fullscreen skin
+  // -- so leaving Stream-Modus via Escape must also close the Canvas
+  // viewer back to its gallery. canvasCloseViewer is defined inside that
+  // IIFE and exposed on window specifically so this standalone function
+  // (which runs on every page, most of which have no Canvas viewer at all)
+  // can reach it via the same optional typeof-guard pattern as
+  // terrinothResetDrawTool above.
+  if (typeof canvasCloseViewer === "function") canvasCloseViewer();
   // Same re-apply as on entry above, now snapping back to whatever
   // normal/fullscreen already had stored -- otherwise the article would
   // keep rendering at Stream-Modus's own (far larger) --font-scale value
@@ -2703,7 +2713,6 @@ document.addEventListener("click", function (e) {
   const imageGrid = document.getElementById("canvas-image-grid");
   const tokenGrid = document.getElementById("canvas-token-grid");
   const viewerEl = document.getElementById("canvas-viewer");
-  const backBtn = document.getElementById("canvas-back-btn");
 
   function canvasDeleteImageCascade(imageId) {
     // A deleted image's own strokes/placements are otherwise orphaned rows
@@ -2738,7 +2747,7 @@ document.addEventListener("click", function (e) {
         });
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          if (!confirm('Bild "' + img.caption + '" wirklich löschen?')) return;
+          if (!confirm('Delete image "' + img.caption + '"?')) return;
           canvasDeleteImageCascade(img.id).then(renderCanvasImageGrid);
         });
         imageGrid.appendChild(item);
@@ -2754,13 +2763,13 @@ document.addEventListener("click", function (e) {
         const item = document.createElement("div");
         item.className = "canvas-gallery-item";
         item.innerHTML =
-          '<button type="button" class="canvas-gallery-delete" aria-label="Löschen">×</button>' +
+          '<button type="button" class="canvas-gallery-delete" aria-label="Delete">×</button>' +
           '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
           '<div class="canvas-gallery-caption"></div>';
         item.querySelector(".canvas-gallery-caption").textContent = tok.name;
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          if (!confirm('Token "' + tok.name + '" wirklich löschen?')) return;
+          if (!confirm('Delete token "' + tok.name + '"?')) return;
           canvasIdbDelete("tokens", tok.id).then(renderCanvasTokenGrid);
         });
         tokenGrid.appendChild(item);
@@ -2769,45 +2778,53 @@ document.addEventListener("click", function (e) {
     });
   }
 
-  document.getElementById("canvas-image-upload-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const captionInput = document.getElementById("canvas-image-caption");
-    const fileInput = document.getElementById("canvas-image-file");
-    const file = fileInput.files[0];
+  // -- Upload: a single "+" button per section opens the file picker
+  // directly; once a file is chosen, a plain prompt() asks for the caption/
+  // name and the image is stored immediately -- no separate form fields, no
+  // separate submit step (Nutzerwunsch 2026-08-09: "einfach nur einen
+  // Button... Nach Auswahl einer Datei soll ein Prompt kommen. Zack,
+  // fertig."). Cancelling either the file picker or the prompt adds nothing.
+  document.getElementById("canvas-image-add-btn").addEventListener("click", function () {
+    document.getElementById("canvas-image-file").click();
+  });
+  document.getElementById("canvas-image-file").addEventListener("change", function (e) {
+    const file = e.target.files[0];
     if (!file) return;
+    const caption = prompt("Caption");
+    if (caption === null) { e.target.value = ""; return; }
     canvasBlobDimensions(file).then(function (dims) {
       return canvasIdbAdd("images", {
         id: canvasUid(),
-        caption: captionInput.value.trim() || file.name,
+        caption: caption.trim() || file.name,
         blob: file,
         width: dims.width,
         height: dims.height,
         createdAt: Date.now(),
       });
     }).then(function () {
-      form.reset();
+      e.target.value = "";
       renderCanvasImageGrid();
     });
   });
-  document.getElementById("canvas-token-upload-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const nameInput = document.getElementById("canvas-token-name");
-    const fileInput = document.getElementById("canvas-token-file");
-    const file = fileInput.files[0];
+  document.getElementById("canvas-token-add-btn").addEventListener("click", function () {
+    document.getElementById("canvas-token-file").click();
+  });
+  document.getElementById("canvas-token-file").addEventListener("change", function (e) {
+    const file = e.target.files[0];
     if (!file) return;
+    const name = prompt("Name");
+    if (name === null) { e.target.value = ""; return; }
     canvasBlobDimensions(file).then(function (dims) {
       return canvasIdbAdd("tokens", {
         id: canvasUid(),
-        name: nameInput.value.trim() || file.name,
+        name: name.trim() || file.name,
         blob: file,
         width: dims.width,
         height: dims.height,
         createdAt: Date.now(),
       });
     }).then(function () {
-      form.reset();
+      e.target.value = "";
       renderCanvasTokenGrid();
     });
   });
@@ -2832,6 +2849,16 @@ document.addEventListener("click", function (e) {
   let canvasPanState = null;
   let canvasDraggingToken = null;
 
+  // Opening an image enters the site's real, single Stream-Modus (the same
+  // one Ctrl+Alt+W triggers everywhere else) instead of a separate custom
+  // fullscreen skin (Nutzerwunsch 2026-08-09, correcting an earlier,
+  // independent-of-Stream-Modus design) -- enterArticleStreamMode is a
+  // plain top-level function declared earlier in this same script, so it's
+  // directly callable here with no typeof guard needed (unlike
+  // canvasCloseViewer's own reverse direction below, which DOES need one
+  // since Canvas's own code doesn't exist on every page). Called from
+  // directly inside the thumbnail's click handler, so requestFullscreen's
+  // own user-gesture requirement is satisfied.
   function canvasOpenViewer(imageId) {
     canvasIdbGetAll("images").then(function (images) {
       const img = images.find(function (i) { return i.id === imageId; });
@@ -2854,8 +2881,17 @@ document.addEventListener("click", function (e) {
       canvasFitToStage();
       canvasLoadStrokes(imageId);
       canvasLoadPlacements(imageId);
+      enterArticleStreamMode();
     });
   }
+  // Pure DOM-side cleanup (viewer -> gallery), deliberately NOT calling
+  // exitArticleStreamMode itself -- it's the other way around: that
+  // function (defined earlier in this file, runs on every page) calls THIS
+  // one via a typeof guard when Escape ends Stream-Modus, see its own doc
+  // comment. Exposed on window so that guard can reach it; calling it
+  // directly here as well would be harmless (idempotent) but is never
+  // needed since Escape is the only exit path (no back button anymore,
+  // Nutzerwunsch 2026-08-09).
   function canvasCloseViewer() {
     canvasCurrentImage = null;
     viewerEl.hidden = true;
@@ -2863,7 +2899,7 @@ document.addEventListener("click", function (e) {
     if (location.hash.indexOf("#canvas-image-") === 0) history.replaceState(null, "", location.pathname + location.search);
     renderCanvasImageGrid();
   }
-  backBtn.addEventListener("click", canvasCloseViewer);
+  window.canvasCloseViewer = canvasCloseViewer;
 
   function canvasFitToStage() {
     if (!canvasCurrentImage) return;
@@ -3021,9 +3057,9 @@ document.addEventListener("click", function (e) {
 
   // -- Draw tool panel: same color/size/solid picker as the Terrinoth map's
   // own draw tool, but its own classes (.canvas-draw-tool-* vs. .terrinoth-
-  // draw-tool-*) and always visible here -- unlike the map, Canvas's zoom/
-  // pan/paint view is NOT gated behind the site's Stream-Modus toggle
-  // (Nutzerwunsch 2026-08-09: "unabhängig, immer Vollbild-Stil").
+  // draw-tool-*) -- the whole viewer (draw tool included) only ever exists
+  // while the real Stream-Modus is active, since opening an image IS what
+  // enters Stream-Modus now (see canvasOpenViewer above).
   drawTool.querySelector(".canvas-draw-tool-tab").addEventListener("click", function () {
     canvasSetDrawModeActive(!canvasDrawModeActive);
   });
@@ -3047,13 +3083,60 @@ document.addEventListener("click", function (e) {
     canvasDrawSolid = e.target.checked;
     canvasSetDrawModeActive(true);
   });
-  drawTool.addEventListener("mouseenter", function () { drawTool.classList.add("expanded"); });
+  // REAL BUG fix, found via screenshot: the draw tool's own dropdown body is
+  // wide enough to reach past the adjacent token tray's tab (they sit right
+  // next to each other in .canvas-toolbar, Nutzerwunsch 2026-08-09), so
+  // both expanded at once visually overlapped. Opening one now always
+  // closes the other instead.
+  drawTool.addEventListener("mouseenter", function () {
+    drawTool.classList.add("expanded");
+    tokenTray.classList.remove("expanded");
+  });
   drawTool.addEventListener("mouseleave", function () { drawTool.classList.remove("expanded"); });
+
+  // -- Global token size (Nutzerwunsch 2026-08-09: "+"/"-" in the token
+  // panel scales EVERY token, existing and future, site-wide) --
+  // Placements store an unscaled BASE center (cx,cy) + size (w,h); actual
+  // on-screen size/position is always BASE * current scale, recomputed live
+  // whenever the scale changes (canvasApplyTokenScaleToVisibleTokens) --
+  // this is what makes "+"/"-" affect already-placed tokens instantly
+  // without rewriting their stored data, and why new placements (computed
+  // fresh at drop time) automatically pick up whatever scale is current.
+  // Kept in localStorage, not IndexedDB, since it's one scalar shared by
+  // the whole page, not a record collection.
+  const CANVAS_TOKEN_SCALE_KEY = "canvasTokenScale";
+  function canvasGetTokenScale() {
+    const v = parseFloat(localStorage.getItem(CANVAS_TOKEN_SCALE_KEY));
+    return v > 0 ? v : 1;
+  }
+  function canvasSetTokenScale(v) {
+    const clamped = Math.min(4, Math.max(0.25, v));
+    localStorage.setItem(CANVAS_TOKEN_SCALE_KEY, String(clamped));
+    canvasApplyTokenScaleToVisibleTokens();
+  }
+  function canvasRenderTokenElement(el) {
+    const scale = canvasGetTokenScale();
+    const cx = Number(el.dataset.cx), cy = Number(el.dataset.cy);
+    const w = Number(el.dataset.baseW) * scale, h = Number(el.dataset.baseH) * scale;
+    el.style.left = (cx - w / 2) + "px";
+    el.style.top = (cy - h / 2) + "px";
+    el.style.width = w + "px";
+    el.style.height = h + "px";
+  }
+  function canvasApplyTokenScaleToVisibleTokens() {
+    tokenLayerEl.querySelectorAll(".canvas-token").forEach(canvasRenderTokenElement);
+  }
+  document.getElementById("canvas-token-scale-up").addEventListener("click", function () {
+    canvasSetTokenScale(canvasGetTokenScale() * 1.15);
+  });
+  document.getElementById("canvas-token-scale-down").addEventListener("click", function () {
+    canvasSetTokenScale(canvasGetTokenScale() / 1.15);
+  });
 
   // -- Token tray (global library) + drag-to-place onto the current image --
   function canvasRenderTokenTray(tokens) {
-    const body = tokenTray.querySelector(".canvas-token-tray-body");
-    body.innerHTML = "";
+    const items = document.getElementById("canvas-token-tray-items");
+    items.innerHTML = "";
     tokens.forEach(function (tok) {
       const url = URL.createObjectURL(tok.blob);
       const el = document.createElement("img");
@@ -3065,10 +3148,13 @@ document.addEventListener("click", function (e) {
       el.addEventListener("dragstart", function (e) {
         e.dataTransfer.setData("text/plain", tok.id);
       });
-      body.appendChild(el);
+      items.appendChild(el);
     });
   }
-  tokenTray.addEventListener("mouseenter", function () { tokenTray.classList.add("expanded"); });
+  tokenTray.addEventListener("mouseenter", function () {
+    tokenTray.classList.add("expanded");
+    drawTool.classList.remove("expanded");
+  });
   tokenTray.addEventListener("mouseleave", function () { tokenTray.classList.remove("expanded"); });
 
   stageEl.addEventListener("dragover", function (e) { e.preventDefault(); });
@@ -3080,13 +3166,15 @@ document.addEventListener("click", function (e) {
       const tok = tokens.find(function (t) { return t.id === tokenId; });
       if (!tok) return;
       const pt = canvasClientToImagePoint(e.clientX, e.clientY);
-      // Default token size: 8% of the background image's shorter side, in
-      // that image's own natural-pixel space -- so a token scales WITH the
-      // map when zooming (like a real miniature on a table), unlike brush
+      // Base size: 8% of the background image's shorter side, in that
+      // image's own natural-pixel space -- so a token scales WITH the map
+      // when zooming (like a real miniature on a table), unlike brush
       // strokes above which deliberately stay constant on-screen instead.
+      // This is the UNSCALED base the global token-size control above
+      // multiplies at render time, not the final on-screen size.
       const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
       const h = w * (tok.height / tok.width);
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, x: pt.x - w / 2, y: pt.y - h / 2, w: w, h: h };
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: h };
       canvasIdbAdd("placements", placement).then(function () {
         canvasAddTokenElement(placement, tok);
       });
@@ -3101,26 +3189,28 @@ document.addEventListener("click", function (e) {
     el.alt = tok.name;
     el.draggable = false;
     el.dataset.placementId = placement.id;
-    el.style.left = placement.x + "px";
-    el.style.top = placement.y + "px";
-    el.style.width = placement.w + "px";
-    el.style.height = placement.h + "px";
+    el.dataset.cx = String(placement.cx);
+    el.dataset.cy = String(placement.cy);
+    el.dataset.baseW = String(placement.w);
+    el.dataset.baseH = String(placement.h);
+    canvasRenderTokenElement(el);
     el.addEventListener("pointerdown", function (e) {
       e.stopPropagation();
       e.preventDefault();
       const startImg = canvasClientToImagePoint(e.clientX, e.clientY);
       canvasDraggingToken = {
         el: el,
-        offsetX: startImg.x - parseFloat(el.style.left),
-        offsetY: startImg.y - parseFloat(el.style.top),
+        offsetX: Number(el.dataset.cx) - startImg.x,
+        offsetY: Number(el.dataset.cy) - startImg.y,
       };
       el.setPointerCapture(e.pointerId);
     });
     el.addEventListener("pointermove", function (e) {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
       const pt = canvasClientToImagePoint(e.clientX, e.clientY);
-      el.style.left = (pt.x - canvasDraggingToken.offsetX) + "px";
-      el.style.top = (pt.y - canvasDraggingToken.offsetY) + "px";
+      el.dataset.cx = String(pt.x + canvasDraggingToken.offsetX);
+      el.dataset.cy = String(pt.y + canvasDraggingToken.offsetY);
+      canvasRenderTokenElement(el);
     });
     el.addEventListener("pointerup", function () {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
@@ -3128,8 +3218,8 @@ document.addEventListener("click", function (e) {
       canvasIdbGetAll("placements").then(function (rows) {
         const row = rows.find(function (r) { return r.id === placement.id; });
         if (!row) return;
-        row.x = parseFloat(el.style.left);
-        row.y = parseFloat(el.style.top);
+        row.cx = Number(el.dataset.cx);
+        row.cy = Number(el.dataset.cy);
         canvasIdbAdd("placements", row);
       });
     });
