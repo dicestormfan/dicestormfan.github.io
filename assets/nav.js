@@ -2074,28 +2074,51 @@ function setupTerrinothFilterPanel() {
       li.classList.toggle("filtered-out", q !== "" && text.indexOf(q) === -1);
     });
   });
-  panel.addEventListener("mouseenter", function () { panel.classList.add("expanded"); });
-  panel.addEventListener("mouseleave", function () { panel.classList.remove("expanded"); });
+  panel.addEventListener("mouseenter", function () {
+    panel.classList.add("expanded");
+    terrinothShowFilterPanel();
+  });
+  panel.addEventListener("mouseleave", function () {
+    panel.classList.remove("expanded");
+    terrinothScheduleFilterHide();
+  });
 }
 setupTerrinothFilterPanel();
 
 // Idle/active fade (Nutzerwunsch 2026-08-08: "fadet aus, wenn die Maus ein
 // paar Sekunden nicht bewegt wurde... fadet schnell ein, wenn sie bewegt
-// wird") -- scoped to movement inside .terrinoth-map specifically (this is
-// map UI, not a page-wide idle concept). The actual fast-in/slow-out
-// asymmetry is pure CSS (two different transition-durations on the base vs
-// .idle-hidden state, see site.scss) -- this timer only ever adds/removes
-// the class.
+// wird"; refined 2026-08-09: the countdown must never run while the cursor
+// is resting inside the panel itself -- it may only START once the mouse
+// actually LEAVES the panel's own area, not merely pause counting down
+// while movement continues). Scoped to movement inside .terrinoth-map
+// specifically (this is map UI, not a page-wide idle concept). The actual
+// fast-in/slow-out asymmetry is pure CSS (two different transition-durations
+// on the base vs .idle-hidden state, see site.scss) -- these helpers only
+// ever add/remove the class and arm/disarm the timer.
 let terrinothIdleTimer = null;
-function resetTerrinothIdleTimer() {
+function terrinothClearIdleTimer() {
+  if (terrinothIdleTimer) { clearTimeout(terrinothIdleTimer); terrinothIdleTimer = null; }
+}
+function terrinothShowFilterPanel() {
   const panel = document.getElementById("terrinoth-filter-panel");
   if (!panel) return;
   panel.classList.remove("idle-hidden");
-  if (terrinothIdleTimer) clearTimeout(terrinothIdleTimer);
+  terrinothClearIdleTimer();
+}
+function terrinothScheduleFilterHide() {
+  const panel = document.getElementById("terrinoth-filter-panel");
+  if (!panel) return;
+  terrinothClearIdleTimer();
   terrinothIdleTimer = setTimeout(function () { panel.classList.add("idle-hidden"); }, 3000);
 }
+// Movement elsewhere on the map (not over the panel, which has its own
+// mouseenter/mouseleave above) keeps resetting the countdown as before.
 document.addEventListener("mousemove", function (e) {
-  if (e.target.closest(".terrinoth-map")) resetTerrinothIdleTimer();
+  if (!e.target.closest(".terrinoth-map")) return;
+  const panel = document.getElementById("terrinoth-filter-panel");
+  if (panel && panel.contains(e.target)) return;
+  terrinothShowFilterPanel();
+  terrinothScheduleFilterHide();
 });
 
 // ---- "Show on map" popover (Nutzerwunsch 2026-08-08) ----
