@@ -172,6 +172,22 @@ document.addEventListener("click", function (e) {
   const href = a.getAttribute("href");
   if (!href || !href.startsWith("/") || a.target === "_blank") return;
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  // Terrinoth map labels in Stream-Modus (Nutzerwunsch 2026-08-09): a click
+  // does NOTHING at all, full stop -- not just "no SPA navigation" but no
+  // native browser navigation either, hence the explicit preventDefault
+  // before returning (a bare "return" here would otherwise still let the
+  // real <a href> fall through to the browser's own default navigation).
+  // Deliberately NOT gated on terrinothDrawModeActive specifically: this
+  // covers plain stream-mode browsing AND painting alike, on purpose --
+  // the mousedown capture-phase intercept elsewhere only ever stops the
+  // PAN-drag handler from seeing that one event, it does nothing to the
+  // separate "click" event the browser still synthesizes afterward from a
+  // stationary mousedown+mouseup pair, which is exactly how a Mal-Klick on
+  // a label could otherwise still reach this handler and navigate.
+  if (document.body.classList.contains("stream-mode") && a.closest(".terrinoth-map")) {
+    e.preventDefault();
+    return;
+  }
   e.preventDefault();
 
   // A tree-node label click always toggles ITS OWN branch closed if it was
