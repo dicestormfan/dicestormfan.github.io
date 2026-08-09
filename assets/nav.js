@@ -1996,9 +1996,6 @@ const TERRINOTH_IMPORTANT_REGIONS = new Set([
   "highmont", "grünstollen", "thelgrim", "greyhaven", "archaut",
   "tamalir", "forge", "vynelvale", "dawnsmoor",
 ]);
-// Must match the wheel handler's zoomMinDivisor=6 for Terrinoth above (100
-// / (1/6) = 600).
-const TERRINOTH_MAX_ZOOM_PERCENT = 600;
 // Called after every viewBox change on a Terrinoth map (wheel, drag,
 // animateMennaraViewBox's own rAF step) -- cheap enough (a few dozen
 // elements, one style property or classList check each) to just recompute
@@ -2033,24 +2030,18 @@ function updateTerrinothZoomLabels(svg) {
   const zoomPercent = (baseW / svg.viewBox.baseVal.width) * 100;
   mapEl.querySelectorAll(".mennara-region-label[data-region]").forEach(function (label) {
     if (TERRINOTH_IMPORTANT_REGIONS.has(label.dataset.region)) {
-      // "Mitzoom-Verhalten der Spezial-Labels... deaktivieren" while
-      // painting (Nutzerwunsch 2026-08-09) -- this whole inverse-zoom-scale
-      // mechanism is a continuous per-tick JS/CSS adjustment; while Mal-
-      // Modus is active it's switched off entirely (same removeProperty as
-      // the non-stream-mode early-return above, falls back to the CSS
-      // default of unscaled/plain), same reasoning as pausing hover-react
-      // and native right-click below -- painting shouldn't fight an
-      // independently-animating label on top of the stroke being drawn.
-      if (terrinothDrawModeActive) {
-        label.style.removeProperty("--zoom-scale");
-      } else {
-        // Inverse-proportional to zoom (Nutzerwunsch 2026-08-08): at 100%
-        // zoom (fully zoomed out) this is TERRINOTH_MAX_ZOOM_PERCENT/100 (6x
-        // at the current 600% max); at the max zoom itself it's exactly 1
-        // (normal size) -- Math.max(zoomPercent,100) is just a defensive
-        // floor, zoomPercent should never actually go below 100.
-        label.style.setProperty("--zoom-scale", TERRINOTH_MAX_ZOOM_PERCENT / Math.max(zoomPercent, 100));
-      }
+      // "Mitwachsen-/-schrumpfen der Speziallabels" disabled EVERYWHERE now
+      // (Nutzerwunsch 2026-08-09, widened from the Mal-Modus-only version
+      // this replaces) -- the inverse-zoom-scale compensation that kept
+      // these labels a constant visual size regardless of zoom is switched
+      // off unconditionally; removeProperty falls back to the CSS default
+      // (unscaled), so an important label now just grows/shrinks with the
+      // map like any other content, same as a non-important one already
+      // does. TERRINOTH_IMPORTANT_REGIONS itself still matters for the
+      // OTHER thing it gates -- staying exempt from the 200%-zoom
+      // visibility fade below, unrelated to this and not part of this
+      // request.
+      label.style.removeProperty("--zoom-scale");
     } else if (label.classList.contains("zoom-gated")) {
       label.classList.toggle("zoom-label-hidden", zoomPercent < 200);
     }
@@ -2429,12 +2420,14 @@ document.addEventListener("mousemove", function (e) {
 document.addEventListener("mouseup", function () {
   terrinothDrawStroke = null;
 });
-// Right-click (Nutzerwunsch 2026-08-09, widened same day: "NIE das native
-// Browser-Menu"): a stroke right-clicked directly is always deleted, in or
-// out of Mal-Modus ("auch im Nicht-Mal-Modus"). Beyond that, the native
-// context menu is suppressed on the map UNCONDITIONALLY now (not just while
-// Mal-Modus is active, an earlier version's narrower scope) -- ending Mal-
-// Modus itself still only happens if it was actually on.
+// Right-click (Nutzerwunsch 2026-08-09, widened twice same day). A stroke
+// right-clicked directly is always deleted, in or out of Mal-Modus, in or
+// out of Stream-Modus ("auch im Nicht-Mal-Modus") -- this part is
+// deliberately unscoped, unlike the toggle below. Off any stroke, but only
+// IN Stream-Modus ("Im Streaming-Modus soll..."): right-click now simply
+// TOGGLES Mal-Modus both ways (was one-directional before, only ever
+// turning it off) -- native context menu suppressed either way so it never
+// appears over the map at all.
 document.addEventListener("contextmenu", function (e) {
   const stroke = e.target.closest(".terrinoth-drawn-stroke");
   if (stroke) {
@@ -2442,9 +2435,9 @@ document.addEventListener("contextmenu", function (e) {
     stroke.remove();
     return;
   }
-  if (e.target.closest(".terrinoth-map svg")) {
+  if (document.body.classList.contains("stream-mode") && e.target.closest(".terrinoth-map svg")) {
     e.preventDefault();
-    if (terrinothDrawModeActive) setTerrinothDrawModeActive(false);
+    setTerrinothDrawModeActive(!terrinothDrawModeActive);
   }
 });
 
