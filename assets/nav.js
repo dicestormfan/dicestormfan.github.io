@@ -2198,7 +2198,17 @@ document.addEventListener("mousemove", function (e) {
 // navigation away and back rebuilds the map from the server-rendered markup
 // (see swapContent's re-init block above) and starts with an empty layer
 // again, same as any other client-side-only UI state on this page.
-const TERRINOTH_DRAW_SIZES = { small: 3, medium: 7, large: 14 };
+// Bumped from {3,7,14} (Nutzerwunsch 2026-08-09, "malt viel zu klein") --
+// confirmed via direct on-screen measurement that the OLD values rendered
+// mathematically exactly as intended (7 -> 7.0 CSS px on screen, no bug),
+// they were just objectively thin for a tool meant to be read from across a
+// room during Stream-Modus. Now matches the picker's own preview dots
+// exactly (already doubled to 8/16/28 CSS px, Nutzerwunsch 2026-08-09
+// earlier the same day) -- the preview should promise the actual output,
+// not a different, smaller one. Keep the <button data-size="..."> values in
+// buildTerrinothMapHtml in sync with these (small/medium's HTML attributes
+// currently read 8/16 too).
+const TERRINOTH_DRAW_SIZES = { small: 8, medium: 16, large: 28 };
 let terrinothDrawColor = "#000000";
 let terrinothDrawSize = TERRINOTH_DRAW_SIZES.medium;
 let terrinothDrawSolid = false;
@@ -2214,14 +2224,32 @@ let terrinothDrawSolid = false;
 let terrinothDrawModeActive = false;
 let terrinothDrawStroke = null;
 
-function terrinothClientToSvgPoint(svg, clientX, clientY) {
+// REAL BUG fix (Nutzerwunsch 2026-08-09, "malt nicht da, wo der Cursor
+// ist"): a first version always inverted the ROOT <svg>'s own CTM, then
+// used that result as-is for a point appended INSIDE "terrinoth-draw-
+// layer" -- which is not a direct child of the root <svg> at all, it sits
+// inside <g id="Captions" transform="translate(-12.936803,-16.798534)">
+// (confirmed by walking svg.getScreenCTM() vs. the layer's own
+// getScreenCTM() and comparing the two matrices directly -- a plain
+// translate, no scale, exactly explaining a constant, zoom-amplified
+// position error and nothing about stroke size). Every map-art label lives
+// inside that same "Captions" group (see the drawLayerInserted block in
+// buildTerrinothMapHtml, which inserts the draw-layer right before the
+// FIRST such label), so any point meant to land inside it must be
+// expressed in THAT group's own local coordinate space, not the root
+// <svg>'s -- hence inverting the LAYER's own getScreenCTM() specifically,
+// not the root svg's. createSVGPoint() itself is only ever available on
+// the root SVGSVGElement (not on a plain <g>), so svg is still needed as
+// the point-factory even though layer is what supplies the actual
+// transform now.
+function terrinothClientToLayerPoint(svg, layer, clientX, clientY) {
   const pt = svg.createSVGPoint();
   pt.x = clientX;
   pt.y = clientY;
-  const ctm = svg.getScreenCTM();
+  const ctm = layer.getScreenCTM();
   if (!ctm) return { x: 0, y: 0 };
-  const svgPt = pt.matrixTransform(ctm.inverse());
-  return { x: svgPt.x, y: svgPt.y };
+  const layerPt = pt.matrixTransform(ctm.inverse());
+  return { x: layerPt.x, y: layerPt.y };
 }
 function setTerrinothDrawModeActive(active) {
   terrinothDrawModeActive = active;
@@ -2376,7 +2404,7 @@ document.addEventListener("mousedown", function (e) {
   e.stopPropagation();
   const layer = svg.querySelector(".terrinoth-draw-layer");
   if (!layer) return;
-  const pt = terrinothClientToSvgPoint(svg, e.clientX, e.clientY);
+  const pt = terrinothClientToLayerPoint(svg, layer, e.clientX, e.clientY);
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("class", "terrinoth-drawn-stroke");
   path.dataset.drawSize = String(terrinothDrawSize);
@@ -2390,11 +2418,11 @@ document.addEventListener("mousedown", function (e) {
   const d = "M " + pt.x + " " + pt.y;
   path.setAttribute("d", d);
   layer.appendChild(path);
-  terrinothDrawStroke = { svg, path, d };
+  terrinothDrawStroke = { svg, layer, path, d };
 }, true);
 document.addEventListener("mousemove", function (e) {
   if (!terrinothDrawStroke) return;
-  const pt = terrinothClientToSvgPoint(terrinothDrawStroke.svg, e.clientX, e.clientY);
+  const pt = terrinothClientToLayerPoint(terrinothDrawStroke.svg, terrinothDrawStroke.layer, e.clientX, e.clientY);
   terrinothDrawStroke.d += " L " + pt.x + " " + pt.y;
   terrinothDrawStroke.path.setAttribute("d", terrinothDrawStroke.d);
 });
