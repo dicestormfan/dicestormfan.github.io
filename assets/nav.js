@@ -1696,16 +1696,16 @@ document.addEventListener("click", function (e) {
     const svg = e.target.closest(".mennara-map svg");
     if (!svg) return;
     e.preventDefault();
-    // REAL BUG fix (Nutzerwunsch 2026-08-09, "sobald ich das Mausrad
-    // betätige wird der Pinsel groß"): a stroke's width is computed ONCE at
-    // mousedown (see terrinothCurrentZoomRatio's own doc comment) and never
-    // re-derived afterward -- wheel-zooming the viewBox WHILE a stroke is
-    // actively being extended (mouse still held down) changes what that
-    // fixed raw viewBox-unit width actually represents on screen without
-    // ever updating it, so the in-progress stroke visibly swells or shrinks
-    // as you scroll. Simplest correct fix: freeze zoom entirely while a
-    // stroke is in progress -- preventDefault above still stops the page
-    // itself from scrolling, only the viewBox change is skipped.
+    // Fix (Nutzerwunsch 2026-08-09, "sobald ich das Mausrad betätige wird
+    // der Pinsel groß"): stroke-width is now continuously kept correct on
+    // every zoom tick regardless (see terrinothRefreshStrokeWidths's own
+    // doc comment, called from updateTerrinothZoomLabels below), so this
+    // guard is no longer the only thing standing between a wheel-zoom and a
+    // visibly wrong in-progress stroke -- kept anyway as a UX choice: zoom
+    // and an active paint gesture fighting for the same pointer position is
+    // confusing regardless of whether the math stays correct underneath.
+    // preventDefault above still stops the page itself from scrolling, only
+    // the viewBox change is skipped.
     if (terrinothDrawStroke) return;
     if (svg._mennaraAnimFrame) { cancelAnimationFrame(svg._mennaraAnimFrame); svg._mennaraAnimFrame = null; }
     // "Show on map" popover map (Nutzerwunsch 2026-08-08): "man kann NICHT
@@ -2055,6 +2055,13 @@ function updateTerrinothZoomLabels(svg) {
       label.classList.toggle("zoom-label-hidden", zoomPercent < 200);
     }
   });
+  // Keep every already-drawn stroke's on-screen thickness constant across
+  // THIS zoom tick too (Nutzerwunsch 2026-08-09, "lass den Pinsel klein") --
+  // see terrinothRefreshStrokeWidths's own doc comment further down (NAV_JS
+  // top-level function, defined after this one but only ever called here,
+  // well after the whole script has finished loading -- same safe forward
+  // reference as terrinothDrawModeActive's own use just above).
+  if (typeof terrinothRefreshStrokeWidths === "function") terrinothRefreshStrokeWidths(svg);
 }
 document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
 
@@ -2319,25 +2326,46 @@ document.addEventListener("mousemove", function (e) {
 // above ever sees it. stopPropagation here halts the event's path entirely
 // (it never reaches the target or the bubble phase), which is what stops
 // that handler from starting its own pan-drag while the brush tool is active.
-// REAL BUG fix (Nutzerwunsch 2026-08-09, "wird RIESIG wenn man zu malen
-// anfängt"): stroke-width was written straight from TERRINOTH_DRAW_SIZES as
-// a raw viewBox-unit number, with no relation to the CURRENT zoom level --
-// the picker's own preview dots (4/8/14px, doubled to 8/16/28px) are fixed
-// SCREEN pixels, setting an expectation of "roughly this thick on screen"
-// that a flat viewBox-unit width can't honor. Strokes live in the exact same
-// coordinate space as the map artwork (see the "terrinoth-draw-layer"
-// insertion point above), so they zoom WITH the map just like any other
-// SVG content -- the same raw width that looked "medium" at 100% zoom
-// covers proportionally more actual screen pixels the further in you're
-// zoomed, exactly matching the report. terrinothCurrentZoomRatio (same
-// baseW/currentWidth formula updateTerrinothZoomLabels already uses for
-// zoomPercent, just as a plain ratio) divides the chosen size down at
-// stroke-creation time so its ON-SCREEN thickness stays constant regardless
-// of current zoom, matching what the preview dots actually promise.
-function terrinothCurrentZoomRatio(svg) {
-  if (!svg.dataset.baseViewbox) svg.dataset.baseViewbox = svg.getAttribute("viewBox");
-  const baseW = Number(svg.dataset.baseViewbox.split(/\s+/)[2]);
-  return baseW / svg.viewBox.baseVal.width;
+// REAL BUG fix (Nutzerwunsch 2026-08-09, "wird RIESIG"/"lass den Pinsel
+// klein" -- three rounds). TERRINOTH_DRAW_SIZES (3/7/14) is now treated
+// directly as a TARGET SCREEN-PIXEL width -- the picker's own preview dots
+// (doubled to 8/16/28 CSS px) already set that exact expectation. A raw
+// viewBox-unit stroke-width can't honor it on its own: strokes live in the
+// same coordinate space as the map artwork, so they zoom WITH the map like
+// any other SVG content, AND (a second, independently-discovered factor)
+// the .mennara-map wrapper itself switches from "fit to container,
+// centered" to "full client area" the moment ANY zoom interaction first
+// happens (a pre-existing, unrelated Nutzerwunsch 2026-08-07 feature --
+// see mennaraDrag/the wheel handler's own "is-zoomed" comments) -- which
+// changes the SVG's own on-screen CSS size independently of viewBox zoom,
+// a factor an EARLIER version of this fix (a fixed baseViewbox-relative
+// ratio) never accounted for at all, confirmed the hard way: stroke width
+// stayed perfectly self-consistent tick-to-tick but jumped once right at
+// the very first zoom interaction. Reading the SVG's LIVE
+// getBoundingClientRect() on every call sidesteps that -- this always asks
+// "how many viewBox units is 1 real screen pixel RIGHT NOW", with no cached
+// baseline to go stale, so it's correct across zoom level changes AND
+// container-mode changes alike, uniformly.
+function terrinothViewBoxUnitsPerScreenPx(svg) {
+  return svg.viewBox.baseVal.width / svg.getBoundingClientRect().width;
+}
+// Every stroke keeps its ORIGINAL intended size (in TERRINOTH_DRAW_SIZES'
+// target-screen-px units, i.e. what the user actually picked) on its own
+// data-draw-size attribute; this function re-derives its stroke-width from
+// that stored value + the current px-per-viewBox-unit ratio, called from
+// updateTerrinothZoomLabels below -- which already runs on every single
+// viewBox change (wheel, drag, animateMennaraViewBox's rAF step), see that
+// function's own doc comment. Net effect: a stroke's on-screen thickness
+// stays constant FOREVER after it's drawn, not just at the instant it was
+// started -- the same "stay small regardless of zoom" treatment
+// TERRINOTH_IMPORTANT_REGIONS labels already get.
+function terrinothRefreshStrokeWidths(svg) {
+  const unitsPerPx = terrinothViewBoxUnitsPerScreenPx(svg);
+  svg.querySelectorAll(".terrinoth-drawn-stroke").forEach(function (stroke) {
+    const size = Number(stroke.dataset.drawSize);
+    if (!size) return;
+    stroke.setAttribute("stroke-width", String(size * unitsPerPx));
+  });
 }
 document.addEventListener("mousedown", function (e) {
   if (!terrinothDrawModeActive || e.button !== 0) return;
@@ -2351,10 +2379,11 @@ document.addEventListener("mousedown", function (e) {
   const pt = terrinothClientToSvgPoint(svg, e.clientX, e.clientY);
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("class", "terrinoth-drawn-stroke");
+  path.dataset.drawSize = String(terrinothDrawSize);
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", terrinothDrawColor);
   path.setAttribute("stroke-opacity", terrinothDrawSolid ? "1" : "0.5");
-  path.setAttribute("stroke-width", String(terrinothDrawSize / terrinothCurrentZoomRatio(svg)));
+  path.setAttribute("stroke-width", String(terrinothDrawSize * terrinothViewBoxUnitsPerScreenPx(svg)));
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   path.setAttribute("pointer-events", "stroke");
