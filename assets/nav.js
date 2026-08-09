@@ -1479,12 +1479,20 @@ document.addEventListener("click", function (e) {
   function mennaraTriggerImageFor(el) {
     return el.matches("image.mennara-trigger") ? el : el.querySelector("image.mennara-trigger");
   }
+  // Captions don't hover-react while painting (Nutzerwunsch 2026-08-09) --
+  // terrinothDrawModeActive is declared later in this file (the draw-tool
+  // section further down) but only ever READ here, inside a listener that
+  // only runs on an actual later mouseover/mouseout, by which point the
+  // whole script (including that declaration) has already run once -- same
+  // safe forward-reference as updateTerrinothZoomLabels's own use of it.
   document.addEventListener("mouseover", function (e) {
+    if (typeof terrinothDrawModeActive !== "undefined" && terrinothDrawModeActive) return;
     const src = e.target.closest(".mennara-map [data-region]");
     if (!src || mennaraTriggerImageFor(src)) return;
     setMennaraRegionActive(src, true);
   });
   document.addEventListener("mouseout", function (e) {
+    if (typeof terrinothDrawModeActive !== "undefined" && terrinothDrawModeActive) return;
     const src = e.target.closest(".mennara-map [data-region]");
     if (!src || src.contains(e.relatedTarget)) return;
     const triggerImg = mennaraTriggerImageFor(src);
@@ -2014,12 +2022,24 @@ function updateTerrinothZoomLabels(svg) {
   const zoomPercent = (baseW / svg.viewBox.baseVal.width) * 100;
   mapEl.querySelectorAll(".mennara-region-label[data-region]").forEach(function (label) {
     if (TERRINOTH_IMPORTANT_REGIONS.has(label.dataset.region)) {
-      // Inverse-proportional to zoom (Nutzerwunsch 2026-08-08): at 100%
-      // zoom (fully zoomed out) this is TERRINOTH_MAX_ZOOM_PERCENT/100 (6x
-      // at the current 600% max); at the max zoom itself it's exactly 1
-      // (normal size) -- Math.max(zoomPercent,100) is just a defensive
-      // floor, zoomPercent should never actually go below 100.
-      label.style.setProperty("--zoom-scale", TERRINOTH_MAX_ZOOM_PERCENT / Math.max(zoomPercent, 100));
+      // "Mitzoom-Verhalten der Spezial-Labels... deaktivieren" while
+      // painting (Nutzerwunsch 2026-08-09) -- this whole inverse-zoom-scale
+      // mechanism is a continuous per-tick JS/CSS adjustment; while Mal-
+      // Modus is active it's switched off entirely (same removeProperty as
+      // the non-stream-mode early-return above, falls back to the CSS
+      // default of unscaled/plain), same reasoning as pausing hover-react
+      // and native right-click below -- painting shouldn't fight an
+      // independently-animating label on top of the stroke being drawn.
+      if (terrinothDrawModeActive) {
+        label.style.removeProperty("--zoom-scale");
+      } else {
+        // Inverse-proportional to zoom (Nutzerwunsch 2026-08-08): at 100%
+        // zoom (fully zoomed out) this is TERRINOTH_MAX_ZOOM_PERCENT/100 (6x
+        // at the current 600% max); at the max zoom itself it's exactly 1
+        // (normal size) -- Math.max(zoomPercent,100) is just a defensive
+        // floor, zoomPercent should never actually go below 100.
+        label.style.setProperty("--zoom-scale", TERRINOTH_MAX_ZOOM_PERCENT / Math.max(zoomPercent, 100));
+      }
     } else if (label.classList.contains("zoom-gated")) {
       label.classList.toggle("zoom-label-hidden", zoomPercent < 200);
     }
@@ -2321,13 +2341,12 @@ document.addEventListener("mousemove", function (e) {
 document.addEventListener("mouseup", function () {
   terrinothDrawStroke = null;
 });
-// Right-click (Nutzerwunsch 2026-08-09): a stroke right-clicked directly is
-// always deleted, in or out of Mal-Modus ("auch im Nicht-Mal-Modus"). Beyond
-// that, while Mal-Modus is active, right-clicking anywhere on the map (not
-// just on a stroke) suppresses the native browser context menu and ends Mal-
-// Modus instead ("Stattdessen soll rechter Mausklick den Mal-Modus
-// beenden"). Outside Mal-Modus and off any stroke, the native menu is left
-// alone -- nothing in the request asks for it to be suppressed there too.
+// Right-click (Nutzerwunsch 2026-08-09, widened same day: "NIE das native
+// Browser-Menu"): a stroke right-clicked directly is always deleted, in or
+// out of Mal-Modus ("auch im Nicht-Mal-Modus"). Beyond that, the native
+// context menu is suppressed on the map UNCONDITIONALLY now (not just while
+// Mal-Modus is active, an earlier version's narrower scope) -- ending Mal-
+// Modus itself still only happens if it was actually on.
 document.addEventListener("contextmenu", function (e) {
   const stroke = e.target.closest(".terrinoth-drawn-stroke");
   if (stroke) {
@@ -2335,9 +2354,9 @@ document.addEventListener("contextmenu", function (e) {
     stroke.remove();
     return;
   }
-  if (terrinothDrawModeActive && e.target.closest(".terrinoth-map svg")) {
+  if (e.target.closest(".terrinoth-map svg")) {
     e.preventDefault();
-    setTerrinothDrawModeActive(false);
+    if (terrinothDrawModeActive) setTerrinothDrawModeActive(false);
   }
 });
 
