@@ -2684,6 +2684,15 @@ document.addEventListener("click", function (e) {
       });
     });
   }
+  function canvasIdbGet(storeName, key) {
+    return canvasOpenDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const req = db.transaction(storeName, "readonly").objectStore(storeName).get(key);
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
   function canvasIdbGetByIndex(storeName, indexName, value) {
     return canvasOpenDb().then(function (db) {
       return new Promise(function (resolve, reject) {
@@ -2747,7 +2756,6 @@ document.addEventListener("click", function (e) {
         });
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          if (!confirm('Delete image "' + img.caption + '"?')) return;
           canvasDeleteImageCascade(img.id).then(renderCanvasImageGrid);
         });
         imageGrid.appendChild(item);
@@ -2769,7 +2777,6 @@ document.addEventListener("click", function (e) {
         item.querySelector(".canvas-gallery-caption").textContent = tok.name;
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          if (!confirm('Delete token "' + tok.name + '"?')) return;
           canvasIdbDelete("tokens", tok.id).then(renderCanvasTokenGrid);
         });
         tokenGrid.appendChild(item);
@@ -3157,11 +3164,35 @@ document.addEventListener("click", function (e) {
   });
   tokenTray.addEventListener("mouseleave", function () { tokenTray.classList.remove("expanded"); });
 
+  // Blank token (Nutzerwunsch 2026-08-09): a template that lives ONLY in
+  // this tray, never in the tokens store/gallery. Its dragstart sets this
+  // sentinel instead of a real token id; the drop handler below branches on
+  // it. Each drop creates its own NEW named placement -- the template
+  // itself never carries a name, only the placements it spawns do.
+  const CANVAS_BLANK_TOKEN_SENTINEL = "__blank__";
+  document.getElementById("canvas-token-blank-template").addEventListener("dragstart", function (e) {
+    e.dataTransfer.setData("text/plain", CANVAS_BLANK_TOKEN_SENTINEL);
+  });
+
   stageEl.addEventListener("dragover", function (e) { e.preventDefault(); });
   stageEl.addEventListener("drop", function (e) {
     e.preventDefault();
     const tokenId = e.dataTransfer.getData("text/plain");
     if (!tokenId || !canvasCurrentImage) return;
+    if (tokenId === CANVAS_BLANK_TOKEN_SENTINEL) {
+      // prompt() is synchronous/blocking -- the placement is only ever
+      // created (and only ever stored) if a name is actually confirmed;
+      // Cancel adds nothing, same convention as every other Canvas prompt.
+      const name = prompt("Name");
+      if (name === null) return;
+      const pt = canvasClientToImagePoint(e.clientX, e.clientY);
+      const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: name.trim(), cx: pt.x, cy: pt.y, w: w, h: w };
+      canvasIdbAdd("placements", placement).then(function () {
+        canvasAddBlankTokenElement(placement);
+      });
+      return;
+    }
     canvasIdbGetAll("tokens").then(function (tokens) {
       const tok = tokens.find(function (t) { return t.id === tokenId; });
       if (!tok) return;
@@ -3181,20 +3212,21 @@ document.addEventListener("click", function (e) {
     });
   });
 
-  function canvasAddTokenElement(placement, tok) {
-    const url = URL.createObjectURL(tok.blob);
-    const el = document.createElement("img");
-    el.className = "canvas-token";
-    el.src = url;
-    el.alt = tok.name;
-    el.draggable = false;
-    el.dataset.placementId = placement.id;
-    el.dataset.cx = String(placement.cx);
-    el.dataset.cy = String(placement.cy);
-    el.dataset.baseW = String(placement.w);
-    el.dataset.baseH = String(placement.h);
-    canvasRenderTokenElement(el);
+  // Shared by both token kinds (image-backed <img> and blank-ring <div>) --
+  // both are just some visual content inside an absolutely positioned
+  // container sized via canvasRenderTokenElement, so drag/persist logic
+  // doesn't need to know which one it's moving.
+  function canvasMakeTokenDraggable(el, placement) {
     el.addEventListener("pointerdown", function (e) {
+      // REAL BUG fix (found via Puppeteer, 2026-08-09): pointerdown fires
+      // for EVERY mouse button, not just the left one -- without this
+      // guard, a right-click on a token also armed a drag (offsetX/Y ~ 0
+      // since the pointer never moved), and its pointerup handler's
+      // fire-and-forget "re-save current position" could race with and
+      // outlive the contextmenu handler's delete below, resurrecting a
+      // token the user had just deleted. Same button check the stage's own
+      // pointerdown already uses for exactly this reason.
+      if (e.button !== 0) return;
       e.stopPropagation();
       e.preventDefault();
       const startImg = canvasClientToImagePoint(e.clientX, e.clientY);
@@ -3215,20 +3247,112 @@ document.addEventListener("click", function (e) {
     el.addEventListener("pointerup", function () {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
       canvasDraggingToken = null;
-      canvasIdbGetAll("placements").then(function (rows) {
-        const row = rows.find(function (r) { return r.id === placement.id; });
-        if (!row) return;
-        row.cx = Number(el.dataset.cx);
-        row.cy = Number(el.dataset.cy);
+      const cx = Number(el.dataset.cx), cy = Number(el.dataset.cy);
+      // REAL BUG fix (found via Puppeteer, 2026-08-09): this used to be
+      // canvasIdbGetAll(...).then(rows => rows.find(...)) -- a full-table
+      // scan slow enough that a right-click delete fired immediately
+      // afterward (contextmenu handler above) could complete its OWN
+      // delete BEFORE this stale-data save landed, resurrecting the just-
+      // deleted token. A direct keyed get() is far faster, and the
+      // el.isConnected re-check right before writing catches the deletion
+      // even if it still slips in during the remaining (now much smaller)
+      // async gap -- token.remove() in the contextmenu handler detaches el
+      // synchronously, so isConnected reliably reflects "was this deleted
+      // in the meantime" at whatever later moment we actually check it.
+      canvasIdbGet("placements", placement.id).then(function (row) {
+        if (!row || !el.isConnected) return;
+        row.cx = cx;
+        row.cy = cy;
         canvasIdbAdd("placements", row);
       });
     });
+  }
+  function canvasAddTokenElement(placement, tok) {
+    const url = URL.createObjectURL(tok.blob);
+    const el = document.createElement("img");
+    el.className = "canvas-token";
+    el.src = url;
+    el.alt = tok.name;
+    el.draggable = false;
+    el.dataset.placementId = placement.id;
+    el.dataset.cx = String(placement.cx);
+    el.dataset.cy = String(placement.cy);
+    el.dataset.baseW = String(placement.w);
+    el.dataset.baseH = String(placement.h);
+    canvasRenderTokenElement(el);
+    canvasMakeTokenDraggable(el, placement);
+    tokenLayerEl.appendChild(el);
+  }
+  // Black ring, 80%-opaque white fill, the placement's own name centered
+  // inside, auto-sized to fill the ring without touching it (Nutzerwunsch
+  // 2026-08-09). A fixed 0-100 viewBox means the SAME font-size (computed
+  // ONCE here, in viewBox units) stays correctly proportioned at any
+  // on-screen size -- the outer <div>'s width/height (set by
+  // canvasRenderTokenElement, identical mechanism to image tokens) is what
+  // the global token-scale control and zoom actually resize; the SVG just
+  // scales along with it for free, no per-resize recomputation needed.
+  function canvasBuildBlankTokenSvg(name) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", "50");
+    circle.setAttribute("cy", "50");
+    circle.setAttribute("r", "42");
+    circle.setAttribute("fill", "#ffffff");
+    circle.setAttribute("fill-opacity", "0.8");
+    circle.setAttribute("stroke", "#000000");
+    circle.setAttribute("stroke-width", "9");
+    svg.appendChild(circle);
+    if (name) {
+      const text = document.createElementNS(svgNS, "text");
+      text.setAttribute("x", "50");
+      text.setAttribute("y", "50");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "central");
+      text.setAttribute("fill", "#000000");
+      text.textContent = name;
+      const initialSize = 40;
+      text.setAttribute("font-size", String(initialSize));
+      svg.appendChild(text);
+      // getComputedTextLength needs real layout -- briefly attach off-
+      // screen (synchronous, removed again before this function returns,
+      // so nothing is ever actually painted in this state).
+      svg.style.position = "absolute";
+      svg.style.visibility = "hidden";
+      document.body.appendChild(svg);
+      const measured = text.getComputedTextLength();
+      document.body.removeChild(svg);
+      svg.style.position = "";
+      svg.style.visibility = "";
+      const availableWidth = 66; // stays clear of the ring's inner edge
+      const maxFontSize = 38; // cap so a 1-2 letter name doesn't blow up vertically
+      if (measured > 0) {
+        text.setAttribute("font-size", String(Math.min(maxFontSize, initialSize * (availableWidth / measured))));
+      }
+    }
+    return svg;
+  }
+  function canvasAddBlankTokenElement(placement) {
+    const el = document.createElement("div");
+    el.className = "canvas-token canvas-token-blank";
+    el.dataset.placementId = placement.id;
+    el.dataset.cx = String(placement.cx);
+    el.dataset.cy = String(placement.cy);
+    el.dataset.baseW = String(placement.w);
+    el.dataset.baseH = String(placement.h);
+    el.appendChild(canvasBuildBlankTokenSvg(placement.name));
+    canvasRenderTokenElement(el);
+    canvasMakeTokenDraggable(el, placement);
     tokenLayerEl.appendChild(el);
   }
   function canvasLoadPlacements(imageId) {
     Promise.all([canvasIdbGetByIndex("placements", "imageId", imageId), canvasIdbGetAll("tokens")]).then(function (res) {
       const placements = res[0], tokens = res[1];
       placements.forEach(function (p) {
+        if (p.kind === "blank") { canvasAddBlankTokenElement(p); return; }
         const tok = tokens.find(function (t) { return t.id === p.tokenId; });
         if (tok) canvasAddTokenElement(p, tok);
       });
