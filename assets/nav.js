@@ -721,6 +721,15 @@ document.addEventListener("keydown", function (e) {
   if (e.key !== "+" && e.key !== "-") return;
   const active = document.activeElement;
   if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+  // Canvas (Nutzerwunsch 2026-08-10): while an image is open in the Canvas
+  // viewer, "+"/"-" control TOKEN size instead -- see the canvas-specific
+  // keydown handler in the Canvas IIFE further down, which is why this one
+  // bails out here. Without this guard, pressing the keys still changed
+  // --font-scale, which happened to visibly resize the em-sized tray-icon
+  // UI chrome (a pure side effect of em units) while leaving the actual,
+  // pixel-sized placed tokens on the map completely untouched -- exactly
+  // backwards from what "+"/"-" are supposed to do on this page.
+  if (typeof canvasIsViewerOpen === "function" && canvasIsViewerOpen()) return;
   e.preventDefault();
   setFontScale(getFontScale() + (e.key === "+" ? 1 : -1) * fontScaleStepActive());
   updateFontButtonState();
@@ -3151,6 +3160,11 @@ document.addEventListener("click", function (e) {
   const CANVAS_RING_BORDER = 4.5;
   const CANVAS_RING_R_OUTER = 40;
   const CANVAS_RING_R_INNER = CANVAS_RING_R_OUTER - CANVAS_RING_BORDER;
+  // Must match the "2s" in .canvas-token-ring-selected's animation shorthand
+  // (site.scss) -- used below to phase-lock every selected ring's animation
+  // to wall-clock time (Nutzerwunsch 2026-08-10: "Alle Markierungsanimationen
+  // sollen synchron sein").
+  const CANVAS_SELECTION_ANIM_MS = 2000;
   function canvasRingColor() {
     return (canvasCurrentImage && canvasCurrentImage.ringColor) || "black";
   }
@@ -3179,8 +3193,10 @@ document.addEventListener("click", function (e) {
       fillCircle.setAttribute("cx", "50");
       fillCircle.setAttribute("cy", "50");
       fillCircle.setAttribute("r", String(CANVAS_RING_R_INNER));
+      // Fully opaque (Nutzerwunsch 2026-08-10, removing the previous 0.8
+      // fill-opacity): blank tokens should read exactly as solid as image
+      // tokens, not visibly washed-out/see-through next to them.
       fillCircle.setAttribute("fill", contentColor);
-      fillCircle.setAttribute("fill-opacity", "0.8");
       svg.appendChild(fillCircle);
       if (opts.name) {
         const text = document.createElementNS(svgNS, "text");
@@ -3264,7 +3280,19 @@ document.addEventListener("click", function (e) {
     // stroke attribute above stays as-is underneath -- the animation
     // overrides it while selected, and reverts to it the instant the
     // class is removed on deselect.
-    if (opts.selected) ring.setAttribute("class", "canvas-token-ring-selected");
+    if (opts.selected) {
+      ring.setAttribute("class", "canvas-token-ring-selected");
+      // Every selected token's ring must oscillate IN SYNC (Nutzerwunsch
+      // 2026-08-10), but each one gets a brand-new SVG (and a brand-new CSS
+      // animation instance starting its own local clock at 0) every time
+      // ANY of its state changes -- left alone, two rings selected at
+      // different moments would drift out of phase forever. Phase-locking
+      // every ring to the same wall-clock reference (a negative delay equal
+      // to how far we already are into the current cycle) makes every
+      // instance, however freshly created, look like it's always been
+      // playing since that same shared reference point.
+      ring.style.animationDelay = "-" + ((Date.now() % CANVAS_SELECTION_ANIM_MS) / 1000) + "s";
+    }
     svg.appendChild(ring);
     if (opts.disabled) {
       // "Ausgext": a cross through the token, arm width = the primary
@@ -3443,6 +3471,20 @@ document.addEventListener("click", function (e) {
   });
   document.getElementById("canvas-token-scale-down").addEventListener("click", function () {
     canvasSetTokenScale(canvasGetTokenScale() / 1.15);
+  });
+  // "+"/"-" KEYS also control token size while an image is open (Nutzerwunsch
+  // 2026-08-10), same multiplier as the buttons above -- exposed on window
+  // so the global font-scale keydown handler (earlier in this file, runs on
+  // every page) can check it and bail out instead of double-handling the
+  // same keypress, same typeof-guard pattern as canvasCloseViewer.
+  window.canvasIsViewerOpen = function () { return !!canvasCurrentImage; };
+  document.addEventListener("keydown", function (e) {
+    if (!canvasCurrentImage) return;
+    if (e.key !== "+" && e.key !== "-") return;
+    const active = document.activeElement;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+    e.preventDefault();
+    canvasSetTokenScale(canvasGetTokenScale() * (e.key === "+" ? 1.15 : 1 / 1.15));
   });
 
   // -- Ring color (Nutzerwunsch 2026-08-10): per-image, persisted on the
