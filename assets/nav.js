@@ -798,6 +798,25 @@ document.addEventListener("fullscreenchange", function () {
   if (!isStreamModeActive()) {
     document.body.classList.toggle("is-fullscreen", isFullscreen);
   }
+  // REAL BUG fix (Nutzerwunsch 2026-08-10, reported on the Canvas viewer:
+  // "Escape beendet nur das Vollbild" -- the site's own normal content/
+  // sidebar/navbar never came back): the dedicated Escape "keydown" listener
+  // below (document.addEventListener("keydown", ...), key === "Escape") is
+  // NOT a reliable way to leave Stream-Modus while real Fullscreen is also
+  // active, because the browser can handle an Escape press by exiting
+  // Fullscreen itself without that keydown ever reaching page JS -- this
+  // file already documents the exact same fragility for the OTHER,
+  // independent Vollbildmodus feature two comments up ("fullscreen can also
+  // be exited by the browser itself (Esc key, F11, etc.), which fires
+  // 'fullscreenchange' but never runs .fullscreen-close's own click
+  // handler"). So exiting Fullscreen is now ALSO treated as leaving whichever
+  // Stream-Modus is active, exactly mirroring how body.is-fullscreen is kept
+  // in sync above -- these exit functions are idempotent (safe to call
+  // again if the keydown handler already ran first).
+  if (!isFullscreen) {
+    if (document.body.classList.contains("stream-mode")) exitArticleStreamMode();
+    else if (document.body.classList.contains("popover-stream-mode")) exitPopoverStreamMode(document.querySelector(".table-modal-overlay.popover-stream-mode"));
+  }
   updateFullscreenContainerFlag();
   // REGRESS 2026-08-05, fixed: this used to hand-assign a module-level
   // "fontScaleMaxActive" variable here -- stale leftover from BEFORE
@@ -2919,14 +2938,18 @@ document.addEventListener("click", function (e) {
       canvasUpdateRingColorButtons();
       galleryEl.hidden = true;
       viewerEl.hidden = false;
-      // REAL BUG fix (Nutzerwunsch 2026-08-10, "wenn ich Escape drücke..."
-      // was the symptom report that led here, but the actual bug was on
-      // ENTRY): this used to call canvasFitToStage() BEFORE
-      // enterArticleStreamMode() -- fitting against the stage's still-
-      // normal-mode size (sidebar/navbar/footer still visible) a moment
-      // before Stream-Modus's own CSS hides them and the stage actually
-      // grows to fill the viewport. Reordered so the fit happens against
-      // the FINAL, already-fullscreen stage size.
+      // REAL BUG fix, take 2 (Nutzerwunsch 2026-08-10, user confirmed after
+      // the first attempt: "Bildgröße und Position entspricht dem Viewport
+      // VOR dem Umschalten auf Vollbild"): reordering canvasFitToStage()
+      // after enterArticleStreamMode() (see below) fixes the CSS-driven part
+      // of Stream-Modus (sidebar/navbar/footer hidden) but NOT real browser
+      // Fullscreen -- requestFullscreen() is async and its actual viewport
+      // resize lands strictly AFTER this synchronous call returns, so the
+      // fit still ran too early. The real fix is the "fullscreenchange"
+      // listener further down in this same IIFE (re-fits again once
+      // Fullscreen has actually taken effect) -- this call here stays too,
+      // so the image is still reasonably placed immediately even when real
+      // Fullscreen fails/is unavailable (e.g. no user-gesture, headless).
       enterArticleStreamMode();
       canvasFitToStage();
       canvasLoadStrokes(imageId);
@@ -2978,6 +3001,15 @@ document.addEventListener("click", function (e) {
     canvasTy = (rect.height - canvasCurrentImage.height * s) / 2;
     canvasApplyTransform();
   }
+  // REAL BUG fix (Nutzerwunsch 2026-08-10): canvasOpenViewer's own fit call
+  // above necessarily runs BEFORE requestFullscreen()'s async viewport
+  // resize actually lands (see its own doc comment) -- so re-fit again once
+  // Fullscreen genuinely finishes transitioning, whichever direction. Guarded
+  // on canvasCurrentImage so this is a harmless no-op on every other page
+  // (this whole IIFE only runs on /canvas/) and while no image is open.
+  document.addEventListener("fullscreenchange", function () {
+    if (canvasCurrentImage) canvasFitToStage();
+  });
   function canvasApplyTransform() {
     transformEl.style.transform = "translate(" + canvasTx + "px," + canvasTy + "px) scale(" + canvasScale + ")";
     canvasRefreshStrokeWidths();
