@@ -1019,6 +1019,9 @@ function exitArticleStreamMode() {
   // can reach it via the same optional typeof-guard pattern as
   // terrinothResetDrawTool above.
   if (typeof canvasCloseViewer === "function") canvasCloseViewer();
+  // Gallery (Nutzerwunsch 2026-08-10): same reasoning as Canvas immediately
+  // above, own IIFE, own window-exposed close hook.
+  if (typeof galleryCloseViewer === "function") galleryCloseViewer();
   // Same re-apply as on entry above, now snapping back to whatever
   // normal/fullscreen already had stored -- otherwise the article would
   // keep rendering at Stream-Modus's own (far larger) --font-scale value
@@ -2680,6 +2683,166 @@ document.addEventListener("click", function (e) {
   });
 }, true);
 
+// ---- Shared image-gallery / pan-zoom helpers (Nutzerwunsch 2026-08-10:
+// "einfacherer Bild-Viewer mit Zoom/Pan, ohne Token/Malwerkzeug", the new
+// Gallery page below) ----
+// Pulled out of what used to be Canvas-only code, same reasoning as the
+// shared paint tool above: the per-browser IndexedDB CRUD, the fit/zoom/pan
+// math, the plain-image gallery grid (thumb/caption/delete/click-to-open),
+// and the "+"-button -> file-picker -> prompt()-caption upload flow are
+// IDENTICAL between Canvas's own Images section and the new Gallery page --
+// genuinely the same mechanism, not a look-alike, so it lives here once.
+// Deliberately NOT shared: viewer open/close orchestration and the
+// pointerdown/move/up branching that decides pan vs. token-drag vs. paint-
+// stroke -- those differ fundamentally per consumer (Canvas layers tokens/
+// strokes on top, Gallery is pan-only), so each keeps its own, exactly like
+// the paint tool's own doc comment already argues for stroke-drawing itself.
+function createIdbHelper(dbName, dbVersion, upgrade) {
+  let dbPromise = null;
+  function openDb() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function (resolve, reject) {
+      const req = indexedDB.open(dbName, dbVersion);
+      req.onupgradeneeded = function () { upgrade(req.result); };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+    return dbPromise;
+  }
+  return {
+    add: function (storeName, value) {
+      return openDb().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const tx = db.transaction(storeName, "readwrite");
+          tx.objectStore(storeName).put(value);
+          tx.oncomplete = function () { resolve(value); };
+          tx.onerror = function () { reject(tx.error); };
+        });
+      });
+    },
+    delete: function (storeName, id) {
+      return openDb().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const tx = db.transaction(storeName, "readwrite");
+          tx.objectStore(storeName).delete(id);
+          tx.oncomplete = function () { resolve(); };
+          tx.onerror = function () { reject(tx.error); };
+        });
+      });
+    },
+    getAll: function (storeName) {
+      return openDb().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { reject(req.error); };
+        });
+      });
+    },
+    get: function (storeName, key) {
+      return openDb().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const req = db.transaction(storeName, "readonly").objectStore(storeName).get(key);
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { reject(req.error); };
+        });
+      });
+    },
+    getByIndex: function (storeName, indexName, value) {
+      return openDb().then(function (db) {
+        return new Promise(function (resolve, reject) {
+          const req = db.transaction(storeName, "readonly").objectStore(storeName).index(indexName).getAll(value);
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { reject(req.error); };
+        });
+      });
+    },
+  };
+}
+function galleryUid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
+function blobDimensions(blob) {
+  return new Promise(function (resolve, reject) {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = function () {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = function (e) { URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
+}
+// "Contain" fit -- see Canvas's original canvasFitToStage doc comment (now
+// just a thin caller of this) for the exact centering rationale.
+function computePanZoomFit(stageEl, imgW, imgH) {
+  const rect = stageEl.getBoundingClientRect();
+  const s = Math.min(rect.width / imgW, rect.height / imgH);
+  return { scale: s, tx: (rect.width - imgW * s) / 2, ty: (rect.height - imgH * s) / 2 };
+}
+function applyPanZoomTransform(transformEl, tx, ty, scale) {
+  transformEl.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
+}
+function panZoomClientToImagePoint(stageEl, clientX, clientY, scale, tx, ty) {
+  const rect = stageEl.getBoundingClientRect();
+  return { x: (clientX - rect.left - tx) / scale, y: (clientY - rect.top - ty) / scale };
+}
+// Wheel-zoom, centered on the cursor (point under the cursor stays under it).
+function computePanZoomWheel(stageEl, clientX, clientY, scale, tx, ty, deltaY, minScale, maxScale) {
+  const rect = stageEl.getBoundingClientRect();
+  const mx = clientX - rect.left, my = clientY - rect.top;
+  const imgX = (mx - tx) / scale, imgY = (my - ty) / scale;
+  const factor = deltaY < 0 ? 1.15 : 1 / 1.15;
+  const newScale = Math.min(maxScale, Math.max(minScale, scale * factor));
+  return { scale: newScale, tx: mx - imgX * newScale, ty: my - imgY * newScale };
+}
+// Plain-image gallery grid: thumb + caption + delete + click-to-open. Used
+// by Canvas's own Images section (not its Tokens section, which has extra
+// default-badge logic and stays custom) and by Gallery's only section.
+function renderImageGalleryGrid(gridEl, idb, opts) {
+  idb.getAll("images").then(function (images) {
+    images.sort(function (a, b) { return b.createdAt - a.createdAt; });
+    gridEl.innerHTML = "";
+    images.forEach(function (img) {
+      const url = URL.createObjectURL(img.blob);
+      const item = document.createElement("div");
+      item.className = "canvas-gallery-item";
+      item.innerHTML =
+        '<button type="button" class="canvas-gallery-delete" aria-label="' + opts.deleteLabel + '">×</button>' +
+        '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
+        '<div class="canvas-gallery-caption"></div>';
+      item.querySelector(".canvas-gallery-caption").textContent = img.caption;
+      item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
+        opts.onOpen(img.id);
+      });
+      item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
+        e.stopPropagation();
+        opts.onDelete(img.id).then(function () { renderImageGalleryGrid(gridEl, idb, opts); });
+      });
+      gridEl.appendChild(item);
+    });
+  });
+}
+// Single round "+" -> file picker -> prompt() for the caption -> stored
+// immediately, no separate form/submit step (see the original Canvas doc
+// comment on this flow for the exact Nutzerwunsch wording).
+function wireImageUpload(addBtn, fileInput, opts) {
+  addBtn.addEventListener("click", function () { fileInput.click(); });
+  fileInput.addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const caption = prompt(opts.promptLabel);
+    if (caption === null) { e.target.value = ""; return; }
+    blobDimensions(file).then(function (dims) {
+      return opts.idb.add("images", opts.buildRecord(file, dims, caption));
+    }).then(function () {
+      e.target.value = "";
+      opts.afterAdd();
+    });
+  });
+}
+
 // ---- Canvas (Nutzerwunsch 2026-08-09) ----
 // Everything below is scoped by the "#canvas-gallery" existence check --
 // it's a no-op on every other page. Deliberately independent of the Mennara/
@@ -2693,90 +2856,21 @@ document.addEventListener("click", function (e) {
   if (!galleryEl) return;
 
   // -- IndexedDB (per-browser, per-device only -- never uploaded anywhere) --
-  const CANVAS_DB_NAME = "terrinothCanvas";
-  const CANVAS_DB_VERSION = 1;
-  let canvasDbPromise = null;
-  function canvasOpenDb() {
-    if (canvasDbPromise) return canvasDbPromise;
-    canvasDbPromise = new Promise(function (resolve, reject) {
-      const req = indexedDB.open(CANVAS_DB_NAME, CANVAS_DB_VERSION);
-      req.onupgradeneeded = function () {
-        const db = req.result;
-        if (!db.objectStoreNames.contains("images")) db.createObjectStore("images", { keyPath: "id" });
-        if (!db.objectStoreNames.contains("tokens")) db.createObjectStore("tokens", { keyPath: "id" });
-        if (!db.objectStoreNames.contains("strokes")) {
-          db.createObjectStore("strokes", { keyPath: "id" }).createIndex("imageId", "imageId");
-        }
-        if (!db.objectStoreNames.contains("placements")) {
-          db.createObjectStore("placements", { keyPath: "id" }).createIndex("imageId", "imageId");
-        }
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-    return canvasDbPromise;
-  }
-  function canvasIdbAdd(storeName, value) {
-    return canvasOpenDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        const tx = db.transaction(storeName, "readwrite");
-        tx.objectStore(storeName).put(value);
-        tx.oncomplete = function () { resolve(value); };
-        tx.onerror = function () { reject(tx.error); };
-      });
-    });
-  }
-  function canvasIdbDelete(storeName, id) {
-    return canvasOpenDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        const tx = db.transaction(storeName, "readwrite");
-        tx.objectStore(storeName).delete(id);
-        tx.oncomplete = function () { resolve(); };
-        tx.onerror = function () { reject(tx.error); };
-      });
-    });
-  }
-  function canvasIdbGetAll(storeName) {
-    return canvasOpenDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).getAll();
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-  function canvasIdbGet(storeName, key) {
-    return canvasOpenDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).get(key);
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-  function canvasIdbGetByIndex(storeName, indexName, value) {
-    return canvasOpenDb().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        const req = db.transaction(storeName, "readonly").objectStore(storeName).index(indexName).getAll(value);
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-  function canvasUid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-  }
+  // Uses the shared createIdbHelper (see the "Shared image-gallery / pan-
+  // zoom helpers" section above) -- same schema/behavior as before, just no
+  // longer hand-written here.
+  const canvasIdb = createIdbHelper("terrinothCanvas", 1, function (db) {
+    if (!db.objectStoreNames.contains("images")) db.createObjectStore("images", { keyPath: "id" });
+    if (!db.objectStoreNames.contains("tokens")) db.createObjectStore("tokens", { keyPath: "id" });
+    if (!db.objectStoreNames.contains("strokes")) {
+      db.createObjectStore("strokes", { keyPath: "id" }).createIndex("imageId", "imageId");
+    }
+    if (!db.objectStoreNames.contains("placements")) {
+      db.createObjectStore("placements", { keyPath: "id" }).createIndex("imageId", "imageId");
+    }
+  });
   function canvasBlobDimensions(blob) {
-    return new Promise(function (resolve, reject) {
-      const url = URL.createObjectURL(blob);
-      const img = new Image();
-      img.onload = function () {
-        resolve({ width: img.naturalWidth, height: img.naturalHeight });
-        URL.revokeObjectURL(url);
-      };
-      img.onerror = function (e) { URL.revokeObjectURL(url); reject(e); };
-      img.src = url;
-    });
+    return blobDimensions(blob);
   }
 
   // -- Gallery (management view) --
@@ -2789,42 +2883,25 @@ document.addEventListener("click", function (e) {
     // that would silently accumulate in IndexedDB forever (never surfaced
     // anywhere, since both stores are only ever queried by imageId).
     return Promise.all([
-      canvasIdbDelete("images", imageId),
-      canvasIdbGetByIndex("strokes", "imageId", imageId).then(function (rows) {
-        return Promise.all(rows.map(function (r) { return canvasIdbDelete("strokes", r.id); }));
+      canvasIdb.delete("images", imageId),
+      canvasIdb.getByIndex("strokes", "imageId", imageId).then(function (rows) {
+        return Promise.all(rows.map(function (r) { return canvasIdb.delete("strokes", r.id); }));
       }),
-      canvasIdbGetByIndex("placements", "imageId", imageId).then(function (rows) {
-        return Promise.all(rows.map(function (r) { return canvasIdbDelete("placements", r.id); }));
+      canvasIdb.getByIndex("placements", "imageId", imageId).then(function (rows) {
+        return Promise.all(rows.map(function (r) { return canvasIdb.delete("placements", r.id); }));
       }),
     ]);
   }
 
   function renderCanvasImageGrid() {
-    canvasIdbGetAll("images").then(function (images) {
-      images.sort(function (a, b) { return b.createdAt - a.createdAt; });
-      imageGrid.innerHTML = "";
-      images.forEach(function (img) {
-        const url = URL.createObjectURL(img.blob);
-        const item = document.createElement("div");
-        item.className = "canvas-gallery-item";
-        item.innerHTML =
-          '<button type="button" class="canvas-gallery-delete" aria-label="Löschen">×</button>' +
-          '<div class="canvas-gallery-thumb-wrap"><img class="canvas-gallery-thumb" src="' + url + '" alt=""></div>' +
-          '<div class="canvas-gallery-caption"></div>';
-        item.querySelector(".canvas-gallery-caption").textContent = img.caption;
-        item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
-          canvasOpenViewer(img.id);
-        });
-        item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
-          e.stopPropagation();
-          canvasDeleteImageCascade(img.id).then(renderCanvasImageGrid);
-        });
-        imageGrid.appendChild(item);
-      });
+    renderImageGalleryGrid(imageGrid, canvasIdb, {
+      deleteLabel: "Löschen",
+      onOpen: canvasOpenViewer,
+      onDelete: canvasDeleteImageCascade,
     });
   }
   function renderCanvasTokenGrid() {
-    canvasIdbGetAll("tokens").then(function (tokens) {
+    canvasIdb.getAll("tokens").then(function (tokens) {
       tokens.sort(function (a, b) { return b.createdAt - a.createdAt; });
       tokenGrid.innerHTML = "";
       tokens.forEach(function (tok) {
@@ -2846,11 +2923,11 @@ document.addEventListener("click", function (e) {
         item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
           tok.isDefault = !tok.isDefault;
           item.classList.toggle("is-default", tok.isDefault);
-          canvasIdbAdd("tokens", tok);
+          canvasIdb.add("tokens", tok);
         });
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          canvasIdbDelete("tokens", tok.id).then(renderCanvasTokenGrid);
+          canvasIdb.delete("tokens", tok.id).then(renderCanvasTokenGrid);
         });
         tokenGrid.appendChild(item);
       });
@@ -2864,27 +2941,20 @@ document.addEventListener("click", function (e) {
   // separate submit step (Nutzerwunsch 2026-08-09: "einfach nur einen
   // Button... Nach Auswahl einer Datei soll ein Prompt kommen. Zack,
   // fertig."). Cancelling either the file picker or the prompt adds nothing.
-  document.getElementById("canvas-image-add-btn").addEventListener("click", function () {
-    document.getElementById("canvas-image-file").click();
-  });
-  document.getElementById("canvas-image-file").addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const caption = prompt("Caption");
-    if (caption === null) { e.target.value = ""; return; }
-    canvasBlobDimensions(file).then(function (dims) {
-      return canvasIdbAdd("images", {
-        id: canvasUid(),
+  wireImageUpload(document.getElementById("canvas-image-add-btn"), document.getElementById("canvas-image-file"), {
+    promptLabel: "Caption",
+    idb: canvasIdb,
+    buildRecord: function (file, dims, caption) {
+      return {
+        id: galleryUid(),
         caption: caption.trim() || file.name,
         blob: file,
         width: dims.width,
         height: dims.height,
         createdAt: Date.now(),
-      });
-    }).then(function () {
-      e.target.value = "";
-      renderCanvasImageGrid();
-    });
+      };
+    },
+    afterAdd: renderCanvasImageGrid,
   });
   document.getElementById("canvas-token-add-btn").addEventListener("click", function () {
     document.getElementById("canvas-token-file").click();
@@ -2895,8 +2965,8 @@ document.addEventListener("click", function (e) {
     const name = prompt("Name");
     if (name === null) { e.target.value = ""; return; }
     canvasBlobDimensions(file).then(function (dims) {
-      return canvasIdbAdd("tokens", {
-        id: canvasUid(),
+      return canvasIdb.add("tokens", {
+        id: galleryUid(),
         name: name.trim() || file.name,
         blob: file,
         width: dims.width,
@@ -2964,7 +3034,7 @@ document.addEventListener("click", function (e) {
   // directly inside the thumbnail's click handler, so requestFullscreen's
   // own user-gesture requirement is satisfied.
   function canvasOpenViewer(imageId) {
-    canvasIdbGetAll("images").then(function (images) {
+    canvasIdb.getAll("images").then(function (images) {
       const img = images.find(function (i) { return i.id === imageId; });
       if (!img) return;
       if (!img.ringColor) img.ringColor = "black";
@@ -3043,12 +3113,11 @@ document.addEventListener("click", function (e) {
   // touches left+right).
   function canvasFitToStage() {
     if (!canvasCurrentImage) return;
-    const rect = stageEl.getBoundingClientRect();
-    const s = Math.min(rect.width / canvasCurrentImage.width, rect.height / canvasCurrentImage.height);
-    canvasScale = s;
-    canvasMinScale = s;
-    canvasTx = (rect.width - canvasCurrentImage.width * s) / 2;
-    canvasTy = (rect.height - canvasCurrentImage.height * s) / 2;
+    const r = computePanZoomFit(stageEl, canvasCurrentImage.width, canvasCurrentImage.height);
+    canvasScale = r.scale;
+    canvasMinScale = r.scale;
+    canvasTx = r.tx;
+    canvasTy = r.ty;
     canvasApplyTransform();
   }
   // REAL BUG fix (Nutzerwunsch 2026-08-10): canvasOpenViewer's own fit call
@@ -3061,11 +3130,10 @@ document.addEventListener("click", function (e) {
     if (canvasCurrentImage) canvasFitToStage();
   });
   function canvasApplyTransform() {
-    transformEl.style.transform = "translate(" + canvasTx + "px," + canvasTy + "px) scale(" + canvasScale + ")";
+    applyPanZoomTransform(transformEl, canvasTx, canvasTy, canvasScale);
   }
   function canvasClientToImagePoint(clientX, clientY) {
-    const rect = stageEl.getBoundingClientRect();
-    return { x: (clientX - rect.left - canvasTx) / canvasScale, y: (clientY - rect.top - canvasTy) / canvasScale };
+    return panZoomClientToImagePoint(stageEl, clientX, clientY, canvasScale, canvasTx, canvasTy);
   }
 
   // Wheel-Zoom, centered on the cursor (same "point under the cursor stays
@@ -3073,14 +3141,10 @@ document.addEventListener("click", function (e) {
   stageEl.addEventListener("wheel", function (e) {
     if (!canvasCurrentImage) return;
     e.preventDefault();
-    const rect = stageEl.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    const imgX = (mx - canvasTx) / canvasScale, imgY = (my - canvasTy) / canvasScale;
-    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-    const newScale = Math.min(canvasMaxScale, Math.max(canvasMinScale, canvasScale * factor));
-    canvasTx = mx - imgX * newScale;
-    canvasTy = my - imgY * newScale;
-    canvasScale = newScale;
+    const r = computePanZoomWheel(stageEl, e.clientX, e.clientY, canvasScale, canvasTx, canvasTy, e.deltaY, canvasMinScale, canvasMaxScale);
+    canvasTx = r.tx;
+    canvasTy = r.ty;
+    canvasScale = r.scale;
     canvasApplyTransform();
   }, { passive: false });
 
@@ -3141,7 +3205,7 @@ document.addEventListener("click", function (e) {
       const id = stroke.dataset.strokeId;
       const removedZ = Number(stroke.dataset.z || 0);
       stroke.remove();
-      if (id) canvasIdbDelete("strokes", id);
+      if (id) canvasIdb.delete("strokes", id);
       canvasCloseZGapAbove(removedZ);
       return;
     }
@@ -3157,17 +3221,17 @@ document.addEventListener("click", function (e) {
         canvasSelectedIds.delete(id);
         canvasPlacementRegistry.delete(id);
         token.remove();
-        canvasIdbDelete("placements", id);
+        canvasIdb.delete("placements", id);
         canvasCloseZGapAbove(removedZ);
         canvasRenderDefaultTokenTray();
         return;
       }
       const timer = setTimeout(function () {
         canvasPendingRightClick = null;
-        canvasIdbGet("placements", id).then(function (row) {
+        canvasIdb.get("placements", id).then(function (row) {
           if (!row || !token.isConnected) return;
           row.disabled = !row.disabled;
-          canvasIdbAdd("placements", row);
+          canvasIdb.add("placements", row);
           const entry = canvasPlacementRegistry.get(id);
           if (entry) entry.placement = row;
           canvasRefreshTokenVisual(id);
@@ -3277,7 +3341,7 @@ document.addEventListener("click", function (e) {
       // than it is tall ends up wider than 2*R_INNER at this scale, and
       // gets symmetrically clipped left/right by the circular clip path --
       // exactly "auf dieser zentrierst Du den Ring").
-      const clipId = "canvas-ring-clip-" + canvasUid();
+      const clipId = "canvas-ring-clip-" + galleryUid();
       const defs = document.createElementNS(svgNS, "defs");
       const clipPath = document.createElementNS(svgNS, "clipPath");
       clipPath.setAttribute("id", clipId);
@@ -3398,7 +3462,7 @@ document.addEventListener("click", function (e) {
   }
   function canvasStartStroke(e) {
     const pt = canvasClientToImagePoint(e.clientX, e.clientY);
-    const id = canvasUid();
+    const id = galleryUid();
     const color = canvasPaintTool.getColor(), size = canvasPaintTool.getSize(), solid = canvasPaintTool.getSolid();
     // Z-Achse (Nutzerwunsch 2026-08-10): ein neuer Strich draengt sich ueber
     // alle bisherigen Striche, ABER unter alle Token -- die gesamte Token-
@@ -3419,7 +3483,7 @@ document.addEventListener("click", function (e) {
   }
   function canvasEndStroke() {
     if (!canvasActiveStroke || !canvasCurrentImage) { canvasActiveStroke = null; return; }
-    canvasIdbAdd("strokes", {
+    canvasIdb.add("strokes", {
       id: canvasActiveStroke.id,
       imageId: canvasCurrentImage.id,
       d: canvasActiveStroke.d,
@@ -3431,7 +3495,7 @@ document.addEventListener("click", function (e) {
     canvasActiveStroke = null;
   }
   function canvasLoadStrokes(imageId) {
-    canvasIdbGetByIndex("strokes", "imageId", imageId).then(function (rows) {
+    canvasIdb.getByIndex("strokes", "imageId", imageId).then(function (rows) {
       rows.forEach(function (r) {
         const path = canvasMakeStrokePath(r.id, r.size, r.color, r.solid, r.z);
         path.setAttribute("d", r.d);
@@ -3545,7 +3609,7 @@ document.addEventListener("click", function (e) {
       if (!canvasCurrentImage) return;
       canvasCurrentImage.ringColor = btn.dataset.ringColor;
       canvasUpdateRingColorButtons();
-      canvasIdbAdd("images", canvasCurrentImage);
+      canvasIdb.add("images", canvasCurrentImage);
       canvasRefreshAllTokenVisuals();
     });
   });
@@ -3558,7 +3622,7 @@ document.addEventListener("click", function (e) {
       const p = entry.placement;
       if (p.active === false && !p.disabled) {
         p.active = true;
-        canvasIdbAdd("placements", p);
+        canvasIdb.add("placements", p);
         canvasRefreshTokenVisual(p.id);
       }
     });
@@ -3607,7 +3671,7 @@ document.addEventListener("click", function (e) {
       canvasCreateBlankTokenAt(canvasClientToImagePoint(e.clientX, e.clientY));
       return;
     }
-    canvasIdbGetAll("tokens").then(function (tokens) {
+    canvasIdb.getAll("tokens").then(function (tokens) {
       const tok = tokens.find(function (t) { return t.id === tokenId; });
       if (!tok) return;
       const pt = canvasClientToImagePoint(e.clientX, e.clientY);
@@ -3622,8 +3686,8 @@ document.addEventListener("click", function (e) {
       // the bounding box is always a circle's square, not the photo's
       // original proportions.
       const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
-      canvasIdbAdd("placements", placement).then(function () {
+      const placement = { id: galleryUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
+      canvasIdb.add("placements", placement).then(function () {
         canvasAddPlacementElement(placement, tok);
         // If this was a default token dragged in from the default-token
         // tray, it's now a real placement -- drop it out of the tray.
@@ -3704,10 +3768,10 @@ document.addEventListener("click", function (e) {
           // click, cancel the pending single-click action and toggle active.
           clearTimeout(canvasPendingLeftClick.timer);
           canvasPendingLeftClick = null;
-          canvasIdbGet("placements", placement.id).then(function (row) {
+          canvasIdb.get("placements", placement.id).then(function (row) {
             if (!row || !el.isConnected) return;
             row.active = row.active === false ? true : false;
-            canvasIdbAdd("placements", row);
+            canvasIdb.add("placements", row);
             const entry = canvasPlacementRegistry.get(placement.id);
             if (entry) entry.placement = row;
             canvasRefreshTokenVisual(placement.id);
@@ -3736,11 +3800,11 @@ document.addEventListener("click", function (e) {
       // resurrected by this save landing after it.
       d.members.forEach(function (m) {
         const cx = Number(m.el.dataset.cx), cy = Number(m.el.dataset.cy);
-        canvasIdbGet("placements", m.placement.id).then(function (row) {
+        canvasIdb.get("placements", m.placement.id).then(function (row) {
           if (!row || !m.el.isConnected) return;
           row.cx = cx;
           row.cy = cy;
-          canvasIdbAdd("placements", row);
+          canvasIdb.add("placements", row);
           const entry = canvasPlacementRegistry.get(m.placement.id);
           if (entry) entry.placement = row;
         });
@@ -3777,7 +3841,7 @@ document.addEventListener("click", function (e) {
     const entry = canvasPlacementRegistry.get(id);
     if (!entry) return;
     entry.placement.selected = selected;
-    canvasIdbAdd("placements", entry.placement);
+    canvasIdb.add("placements", entry.placement);
     canvasRefreshTokenVisual(id);
   }
   function canvasClearSelection() {
@@ -3810,7 +3874,7 @@ document.addEventListener("click", function (e) {
   function canvasShiftAllTokensZUp() {
     canvasPlacementRegistry.forEach(function (entry) {
       entry.placement.z += 1;
-      canvasIdbAdd("placements", entry.placement);
+      canvasIdb.add("placements", entry.placement);
       canvasRefreshTokenVisual(entry.placement.id);
     });
   }
@@ -3822,7 +3886,7 @@ document.addEventListener("click", function (e) {
     canvasPlacementRegistry.forEach(function (entry) {
       if (entry.placement.z > removedZ) {
         entry.placement.z -= 1;
-        canvasIdbAdd("placements", entry.placement);
+        canvasIdb.add("placements", entry.placement);
         canvasRefreshTokenVisual(entry.placement.id);
       }
     });
@@ -3833,10 +3897,10 @@ document.addEventListener("click", function (e) {
         el.dataset.z = String(newZ);
         const strokeId = el.dataset.strokeId;
         if (strokeId) {
-          canvasIdbGet("strokes", strokeId).then(function (row) {
+          canvasIdb.get("strokes", strokeId).then(function (row) {
             if (!row) return;
             row.z = newZ;
-            canvasIdbAdd("strokes", row);
+            canvasIdb.add("strokes", row);
           });
         }
       }
@@ -3870,8 +3934,8 @@ document.addEventListener("click", function (e) {
   // Shared by the drag-from-tray drop handler and the new Strg+T-Shortcut.
   function canvasCreateBlankTokenAt(pt) {
     const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-    const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: "", cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
-    canvasIdbAdd("placements", placement).then(function () {
+    const placement = { id: galleryUid(), imageId: canvasCurrentImage.id, kind: "blank", name: "", cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
+    canvasIdb.add("placements", placement).then(function () {
       canvasAddPlacementElement(placement, null);
       Array.from(canvasSelectedIds).forEach(function (id) {
         const entry = canvasPlacementRegistry.get(id);
@@ -3893,7 +3957,7 @@ document.addEventListener("click", function (e) {
   function canvasRenderDefaultTokenTray() {
     const tray = document.getElementById("canvas-default-token-tray");
     if (!tray || !canvasCurrentImage) return;
-    canvasIdbGetAll("tokens").then(function (tokens) {
+    canvasIdb.getAll("tokens").then(function (tokens) {
       const defaults = tokens.filter(function (t) { return t.isDefault; });
       const placedTokenIds = new Set();
       canvasPlacementRegistry.forEach(function (entry) {
@@ -3917,7 +3981,7 @@ document.addEventListener("click", function (e) {
     });
   }
   function canvasLoadPlacements(imageId) {
-    Promise.all([canvasIdbGetByIndex("placements", "imageId", imageId), canvasIdbGetAll("tokens")]).then(function (res) {
+    Promise.all([canvasIdb.getByIndex("placements", "imageId", imageId), canvasIdb.getAll("tokens")]).then(function (res) {
       const placements = res[0], tokens = res[1];
       placements.forEach(function (p) {
         if (p.active === undefined) p.active = true;
@@ -3975,8 +4039,8 @@ document.addEventListener("click", function (e) {
       const za = a.placement.z, zb = b.placement.z;
       a.placement.z = zb;
       b.placement.z = za;
-      canvasIdbAdd("placements", a.placement);
-      canvasIdbAdd("placements", b.placement);
+      canvasIdb.add("placements", a.placement);
+      canvasIdb.add("placements", b.placement);
       canvasRefreshTokenVisual(a.placement.id);
       canvasRefreshTokenVisual(b.placement.id);
     });
@@ -4032,7 +4096,7 @@ document.addEventListener("click", function (e) {
     selectedBlankIds.forEach(function (id) {
       const entry = canvasPlacementRegistry.get(id);
       entry.placement.name = upper;
-      canvasIdbAdd("placements", entry.placement);
+      canvasIdb.add("placements", entry.placement);
       canvasRefreshTokenVisual(id);
     });
   });
@@ -4042,5 +4106,140 @@ document.addEventListener("click", function (e) {
   // Neustart erhalten).
   if (location.hash.indexOf("#canvas-image-") === 0) {
     canvasOpenViewer(location.hash.slice("#canvas-image-".length));
+  }
+})();
+
+// ---- Gallery (Nutzerwunsch 2026-08-10) ----
+// Canvas's own Images-gallery+pan/zoom-viewer half, alone -- see
+// buildGalleryHtml's own doc comment. Own IndexedDB database (one "images"
+// store, nothing else), own pan state, own pointerdown/move/up (always just
+// pans -- no token/paint branch to check at all, so this is genuinely
+// simpler than Canvas's own handlers, not a trimmed copy of them). Scoped by
+// the "#gallery-gallery" existence check, a no-op on every other page.
+(function () {
+  const galleryPageEl = document.getElementById("gallery-gallery");
+  if (!galleryPageEl) return;
+
+  const galleryDbIdb = createIdbHelper("terrinothGallery", 1, function (db) {
+    if (!db.objectStoreNames.contains("images")) db.createObjectStore("images", { keyPath: "id" });
+  });
+
+  const galleryGrid = document.getElementById("gallery-image-grid");
+  const galleryViewerEl = document.getElementById("gallery-viewer");
+  const galleryStageEl = document.getElementById("gallery-stage");
+  const galleryTransformEl = document.getElementById("gallery-transform");
+  const galleryBgImageEl = document.getElementById("gallery-bg-image");
+
+  let galleryCurrentImage = null;
+  let galleryScale = 1, galleryTx = 0, galleryTy = 0, galleryMinScale = 0.05, galleryMaxScale = 8;
+  let galleryPanState = null;
+
+  function renderGalleryGrid() {
+    renderImageGalleryGrid(galleryGrid, galleryDbIdb, {
+      deleteLabel: "Delete",
+      onOpen: galleryOpenViewer,
+      onDelete: function (id) { return galleryDbIdb.delete("images", id); },
+    });
+  }
+
+  wireImageUpload(document.getElementById("gallery-image-add-btn"), document.getElementById("gallery-image-file"), {
+    promptLabel: "Caption",
+    idb: galleryDbIdb,
+    buildRecord: function (file, dims, caption) {
+      return {
+        id: galleryUid(),
+        caption: caption.trim() || file.name,
+        blob: file,
+        width: dims.width,
+        height: dims.height,
+        createdAt: Date.now(),
+      };
+    },
+    afterAdd: renderGalleryGrid,
+  });
+
+  renderGalleryGrid();
+
+  function galleryApplyTransform() {
+    applyPanZoomTransform(galleryTransformEl, galleryTx, galleryTy, galleryScale);
+  }
+  function galleryFitToStage() {
+    if (!galleryCurrentImage) return;
+    const r = computePanZoomFit(galleryStageEl, galleryCurrentImage.width, galleryCurrentImage.height);
+    galleryScale = r.scale;
+    galleryMinScale = r.scale;
+    galleryTx = r.tx;
+    galleryTy = r.ty;
+    galleryApplyTransform();
+  }
+  // Same real-Fullscreen-lands-async fix as Canvas's own fullscreenchange
+  // listener (see its doc comment) -- re-fit once Fullscreen actually
+  // finishes transitioning, whichever direction.
+  document.addEventListener("fullscreenchange", function () {
+    if (galleryCurrentImage) galleryFitToStage();
+  });
+
+  function galleryOpenViewer(imageId) {
+    galleryDbIdb.getAll("images").then(function (images) {
+      const img = images.find(function (i) { return i.id === imageId; });
+      if (!img) return;
+      galleryCurrentImage = img;
+      history.replaceState(null, "", "#gallery-image-" + imageId);
+      const url = URL.createObjectURL(img.blob);
+      galleryBgImageEl.src = url;
+      galleryBgImageEl.style.width = img.width + "px";
+      galleryBgImageEl.style.height = img.height + "px";
+      galleryTransformEl.style.width = img.width + "px";
+      galleryTransformEl.style.height = img.height + "px";
+      galleryPageEl.hidden = true;
+      galleryViewerEl.hidden = false;
+      // Same real, single Stream-Modus Canvas's own viewer enters (see its
+      // own doc comment) -- Escape is the only exit, via
+      // exitArticleStreamMode's galleryCloseViewer hook below.
+      enterArticleStreamMode();
+      galleryFitToStage();
+    });
+  }
+  function galleryCloseViewer() {
+    galleryCurrentImage = null;
+    galleryPanState = null;
+    galleryViewerEl.hidden = true;
+    galleryPageEl.hidden = false;
+    if (location.hash.indexOf("#gallery-image-") === 0) history.replaceState(null, "", location.pathname + location.search);
+    renderGalleryGrid();
+  }
+  window.galleryCloseViewer = galleryCloseViewer;
+  window.galleryIsViewerOpen = function () { return !!galleryCurrentImage; };
+
+  galleryStageEl.addEventListener("wheel", function (e) {
+    if (!galleryCurrentImage) return;
+    e.preventDefault();
+    const r = computePanZoomWheel(galleryStageEl, e.clientX, e.clientY, galleryScale, galleryTx, galleryTy, e.deltaY, galleryMinScale, galleryMaxScale);
+    galleryTx = r.tx;
+    galleryTy = r.ty;
+    galleryScale = r.scale;
+    galleryApplyTransform();
+  }, { passive: false });
+
+  galleryStageEl.addEventListener("pointerdown", function (e) {
+    if (e.button !== 0 || !galleryCurrentImage) return;
+    galleryPanState = { startX: e.clientX, startY: e.clientY, startTx: galleryTx, startTy: galleryTy };
+    galleryStageEl.classList.add("is-grabbing");
+    galleryStageEl.setPointerCapture(e.pointerId);
+  });
+  galleryStageEl.addEventListener("pointermove", function (e) {
+    if (!galleryPanState) return;
+    galleryTx = galleryPanState.startTx + (e.clientX - galleryPanState.startX);
+    galleryTy = galleryPanState.startTy + (e.clientY - galleryPanState.startY);
+    galleryApplyTransform();
+  });
+  galleryStageEl.addEventListener("pointerup", function () {
+    galleryPanState = null;
+    galleryStageEl.classList.remove("is-grabbing");
+  });
+
+  // Deep-link support, same pattern as Canvas's own.
+  if (location.hash.indexOf("#gallery-image-") === 0) {
+    galleryOpenViewer(location.hash.slice("#gallery-image-".length));
   }
 })();
