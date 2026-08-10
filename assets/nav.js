@@ -2949,8 +2949,8 @@ document.addEventListener("click", function (e) {
   const CANVAS_DBLCLICK_WINDOW_MS = 350;
   const CANVAS_CLICK_MOVE_THRESHOLD = 4; // px, below this a pointerdown/up pair counts as a click, not a drag
   // Last known pointer position over the stage (Nutzerwunsch 2026-08-10:
-  // Strg+T legt einen neuen Ad-Hoc-Token "an der Stelle des Cursors" an) --
-  // updated on every pointermove, read only when Strg+T actually fires.
+  // Shift+T legt einen neuen Ad-Hoc-Token "an der Stelle des Cursors" an) --
+  // updated on every pointermove, read only when Shift+T actually fires.
   let canvasLastStageClientX = null, canvasLastStageClientY = null;
 
   // Opening an image enters the site's real, single Stream-Modus (the same
@@ -3969,20 +3969,23 @@ document.addEventListener("click", function (e) {
     canvasSwapSelectedTokenZ(e.key === "PageUp" ? 1 : -1);
   });
 
-  // Strg+T legt einen neuen Ad-Hoc-Token an der zuletzt bekannten
-  // Cursorposition ueber der Karte an (Nutzerwunsch 2026-08-10). Browser
-  // reservieren Strg+T normalerweise fuer "neuer Tab" und lassen Seiten das
-  // nicht zuverlaessig ueberschreiben -- dieser Handler bleibt trotzdem
-  // registriert (funktioniert z.B. in eingebetteten/Nicht-Browser-Kontexten
-  // oder falls der Browser es doch durchlaesst), ist aber in einem normalen
-  // Browser-Tab kein verlaesslicher Ersatz fuer einen Klick+Ziehen.
+  // Shift+T legt einen neuen Ad-Hoc-Token an der zuletzt bekannten
+  // Cursorposition ueber der Karte an (Nutzerwunsch 2026-08-10, von Strg+T
+  // auf Shift+T geaendert -- Browser reservieren Strg+T fest fuer "neuer
+  // Tab" und lassen Seiten das nicht ueberschreiben; Shift+T ist frei).
+  // stopImmediatePropagation, NICHT nur preventDefault: ohne das wuerde
+  // dieselbe Taste sofort danach auch noch den Umbenennen-Handler weiter
+  // unten treffen (der reagiert auf jede blanke 0-9/a-z-Taste inkl.
+  // Shift-Grossschreibung "T") und den frisch erzeugten -- jetzt selbst
+  // markierten -- Token gleich wieder auf Caption "T" umbenennen.
   document.addEventListener("keydown", function (e) {
     if (!canvasCurrentImage) return;
-    if (e.key.toLowerCase() !== "t" || !e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+    if (e.key.toLowerCase() !== "t" || !e.shiftKey || e.ctrlKey || e.altKey || e.metaKey) return;
     const active = document.activeElement;
     if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
     if (canvasLastStageClientX === null) return;
     e.preventDefault();
+    e.stopImmediatePropagation();
     canvasCreateBlankTokenAt(canvasClientToImagePoint(canvasLastStageClientX, canvasLastStageClientY));
   });
 
