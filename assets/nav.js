@@ -3119,8 +3119,7 @@ document.addEventListener("click", function (e) {
       const dist = Math.hypot(e.clientX - canvasPanState.startX, e.clientY - canvasPanState.startY);
       const drawActive = canvasPaintTool && canvasPaintTool.isActive();
       if (dist < CANVAS_CLICK_MOVE_THRESHOLD && !drawActive && canvasSelectedIds.size) {
-        canvasSelectedIds.clear();
-        canvasRefreshAllTokenVisuals();
+        canvasClearSelection();
       }
     }
     canvasPanState = null;
@@ -3718,13 +3717,12 @@ document.addEventListener("click", function (e) {
           const timer = setTimeout(function () {
             canvasPendingLeftClick = null;
             if (shiftKey) {
-              canvasSelectedIds.add(placement.id);
-              canvasRefreshTokenVisual(placement.id);
+              canvasSetSelected(placement.id, true);
             } else {
-              const prevSelected = canvasSelectedIds;
-              canvasSelectedIds = new Set([placement.id]);
-              prevSelected.forEach(function (id) { if (id !== placement.id) canvasRefreshTokenVisual(id); });
-              canvasRefreshTokenVisual(placement.id);
+              Array.from(canvasSelectedIds).forEach(function (id) {
+                if (id !== placement.id) canvasSetSelected(id, false);
+              });
+              canvasSetSelected(placement.id, true);
             }
           }, CANVAS_DBLCLICK_WINDOW_MS);
           canvasPendingLeftClick = { id: placement.id, timer: timer };
@@ -3764,6 +3762,27 @@ document.addEventListener("click", function (e) {
   // vertauscht Werte statt sie zu addieren/subtrahieren, kann also fuer
   // sich allein nie Luecken erzeugen -- nur Hinzufuegen/Entfernen kann das,
   // und wird deshalb hier zentral behandelt.
+  // Markierungsstatus wird jetzt mitpersistiert (Nutzerwunsch 2026-08-10:
+  // "Selected-Status soll auch persistiert werden") -- placement.selected
+  // ist die alleinige Quelle der Wahrheit, canvasSelectedIds ist nur die
+  // In-Memory-Sicht darauf fuer das aktuell offene Bild. JEDE Aenderung an
+  // canvasSelectedIds ausserhalb dieser Funktion (canvasCloseViewer) laesst
+  // die persistierten Werte bewusst unangetastet -- das Schliessen/Erneut-
+  // Oeffnen desselben Bildes soll die zuletzt gesetzte Markierung
+  // wiederherstellen, nicht sie loeschen. canvasLoadPlacements liest
+  // p.selected beim Laden zurueck in canvasSelectedIds.
+  function canvasSetSelected(id, selected) {
+    if (selected) canvasSelectedIds.add(id);
+    else canvasSelectedIds.delete(id);
+    const entry = canvasPlacementRegistry.get(id);
+    if (!entry) return;
+    entry.placement.selected = selected;
+    canvasIdbAdd("placements", entry.placement);
+    canvasRefreshTokenVisual(id);
+  }
+  function canvasClearSelection() {
+    Array.from(canvasSelectedIds).forEach(function (id) { canvasSetSelected(id, false); });
+  }
   function canvasMaxTokenZ() {
     let max = 0;
     canvasPlacementRegistry.forEach(function (entry) {
@@ -3854,17 +3873,11 @@ document.addEventListener("click", function (e) {
     const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: "", cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
     canvasIdbAdd("placements", placement).then(function () {
       canvasAddPlacementElement(placement, null);
-      const prevSelected = canvasSelectedIds;
-      const newSelected = new Set();
-      prevSelected.forEach(function (id) {
+      Array.from(canvasSelectedIds).forEach(function (id) {
         const entry = canvasPlacementRegistry.get(id);
-        if (entry && entry.placement.kind === "blank") newSelected.add(id);
+        if (!entry || entry.placement.kind !== "blank") canvasSetSelected(id, false);
       });
-      newSelected.add(placement.id);
-      canvasSelectedIds = newSelected;
-      const changed = new Set(prevSelected);
-      newSelected.forEach(function (id) { changed.add(id); });
-      changed.forEach(function (id) { canvasRefreshTokenVisual(id); });
+      canvasSetSelected(placement.id, true);
     });
   }
   // Default tokens (Nutzerwunsch 2026-08-10, revised): a token flagged
@@ -3913,6 +3926,12 @@ document.addEventListener("click", function (e) {
         // itself (Nutzerwunsch 2026-08-10), no object may ever hold it. Only
         // hit for placements saved before z-tracking existed at all.
         if (p.z === undefined) p.z = 1;
+        // Markierung ist jetzt persistiert (Nutzerwunsch 2026-08-10) -- vor
+        // canvasAddPlacementElement in canvasSelectedIds eintragen, damit der
+        // allererste canvasRefreshTokenVisual-Aufruf (innerhalb dieser
+        // Funktion) den Ring gleich korrekt markiert rendert, statt erst
+        // unmarkiert zu zeichnen und gleich danach nochmal zu aktualisieren.
+        if (p.selected) canvasSelectedIds.add(p.id);
         if (p.kind === "blank") { canvasAddPlacementElement(p, null); return; }
         const tok = tokens.find(function (t) { return t.id === p.tokenId; });
         if (tok) canvasAddPlacementElement(p, tok);
