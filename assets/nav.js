@@ -2778,9 +2778,10 @@ document.addEventListener("click", function (e) {
         item.querySelector(".canvas-gallery-caption").textContent = tok.name;
         // Default-token toggle (Nutzerwunsch 2026-08-10): click the
         // thumbnail itself (tokens have no "open viewer" action the way
-        // image thumbnails do) to flag/unflag it -- a flagged token gets
-        // auto-placed on every map that doesn't already have an instance
-        // of it, see canvasApplyDefaultTokens.
+        // image thumbnails do) to flag/unflag it -- a flagged token appears
+        // in the default-token tray (top-right of the map viewer) on every
+        // map that doesn't already have a placement of it, see
+        // canvasRenderDefaultTokenTray.
         item.querySelector(".canvas-gallery-thumb-wrap").addEventListener("click", function () {
           tok.isDefault = !tok.isDefault;
           item.classList.toggle("is-default", tok.isDefault);
@@ -2867,15 +2868,20 @@ document.addEventListener("click", function (e) {
   let canvasActiveStroke = null;
   let canvasPanState = null;
   let canvasDraggingToken = null;
-  // Token handling additions (Nutzerwunsch 2026-08-10): selection (multi-,
-  // toggled by a plain no-move click), left-click-vs-drag distinguished by
-  // movement distance, and manual double-click/double-right-click timing
-  // (native dblclick/"dblcontextmenu" aren't reliable here since every
-  // click already does its own immediate single-click action -- see
-  // canvasMakeTokenDraggable's own doc comment for the exact reasoning).
+  // Token handling additions (Nutzerwunsch 2026-08-10): selection (Shift+
+  // click adds, plain click replaces), left-click-vs-drag distinguished by
+  // movement distance, and manual double-click/double-right-click timing.
+  // Native dblclick/"dblcontextmenu" aren't used here since a plain click's
+  // own action must NOT fire until we know for certain no second click is
+  // coming -- canvasPendingLeftClick/canvasPendingRightClick each hold at
+  // most one { id, timer } for a click awaiting that verdict: if a second
+  // click on the SAME token arrives before the timer fires, the timer is
+  // cancelled and the double-click action runs instead; otherwise the timer
+  // itself fires the single-click action once the window has safely passed
+  // (see canvasMakeTokenDraggable's own doc comment for the two actions).
   let canvasSelectedIds = new Set();
-  let canvasLastLeftClick = null; // { id, time }
-  let canvasLastRightClick = null; // { id, time }
+  let canvasPendingLeftClick = null; // { id, timer }
+  let canvasPendingRightClick = null; // { id, timer }
   const CANVAS_DBLCLICK_WINDOW_MS = 350;
   const CANVAS_CLICK_MOVE_THRESHOLD = 4; // px, below this a pointerdown/up pair counts as a click, not a drag
 
@@ -2908,6 +2914,7 @@ document.addEventListener("click", function (e) {
       drawSvgEl.setAttribute("viewBox", "0 0 " + img.width + " " + img.height);
       drawSvgEl.innerHTML = "";
       tokenLayerEl.innerHTML = "";
+      document.getElementById("canvas-default-token-tray").innerHTML = "";
       canvasPlacementRegistry.clear();
       canvasUpdateRingColorButtons();
       galleryEl.hidden = true;
@@ -2943,8 +2950,10 @@ document.addEventListener("click", function (e) {
     canvasSetDrawModeActive(false);
     canvasPanState = null;
     canvasDraggingToken = null;
-    canvasLastLeftClick = null;
-    canvasLastRightClick = null;
+    if (canvasPendingLeftClick) clearTimeout(canvasPendingLeftClick.timer);
+    if (canvasPendingRightClick) clearTimeout(canvasPendingRightClick.timer);
+    canvasPendingLeftClick = null;
+    canvasPendingRightClick = null;
     viewerEl.hidden = true;
     galleryEl.hidden = false;
     if (location.hash.indexOf("#canvas-image-") === 0) history.replaceState(null, "", location.pathname + location.search);
@@ -3025,18 +3034,34 @@ document.addEventListener("click", function (e) {
       canvasApplyTransform();
     }
   });
-  stageEl.addEventListener("pointerup", function () {
-    if (canvasActiveStroke) canvasEndStroke();
+  stageEl.addEventListener("pointerup", function (e) {
+    if (canvasActiveStroke) {
+      canvasEndStroke();
+    } else if (canvasPanState) {
+      // A plain click on the empty map (not a token, not a pan/paint drag)
+      // clears the whole selection (Nutzerwunsch 2026-08-10: "Klick auf
+      // leere Kartenflaeche hebt ALLE Markierungen auf"). Token clicks never
+      // reach here -- the pointerdown handler above already bails out for
+      // them, and the token's own pointerup handler stops this event from
+      // bubbling back up (see canvasMakeTokenDraggable).
+      const dist = Math.hypot(e.clientX - canvasPanState.startX, e.clientY - canvasPanState.startY);
+      if (dist < CANVAS_CLICK_MOVE_THRESHOLD && !canvasDrawModeActive && canvasSelectedIds.size) {
+        canvasSelectedIds.clear();
+        canvasRefreshAllTokenVisuals();
+      }
+    }
     canvasPanState = null;
     stageEl.classList.remove("is-grabbing");
   });
 
   // Right-click on a token no longer deletes it outright (Nutzerwunsch
-  // 2026-08-10) -- a single right-click now toggles "permanently inactive"
+  // 2026-08-10) -- a single right-click toggles "permanently inactive"
   // (disabled), a right DOUBLE-click deletes. Native contextmenu has no
   // dblclick equivalent, so double-right-click is detected manually via
-  // canvasLastRightClick (same-target-within-window), exactly parallel to
-  // canvasLastLeftClick for the ordinary left double-click below.
+  // canvasPendingRightClick, exactly parallel to canvasPendingLeftClick for
+  // the ordinary left double-click below -- see that variable's own doc
+  // comment for why the single-click action is DELAYED behind a timer
+  // rather than fired immediately and only reinterpreted afterwards.
   stageEl.addEventListener("contextmenu", function (e) {
     const stroke = e.target.closest(".canvas-drawn-stroke");
     if (stroke) {
@@ -3050,24 +3075,28 @@ document.addEventListener("click", function (e) {
     if (token) {
       e.preventDefault();
       const id = token.dataset.placementId;
-      const now = Date.now();
-      const isDoubleClick = canvasLastRightClick && canvasLastRightClick.id === id && (now - canvasLastRightClick.time) < CANVAS_DBLCLICK_WINDOW_MS;
-      canvasLastRightClick = isDoubleClick ? null : { id: id, time: now };
-      if (isDoubleClick) {
+      if (canvasPendingRightClick && canvasPendingRightClick.id === id) {
+        clearTimeout(canvasPendingRightClick.timer);
+        canvasPendingRightClick = null;
         canvasSelectedIds.delete(id);
         canvasPlacementRegistry.delete(id);
         token.remove();
         canvasIdbDelete("placements", id);
+        canvasRenderDefaultTokenTray();
         return;
       }
-      canvasIdbGet("placements", id).then(function (row) {
-        if (!row || !token.isConnected) return;
-        row.disabled = !row.disabled;
-        canvasIdbAdd("placements", row);
-        const entry = canvasPlacementRegistry.get(id);
-        if (entry) entry.placement = row;
-        canvasRefreshTokenVisual(id);
-      });
+      const timer = setTimeout(function () {
+        canvasPendingRightClick = null;
+        canvasIdbGet("placements", id).then(function (row) {
+          if (!row || !token.isConnected) return;
+          row.disabled = !row.disabled;
+          canvasIdbAdd("placements", row);
+          const entry = canvasPlacementRegistry.get(id);
+          if (entry) entry.placement = row;
+          canvasRefreshTokenVisual(id);
+        });
+      }, CANVAS_DBLCLICK_WINDOW_MS);
+      canvasPendingRightClick = { id: id, timer: timer };
       return;
     }
     e.preventDefault();
@@ -3085,15 +3114,11 @@ document.addEventListener("click", function (e) {
   const canvasPlacementRegistry = new Map();
   // Ring geometry, shared by every token regardless of kind (Nutzerwunsch
   // 2026-08-10: "Mach die Width der Ring-Border nur halb so groß" -- halved
-  // from the original 9 to 4.5 -- and the new selection-ring/disabled-X
-  // marks all derive their own thickness from this same base value so they
-  // stay proportional to it). R_OUTER=40 (not the old blank-token r=42)
-  // specifically leaves enough of the fixed 0-100 viewBox spare to fit the
-  // optional outer selection ring without it clipping at the viewBox edge.
+  // from the original 9 to 4.5 -- and the disabled-X marks derive their own
+  // thickness from this same base value so they stay proportional to it).
   const CANVAS_RING_BORDER = 4.5;
   const CANVAS_RING_R_OUTER = 40;
   const CANVAS_RING_R_INNER = CANVAS_RING_R_OUTER - CANVAS_RING_BORDER;
-  const CANVAS_SELECTION_COLOR = "#f0e6da";
   function canvasRingColor() {
     return (canvasCurrentImage && canvasCurrentImage.ringColor) || "black";
   }
@@ -3200,23 +3225,15 @@ document.addEventListener("click", function (e) {
     ring.setAttribute("fill", "none");
     ring.setAttribute("stroke", ringColor);
     ring.setAttribute("stroke-width", String(CANVAS_RING_BORDER));
+    // No separate outer selection ring anymore (Nutzerwunsch 2026-08-10,
+    // replacing the earlier second-ring design): a selected token's own
+    // primary ring instead oscillates black<->white via this CSS class'
+    // animation (see .canvas-token-ring-selected in site.scss). The
+    // stroke attribute above stays as-is underneath -- the animation
+    // overrides it while selected, and reverts to it the instant the
+    // class is removed on deselect.
+    if (opts.selected) ring.setAttribute("class", "canvas-token-ring-selected");
     svg.appendChild(ring);
-    if (opts.selected) {
-      // Second, outer ring (Nutzerwunsch 2026-08-10): half the primary
-      // ring's border width, with a gap of also half that width between
-      // the two.
-      const gap = CANVAS_RING_BORDER / 2;
-      const selBorder = CANVAS_RING_BORDER / 2;
-      const selR = CANVAS_RING_R_OUTER + gap + selBorder / 2;
-      const selRing = document.createElementNS(svgNS, "circle");
-      selRing.setAttribute("cx", "50");
-      selRing.setAttribute("cy", "50");
-      selRing.setAttribute("r", String(selR));
-      selRing.setAttribute("fill", "none");
-      selRing.setAttribute("stroke", CANVAS_SELECTION_COLOR);
-      selRing.setAttribute("stroke-width", String(selBorder));
-      svg.appendChild(selRing);
-    }
     if (opts.disabled) {
       // "Ausgext": a cross through the token, arm width = the primary
       // ring's own border width, corner-to-corner within the primary ring.
@@ -3499,21 +3516,28 @@ document.addEventListener("click", function (e) {
       const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: 0 };
       canvasIdbAdd("placements", placement).then(function () {
         canvasAddPlacementElement(placement, tok);
+        // If this was a default token dragged in from the default-token
+        // tray, it's now a real placement -- drop it out of the tray.
+        canvasRenderDefaultTokenTray();
       });
     });
   });
 
   // Shared by both token kinds -- both are just some visual content inside
   // an absolutely positioned container sized via canvasRenderTokenElement.
-  // Handles, in order of precedence: (1) a plain no-movement click toggles
-  // selection, or -- if it lands within CANVAS_DBLCLICK_WINDOW_MS of the
-  // PREVIOUS click on the SAME token -- toggles active instead (Nutzerwunsch
-  // 2026-08-10: "Doppelklick toggelt Aktivitätsstatus"; the first click's
-  // own selection-toggle still happened immediately, only the second one is
-  // reinterpreted, see the module doc comment on canvasLastLeftClick).
-  // (2) a real drag moves this token AND every other currently-selected one
-  // by the same delta ("wenn man einen markierten Token bewegt, dann
-  // bewegen sich alle anderen markierten Token auf gleiche Weise").
+  // Handles, in order of precedence: (1) a plain no-movement click, which
+  // does NOT act immediately -- its selection action is scheduled behind a
+  // CANVAS_DBLCLICK_WINDOW_MS timer, and only actually runs if no second
+  // click on the SAME token arrives first; a second click within the window
+  // cancels that timer and toggles "active" instead (Nutzerwunsch 2026-08-10,
+  // correcting the previous, backwards approach that fired the single-click
+  // action immediately and only reinterpreted a following second click --
+  // see canvasPendingLeftClick's own doc comment). Shift+click ADDS the
+  // token to the selection; a plain click REPLACES the whole selection with
+  // just this token. (2) a real drag moves this token AND every other
+  // currently-selected one by the same delta ("wenn man einen markierten
+  // Token bewegt, dann bewegen sich alle anderen markierten Token auf
+  // gleiche Weise").
   function canvasMakeTokenDraggable(el, placement) {
     el.addEventListener("pointerdown", function (e) {
       // REAL BUG fix (found via Puppeteer, 2026-08-09): pointerdown fires
@@ -3558,18 +3582,19 @@ document.addEventListener("click", function (e) {
         canvasRenderTokenElement(m.el);
       });
     });
-    el.addEventListener("pointerup", function () {
+    el.addEventListener("pointerup", function (e) {
       if (!canvasDraggingToken || canvasDraggingToken.el !== el) return;
+      e.stopPropagation();
       const d = canvasDraggingToken;
       canvasDraggingToken = null;
       if (!d.moved) {
-        // Plain click: toggle selection, or (if this is the second click
-        // within the double-click window on the SAME token) toggle active
-        // instead -- see this function's own doc comment above.
-        const now = Date.now();
-        const isDoubleClick = canvasLastLeftClick && canvasLastLeftClick.id === placement.id && (now - canvasLastLeftClick.time) < CANVAS_DBLCLICK_WINDOW_MS;
-        if (isDoubleClick) {
-          canvasLastLeftClick = null;
+        // See this function's own doc comment above for the full timing
+        // rationale: a click's action is delayed, not fired immediately.
+        if (canvasPendingLeftClick && canvasPendingLeftClick.id === placement.id) {
+          // Second click within the window on the same token -> double
+          // click, cancel the pending single-click action and toggle active.
+          clearTimeout(canvasPendingLeftClick.timer);
+          canvasPendingLeftClick = null;
           canvasIdbGet("placements", placement.id).then(function (row) {
             if (!row || !el.isConnected) return;
             row.active = row.active === false ? true : false;
@@ -3579,10 +3604,20 @@ document.addEventListener("click", function (e) {
             canvasRefreshTokenVisual(placement.id);
           });
         } else {
-          canvasLastLeftClick = { id: placement.id, time: now };
-          if (canvasSelectedIds.has(placement.id)) canvasSelectedIds.delete(placement.id);
-          else canvasSelectedIds.add(placement.id);
-          canvasRefreshTokenVisual(placement.id);
+          const shiftKey = e.shiftKey;
+          const timer = setTimeout(function () {
+            canvasPendingLeftClick = null;
+            if (shiftKey) {
+              canvasSelectedIds.add(placement.id);
+              canvasRefreshTokenVisual(placement.id);
+            } else {
+              const prevSelected = canvasSelectedIds;
+              canvasSelectedIds = new Set([placement.id]);
+              prevSelected.forEach(function (id) { if (id !== placement.id) canvasRefreshTokenVisual(id); });
+              canvasRefreshTokenVisual(placement.id);
+            }
+          }, CANVAS_DBLCLICK_WINDOW_MS);
+          canvasPendingLeftClick = { id: placement.id, timer: timer };
         }
         return;
       }
@@ -3622,26 +3657,39 @@ document.addEventListener("click", function (e) {
     canvasPlacementRegistry.set(placement.id, { el: el, placement: placement, tok: tok || null });
     canvasRefreshTokenVisual(placement.id);
   }
-  // Default tokens (Nutzerwunsch 2026-08-10): a token flagged "default" in
-  // the gallery (green checkmark) is auto-placed on every map that doesn't
-  // already have an instance of it -- "sofern er noch nicht vorhanden ist"
-  // is checked fresh every open, not a one-time flag, so manually removing
-  // an auto-added default lets it be re-added on the next open. Stacked
-  // vertically along the right edge.
-  function canvasApplyDefaultTokens(existingPlacements, tokens) {
-    const defaults = tokens.filter(function (t) { return t.isDefault; });
-    if (!defaults.length) return;
-    const existingTokenIds = new Set(existingPlacements.filter(function (p) { return p.kind !== "blank"; }).map(function (p) { return p.tokenId; }));
-    const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-    let slot = 0;
-    defaults.forEach(function (tok) {
-      if (existingTokenIds.has(tok.id)) return;
-      const cx = canvasCurrentImage.width - w * 0.7 - w / 2;
-      const cy = w * 0.7 + w / 2 + slot * w * 1.2;
-      slot++;
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: cx, cy: cy, w: w, h: w, active: true, disabled: false, z: 0 };
-      canvasIdbAdd("placements", placement).then(function () {
-        canvasAddPlacementElement(placement, tok);
+  // Default tokens (Nutzerwunsch 2026-08-10, revised): a token flagged
+  // "default" in the gallery (green checkmark) no longer auto-places itself
+  // on the map. Instead it starts in a small tray top-right of the BODY
+  // (#canvas-default-token-tray, a sibling of .canvas-stage -- see its own
+  // doc comment in site.scss), outside the map's own coordinate system.
+  // Only dragging it from there onto the map (same drop handler as the
+  // regular token-library tray below, reusing tok.id as the drag payload)
+  // turns it into a real placement with image coordinates. Freshly
+  // recomputed on every open/drop/delete rather than tracked as a flag, so
+  // a default token whose placement gets deleted simply reappears here.
+  function canvasRenderDefaultTokenTray() {
+    const tray = document.getElementById("canvas-default-token-tray");
+    if (!tray || !canvasCurrentImage) return;
+    canvasIdbGetAll("tokens").then(function (tokens) {
+      const defaults = tokens.filter(function (t) { return t.isDefault; });
+      const placedTokenIds = new Set();
+      canvasPlacementRegistry.forEach(function (entry) {
+        if (entry.placement.kind !== "blank" && entry.placement.tokenId) placedTokenIds.add(entry.placement.tokenId);
+      });
+      tray.innerHTML = "";
+      defaults.forEach(function (tok) {
+        if (placedTokenIds.has(tok.id)) return;
+        const url = URL.createObjectURL(tok.blob);
+        const el = document.createElement("img");
+        el.className = "canvas-default-token-tray-item";
+        el.src = url;
+        el.title = tok.name;
+        el.draggable = true;
+        el.dataset.tokenId = tok.id;
+        el.addEventListener("dragstart", function (e) {
+          e.dataTransfer.setData("text/plain", tok.id);
+        });
+        tray.appendChild(el);
       });
     });
   }
@@ -3656,7 +3704,7 @@ document.addEventListener("click", function (e) {
         const tok = tokens.find(function (t) { return t.id === p.tokenId; });
         if (tok) canvasAddPlacementElement(p, tok);
       });
-      canvasApplyDefaultTokens(placements, tokens);
+      canvasRenderDefaultTokenTray();
     });
   }
 
