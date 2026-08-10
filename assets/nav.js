@@ -1534,19 +1534,19 @@ document.addEventListener("click", function (e) {
     return el.matches("image.mennara-trigger") ? el : el.querySelector("image.mennara-trigger");
   }
   // Captions don't hover-react while painting (Nutzerwunsch 2026-08-09) --
-  // terrinothDrawModeActive is declared later in this file (the draw-tool
-  // section further down) but only ever READ here, inside a listener that
-  // only runs on an actual later mouseover/mouseout, by which point the
-  // whole script (including that declaration) has already run once -- same
-  // safe forward-reference as updateTerrinothZoomLabels's own use of it.
+  // terrinothPaintTool is declared later in this file (the draw-tool section
+  // further down) but only ever READ here, inside a listener that only runs
+  // on an actual later mouseover/mouseout, by which point the whole script
+  // (including that declaration) has already run once -- same safe
+  // forward-reference as updateTerrinothZoomLabels's own use of it.
   document.addEventListener("mouseover", function (e) {
-    if (typeof terrinothDrawModeActive !== "undefined" && terrinothDrawModeActive) return;
+    if (typeof terrinothPaintTool !== "undefined" && terrinothPaintTool && terrinothPaintTool.isActive()) return;
     const src = e.target.closest(".mennara-map [data-region]");
     if (!src || mennaraTriggerImageFor(src)) return;
     setMennaraRegionActive(src, true);
   });
   document.addEventListener("mouseout", function (e) {
-    if (typeof terrinothDrawModeActive !== "undefined" && terrinothDrawModeActive) return;
+    if (typeof terrinothPaintTool !== "undefined" && terrinothPaintTool && terrinothPaintTool.isActive()) return;
     const src = e.target.closest(".mennara-map [data-region]");
     if (!src || src.contains(e.relatedTarget)) return;
     const triggerImg = mennaraTriggerImageFor(src);
@@ -1751,13 +1751,9 @@ document.addEventListener("click", function (e) {
     if (!svg) return;
     e.preventDefault();
     // Fix (Nutzerwunsch 2026-08-09, "sobald ich das Mausrad betätige wird
-    // der Pinsel groß"): stroke-width is now continuously kept correct on
-    // every zoom tick regardless (see terrinothRefreshStrokeWidths's own
-    // doc comment, called from updateTerrinothZoomLabels below), so this
-    // guard is no longer the only thing standing between a wheel-zoom and a
-    // visibly wrong in-progress stroke -- kept anyway as a UX choice: zoom
-    // and an active paint gesture fighting for the same pointer position is
-    // confusing regardless of whether the math stays correct underneath.
+    // der Pinsel groß"): a UX choice -- zoom and an active paint gesture
+    // fighting for the same pointer position is confusing regardless of the
+    // underlying math, so wheel-zoom is simply suppressed mid-stroke.
     // preventDefault above still stops the page itself from scrolling, only
     // the viewBox change is skipped.
     if (terrinothDrawStroke) return;
@@ -2100,13 +2096,6 @@ function updateTerrinothZoomLabels(svg) {
       label.classList.toggle("zoom-label-hidden", zoomPercent < 200);
     }
   });
-  // Keep every already-drawn stroke's on-screen thickness constant across
-  // THIS zoom tick too (Nutzerwunsch 2026-08-09, "lass den Pinsel klein") --
-  // see terrinothRefreshStrokeWidths's own doc comment further down (NAV_JS
-  // top-level function, defined after this one but only ever called here,
-  // well after the whole script has finished loading -- same safe forward
-  // reference as terrinothDrawModeActive's own use just above).
-  if (typeof terrinothRefreshStrokeWidths === "function") terrinothRefreshStrokeWidths(svg);
 }
 document.querySelectorAll(".terrinoth-map svg").forEach(function (svg) { updateTerrinothZoomLabels(svg); });
 
@@ -2229,8 +2218,134 @@ document.addEventListener("mousemove", function (e) {
   terrinothScheduleFilterHide();
 });
 
-// ---- Terrinoth map draw tool (Nutzerwunsch 2026-08-09, redesigned same
-// day) ----
+// ---- Shared paint tool (Nutzerwunsch 2026-08-10: "modular... nicht an
+// einen der beiden Artikel gebunden") ----
+// One reusable freehand-annotation UI + brush-state module: owns the color/
+// size/solid controls, the draw-mode-active toggle, panel hover-expand
+// (+ optional idle-auto-hide), and a brush-reflecting custom cursor
+// (Nutzerwunsch 2026-08-10: "der Mauscursor... blau, transparent und
+// mittelgroß"). Used by BOTH the Terrinoth map's draw tool (below) and the
+// Canvas viewer's draw tool (near the end of this script) -- each keeps its
+// OWN pointer-event stroke-drawing + persistence, since those differ
+// fundamentally by coordinate system (SVG viewBox math + session-only for
+// Terrinoth vs. CSS-transform math + IndexedDB for Canvas) and folding them
+// in here would only add branching, not real reuse. This module never draws
+// a single stroke itself, only supplies the current brush settings + toggle
+// state for a consumer to read.
+const PAINT_TOOL_SIZE_MIN = 5;
+const PAINT_TOOL_SIZE_MAX = 120;
+// Custom cursor image capped at 120x120 (Nutzerwunsch 2026-08-10, confirmed
+// explicitly: "Als Maximalgröße ist 120x120 voll in Ordnung" -- the browser-
+// enforced cap most engines honor for cursor images anyway). Coincides
+// exactly with PAINT_TOOL_SIZE_MAX, so the cursor can represent the WHOLE
+// brush-size range 1:1 (diameter == size) without any separate clamping.
+function paintToolCursorValue(color, sizePx, solid) {
+  const d = Math.max(2, Math.round(sizePx));
+  const r = d / 2;
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + d + '" height="' + d + '">' +
+    '<circle cx="' + r + '" cy="' + r + '" r="' + Math.max(0.5, r - 1) + '" fill="' + color + '" fill-opacity="' + (solid ? 1 : 0.5) + '" stroke="rgba(0,0,0,0.45)" stroke-width="1"/>' +
+    '</svg>';
+  return "url(data:image/svg+xml;base64," + btoa(svg) + ") " + r + " " + r + ", crosshair";
+}
+// opts: {
+//   panel: HTMLElement (the already-in-DOM .paint-tool root),
+//   getCursorScopes: () => Element[] (elements to set --paint-cursor on --
+//     a function, not a static list, so it can resolve freshly each time,
+//     e.g. Terrinoth may have more than one .terrinoth-map on the page),
+//   idleHide: boolean (optional -- Terrinoth wants the panel to auto-fade
+//     after 3s idle like its filter panel does; Canvas doesn't need this,
+//     its whole toolbar stays put regardless of mouse activity),
+//   idleScopeSelector: string (required if idleHide -- CSS selector for
+//     "mouse movement over this area keeps the panel visible"),
+//   onModeChange: function(active) (consumer applies its OWN "draw-mode-
+//     active" class to whatever element(s) it needs to react to),
+// }
+function createPaintTool(opts) {
+  const panel = opts.panel;
+  const tab = panel.querySelector(".paint-tool-tab");
+  const sizeSlider = panel.querySelector(".paint-tool-size-slider");
+  const solidCheckbox = panel.querySelector(".paint-tool-solid-checkbox");
+  let color = "#000000";
+  let size = Number(sizeSlider.value);
+  let solid = false;
+  let active = false;
+
+  function updateCursor() {
+    const value = active ? paintToolCursorValue(color, size, solid) : null;
+    opts.getCursorScopes().forEach(function (el) {
+      if (value) el.style.setProperty("--paint-cursor", value);
+      else el.style.removeProperty("--paint-cursor");
+    });
+  }
+  function setActive(v) {
+    active = v;
+    panel.classList.toggle("draw-active", active);
+    tab.setAttribute("aria-pressed", String(active));
+    updateCursor();
+    if (opts.onModeChange) opts.onModeChange(active);
+  }
+  tab.addEventListener("click", function () { setActive(!active); });
+  // Making ANY selection here also arms Mal-Modus (Nutzerwunsch 2026-08-09:
+  // "Das Treffen einer Auswahl im Panel aktiviere automatisch den Draw-
+  // Mode") -- always forces it ON, not a toggle, since picking a color/size
+  // while already painting obviously shouldn't switch painting back off.
+  panel.querySelectorAll(".paint-tool-swatch").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      panel.querySelectorAll(".paint-tool-swatch").forEach(function (b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      color = btn.dataset.color;
+      setActive(true);
+    });
+  });
+  sizeSlider.addEventListener("input", function () {
+    size = Number(sizeSlider.value);
+    setActive(true);
+  });
+  solidCheckbox.addEventListener("change", function () {
+    solid = solidCheckbox.checked;
+    setActive(true);
+  });
+  // Hover-driven expand/collapse. Moving the mouse from the tab/body onto
+  // the map/canvas to actually start painting naturally crosses out of this
+  // hover area first, which is what closes the body the instant painting
+  // starts ("In dem Moment, wo ich zu malen anfange, schließen sich die
+  // Kreise") -- no separate JS force-close needed.
+  panel.addEventListener("mouseenter", function () { panel.classList.add("expanded"); });
+  panel.addEventListener("mouseleave", function () { panel.classList.remove("expanded"); });
+
+  // Idle fade (OPT IN, Terrinoth only -- see opts.idleHide above), identical
+  // mechanism to .terrinoth-filter-panel.idle-hidden.
+  let idleTimer = null;
+  function show() {
+    panel.classList.remove("idle-hidden");
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+  }
+  function scheduleHide() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () { panel.classList.add("idle-hidden"); }, 3000);
+  }
+  if (opts.idleHide) {
+    panel.addEventListener("mouseenter", show);
+    panel.addEventListener("mouseleave", scheduleHide);
+    document.addEventListener("mousemove", function (e) {
+      if (!e.target.closest(opts.idleScopeSelector)) return;
+      if (panel.contains(e.target)) return;
+      show();
+      scheduleHide();
+    });
+  }
+
+  return {
+    getColor: function () { return color; },
+    getSize: function () { return size; },
+    getSolid: function () { return solid; },
+    isActive: function () { return active; },
+    setActive: setActive,
+  };
+}
+
+// ---- Terrinoth map draw tool (Nutzerwunsch 2026-08-09, now on the shared
+// createPaintTool module above, Nutzerwunsch 2026-08-10) ----
 // Simple stream-mode-only freehand annotation tool. Strokes are appended as
 // plain <path> children of the "terrinoth-draw-layer" <g> that already lives
 // inside the map's own <svg> (see buildTerrinothMapHtml) -- since that <g> is
@@ -2243,30 +2358,7 @@ document.addEventListener("mousemove", function (e) {
 // navigation away and back rebuilds the map from the server-rendered markup
 // (see swapContent's re-init block above) and starts with an empty layer
 // again, same as any other client-side-only UI state on this page.
-// Bumped from {3,7,14} (Nutzerwunsch 2026-08-09, "malt viel zu klein") --
-// confirmed via direct on-screen measurement that the OLD values rendered
-// mathematically exactly as intended (7 -> 7.0 CSS px on screen, no bug),
-// they were just objectively thin for a tool meant to be read from across a
-// room during Stream-Modus. Now matches the picker's own preview dots
-// exactly (already doubled to 8/16/28 CSS px, Nutzerwunsch 2026-08-09
-// earlier the same day) -- the preview should promise the actual output,
-// not a different, smaller one. Keep the <button data-size="..."> values in
-// buildTerrinothMapHtml in sync with these (small/medium's HTML attributes
-// currently read 8/16 too).
-const TERRINOTH_DRAW_SIZES = { small: 8, medium: 16, large: 28 };
-let terrinothDrawColor = "#000000";
-let terrinothDrawSize = TERRINOTH_DRAW_SIZES.medium;
-let terrinothDrawSolid = false;
-// Whether the brush tool is the active interaction mode for the map (left-
-// drag draws instead of panning, cursor is a crosshair) -- toggled ONLY by
-// clicking the tab (see setupTerrinothDrawTool below), deliberately
-// independent of whether the swatch body is currently visible/hovered. The
-// two used to be coupled (a first version toggled both from one click); now
-// that the tab's hover-to-reveal behavior mirrors the filter panel's tab
-// exactly (Nutzerwunsch: "genauso... vom Verhalten"), coupling them would
-// mean just brushing the mouse past the corner arms painting, which the
-// confirmed design explicitly rejected in favor of an explicit click.
-let terrinothDrawModeActive = false;
+let terrinothPaintTool = null;
 let terrinothDrawStroke = null;
 
 // REAL BUG fix (Nutzerwunsch 2026-08-09, "malt nicht da, wo der Cursor
@@ -2296,20 +2388,8 @@ function terrinothClientToLayerPoint(svg, layer, clientX, clientY) {
   const layerPt = pt.matrixTransform(ctm.inverse());
   return { x: layerPt.x, y: layerPt.y };
 }
-function setTerrinothDrawModeActive(active) {
-  terrinothDrawModeActive = active;
-  document.querySelectorAll(".terrinoth-map").forEach(function (m) {
-    m.classList.toggle("draw-mode-active", active);
-  });
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (tool) {
-    tool.classList.toggle("draw-active", active);
-    const tab = tool.querySelector(".terrinoth-draw-tool-tab");
-    if (tab) tab.setAttribute("aria-pressed", String(active));
-  }
-}
 function terrinothResetDrawTool() {
-  setTerrinothDrawModeActive(false);
+  if (terrinothPaintTool) terrinothPaintTool.setActive(false);
   terrinothDrawStroke = null;
   // Wipe every drawn stroke (Nutzerwunsch 2026-08-09: "das Malen ist nur für
   // den Streammodus, also entferne alles Gekritzel wenn ich den Streammodus
@@ -2318,79 +2398,22 @@ function terrinothResetDrawTool() {
   document.querySelectorAll(".terrinoth-drawn-stroke").forEach(function (el) { el.remove(); });
 }
 function setupTerrinothDrawTool() {
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (!tool || tool.dataset.setupDone) return;
-  tool.dataset.setupDone = "1";
-  tool.querySelector(".terrinoth-draw-tool-tab").addEventListener("click", function () {
-    setTerrinothDrawModeActive(!terrinothDrawModeActive);
-  });
-  // Making ANY selection here also arms Mal-Modus (Nutzerwunsch 2026-08-09:
-  // "Das Treffen einer Auswahl im Panel aktiviere automatisch den Draw-
-  // Mode") -- always forces it ON, not a toggle, since picking a color while
-  // already painting obviously shouldn't switch painting back off.
-  tool.querySelectorAll(".terrinoth-draw-swatch").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      tool.querySelectorAll(".terrinoth-draw-swatch").forEach(function (b) { b.classList.remove("selected"); });
-      btn.classList.add("selected");
-      terrinothDrawColor = btn.dataset.color;
-      setTerrinothDrawModeActive(true);
-    });
-  });
-  tool.querySelectorAll(".terrinoth-draw-size").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      tool.querySelectorAll(".terrinoth-draw-size").forEach(function (b) { b.classList.remove("selected"); });
-      btn.classList.add("selected");
-      terrinothDrawSize = Number(btn.dataset.size);
-      setTerrinothDrawModeActive(true);
-    });
-  });
-  tool.querySelector(".terrinoth-draw-solid-checkbox").addEventListener("change", function (e) {
-    terrinothDrawSolid = e.target.checked;
-    setTerrinothDrawModeActive(true);
-  });
-  // Hover-driven expand/collapse (Nutzerwunsch: matches the filter panel's
-  // own mouseenter/mouseleave exactly, including the same idle-fade calls --
-  // see terrinothShowDrawTool/terrinothScheduleDrawToolHide below, parallel
-  // to terrinothShowFilterPanel/terrinothScheduleFilterHide above). Moving
-  // the mouse from the tab/body onto the map to actually start painting
-  // naturally crosses out of this hover area first, which is what closes the
-  // body the instant painting starts ("In dem Moment, wo ich zu malen
-  // anfange, schließen sich die Kreise") -- no separate JS force-close
-  // needed, unlike the click-toggle version this replaces.
-  tool.addEventListener("mouseenter", function () {
-    tool.classList.add("expanded");
-    terrinothShowDrawTool();
-  });
-  tool.addEventListener("mouseleave", function () {
-    tool.classList.remove("expanded");
-    terrinothScheduleDrawToolHide();
+  const panel = document.getElementById("terrinoth-draw-tool");
+  if (!panel || panel.dataset.setupDone) return;
+  panel.dataset.setupDone = "1";
+  terrinothPaintTool = createPaintTool({
+    panel: panel,
+    getCursorScopes: function () { return Array.prototype.slice.call(document.querySelectorAll(".terrinoth-map")); },
+    idleHide: true,
+    idleScopeSelector: ".terrinoth-map",
+    onModeChange: function (active) {
+      document.querySelectorAll(".terrinoth-map").forEach(function (m) {
+        m.classList.toggle("draw-mode-active", active);
+      });
+    },
   });
 }
 setupTerrinothDrawTool();
-
-let terrinothDrawIdleTimer = null;
-function terrinothClearDrawIdleTimer() {
-  if (terrinothDrawIdleTimer) { clearTimeout(terrinothDrawIdleTimer); terrinothDrawIdleTimer = null; }
-}
-function terrinothShowDrawTool() {
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (!tool) return;
-  tool.classList.remove("idle-hidden");
-  terrinothClearDrawIdleTimer();
-}
-function terrinothScheduleDrawToolHide() {
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (!tool) return;
-  terrinothClearDrawIdleTimer();
-  terrinothDrawIdleTimer = setTimeout(function () { tool.classList.add("idle-hidden"); }, 3000);
-}
-document.addEventListener("mousemove", function (e) {
-  if (!e.target.closest(".terrinoth-map")) return;
-  const tool = document.getElementById("terrinoth-draw-tool");
-  if (tool && tool.contains(e.target)) return;
-  terrinothShowDrawTool();
-  terrinothScheduleDrawToolHide();
-});
 
 // Capture-phase on document (Nutzerwunsch 2026-08-09) -- capture-phase
 // listeners always run before ANY bubble-phase listener anywhere on the same
@@ -2400,48 +2423,25 @@ document.addEventListener("mousemove", function (e) {
 // (it never reaches the target or the bubble phase), which is what stops
 // that handler from starting its own pan-drag while the brush tool is active.
 // REAL BUG fix (Nutzerwunsch 2026-08-09, "wird RIESIG"/"lass den Pinsel
-// klein" -- three rounds). TERRINOTH_DRAW_SIZES (3/7/14) is now treated
-// directly as a TARGET SCREEN-PIXEL width -- the picker's own preview dots
-// (doubled to 8/16/28 CSS px) already set that exact expectation. A raw
-// viewBox-unit stroke-width can't honor it on its own: strokes live in the
-// same coordinate space as the map artwork, so they zoom WITH the map like
-// any other SVG content, AND (a second, independently-discovered factor)
-// the .mennara-map wrapper itself switches from "fit to container,
-// centered" to "full client area" the moment ANY zoom interaction first
-// happens (a pre-existing, unrelated Nutzerwunsch 2026-08-07 feature --
-// see mennaraDrag/the wheel handler's own "is-zoomed" comments) -- which
-// changes the SVG's own on-screen CSS size independently of viewBox zoom,
-// a factor an EARLIER version of this fix (a fixed baseViewbox-relative
-// ratio) never accounted for at all, confirmed the hard way: stroke width
-// stayed perfectly self-consistent tick-to-tick but jumped once right at
-// the very first zoom interaction. Reading the SVG's LIVE
-// getBoundingClientRect() on every call sidesteps that -- this always asks
-// "how many viewBox units is 1 real screen pixel RIGHT NOW", with no cached
-// baseline to go stale, so it's correct across zoom level changes AND
-// container-mode changes alike, uniformly.
+// klein" -- three rounds). The brush size is now treated directly as a
+// TARGET SCREEN-PIXEL width -- the picker's own preview used to set that
+// exact expectation, now the slider does. A raw viewBox-unit stroke-width
+// can't honor it on its own: strokes live in the same coordinate space as
+// the map artwork, so they zoom WITH the map like any other SVG content,
+// AND (a second, independently-discovered factor) the .mennara-map wrapper
+// itself switches from "fit to container, centered" to "full client area"
+// the moment ANY zoom interaction first happens (a pre-existing, unrelated
+// Nutzerwunsch 2026-08-07 feature -- see mennaraDrag/the wheel handler's own
+// "is-zoomed" comments) -- which changes the SVG's own on-screen CSS size
+// independently of viewBox zoom. Reading the SVG's LIVE
+// getBoundingClientRect() sidesteps both: this always asks "how many
+// viewBox units is 1 real screen pixel RIGHT NOW", with no cached baseline
+// to go stale.
 function terrinothViewBoxUnitsPerScreenPx(svg) {
   return svg.viewBox.baseVal.width / svg.getBoundingClientRect().width;
 }
-// Every stroke keeps its ORIGINAL intended size (in TERRINOTH_DRAW_SIZES'
-// target-screen-px units, i.e. what the user actually picked) on its own
-// data-draw-size attribute; this function re-derives its stroke-width from
-// that stored value + the current px-per-viewBox-unit ratio, called from
-// updateTerrinothZoomLabels below -- which already runs on every single
-// viewBox change (wheel, drag, animateMennaraViewBox's rAF step), see that
-// function's own doc comment. Net effect: a stroke's on-screen thickness
-// stays constant FOREVER after it's drawn, not just at the instant it was
-// started -- the same "stay small regardless of zoom" treatment
-// TERRINOTH_IMPORTANT_REGIONS labels already get.
-function terrinothRefreshStrokeWidths(svg) {
-  const unitsPerPx = terrinothViewBoxUnitsPerScreenPx(svg);
-  svg.querySelectorAll(".terrinoth-drawn-stroke").forEach(function (stroke) {
-    const size = Number(stroke.dataset.drawSize);
-    if (!size) return;
-    stroke.setAttribute("stroke-width", String(size * unitsPerPx));
-  });
-}
 document.addEventListener("mousedown", function (e) {
-  if (!terrinothDrawModeActive || e.button !== 0) return;
+  if (!terrinothPaintTool || !terrinothPaintTool.isActive() || e.button !== 0) return;
   if (!document.body.classList.contains("stream-mode")) return;
   const svg = e.target.closest(".terrinoth-map svg");
   if (!svg) return;
@@ -2452,11 +2452,21 @@ document.addEventListener("mousedown", function (e) {
   const pt = terrinothClientToLayerPoint(svg, layer, e.clientX, e.clientY);
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("class", "terrinoth-drawn-stroke");
-  path.dataset.drawSize = String(terrinothDrawSize);
+  const size = terrinothPaintTool.getSize();
+  path.dataset.drawSize = String(size);
   path.setAttribute("fill", "none");
-  path.setAttribute("stroke", terrinothDrawColor);
-  path.setAttribute("stroke-opacity", terrinothDrawSolid ? "1" : "0.5");
-  path.setAttribute("stroke-width", String(terrinothDrawSize * terrinothViewBoxUnitsPerScreenPx(svg)));
+  path.setAttribute("stroke", terrinothPaintTool.getColor());
+  path.setAttribute("stroke-opacity", terrinothPaintTool.getSolid() ? "1" : "0.5");
+  // Nutzerwunsch 2026-08-10: "Die Breite der gemalten Pfade muss beim
+  // Zoomen mitwachsen und schrumpfen" -- converted ONCE, right here, from
+  // the desired on-screen px width into this instant's viewBox units, then
+  // NEVER recomputed again (unlike the old terrinothRefreshStrokeWidths,
+  // removed -- it kept re-deriving this on every single zoom tick to hold
+  // the on-screen size artificially CONSTANT, exactly the opposite of what's
+  // wanted now). Left alone afterward, the stroke lives in the same viewBox
+  // as the map artwork and naturally grows/shrinks with it on future zoom,
+  // same as any other map content.
+  path.setAttribute("stroke-width", String(size * terrinothViewBoxUnitsPerScreenPx(svg)));
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   path.setAttribute("pointer-events", "stroke");
@@ -2491,7 +2501,7 @@ document.addEventListener("contextmenu", function (e) {
   }
   if (document.body.classList.contains("stream-mode") && e.target.closest(".terrinoth-map svg")) {
     e.preventDefault();
-    setTerrinothDrawModeActive(!terrinothDrawModeActive);
+    if (terrinothPaintTool) terrinothPaintTool.setActive(!terrinothPaintTool.isActive());
   }
 });
 
@@ -2891,8 +2901,11 @@ document.addEventListener("click", function (e) {
 
   let canvasCurrentImage = null;
   let canvasScale = 1, canvasTx = 0, canvasTy = 0, canvasMinScale = 0.05, canvasMaxScale = 8;
-  let canvasDrawModeActive = false;
-  let canvasDrawColor = "#000000", canvasDrawSize = 16, canvasDrawSolid = false;
+  // Draw tool (Nutzerwunsch 2026-08-10, now on the shared createPaintTool
+  // module -- see its own doc comment near the Terrinoth map's draw tool
+  // section) -- assigned once, synchronously, further down in this same
+  // IIFE (see the "Draw tool panel" section below).
+  let canvasPaintTool = null;
   let canvasActiveStroke = null;
   let canvasPanState = null;
   let canvasDraggingToken = null;
@@ -2980,7 +2993,7 @@ document.addEventListener("click", function (e) {
   function canvasCloseViewer() {
     canvasCurrentImage = null;
     canvasSelectedIds = new Set();
-    canvasSetDrawModeActive(false);
+    if (canvasPaintTool) canvasPaintTool.setActive(false);
     canvasPanState = null;
     canvasDraggingToken = null;
     if (canvasPendingLeftClick) clearTimeout(canvasPendingLeftClick.timer);
@@ -3022,18 +3035,6 @@ document.addEventListener("click", function (e) {
   });
   function canvasApplyTransform() {
     transformEl.style.transform = "translate(" + canvasTx + "px," + canvasTy + "px) scale(" + canvasScale + ")";
-    canvasRefreshStrokeWidths();
-  }
-  // Stroke thickness stays constant in on-screen pixels regardless of zoom
-  // (Nutzerwunsch: "genauso ... malen wie bei der Terrinoth-Karte", which
-  // keeps its own strokes zoom-compensated the same way) -- each stroke
-  // keeps its ORIGINAL target screen-px size on data-draw-size, re-derived
-  // into a viewBox-unit stroke-width on every scale change.
-  function canvasRefreshStrokeWidths() {
-    drawSvgEl.querySelectorAll(".canvas-drawn-stroke").forEach(function (p) {
-      const size = Number(p.dataset.drawSize);
-      if (size) p.setAttribute("stroke-width", String(size / canvasScale));
-    });
   }
   function canvasClientToImagePoint(clientX, clientY) {
     const rect = stageEl.getBoundingClientRect();
@@ -3059,7 +3060,7 @@ document.addEventListener("click", function (e) {
   stageEl.addEventListener("pointerdown", function (e) {
     if (e.button !== 0 || !canvasCurrentImage) return;
     if (e.target.closest(".canvas-token")) return;
-    if (canvasDrawModeActive) {
+    if (canvasPaintTool && canvasPaintTool.isActive()) {
       canvasStartStroke(e);
     } else {
       canvasPanState = { startX: e.clientX, startY: e.clientY, startTx: canvasTx, startTy: canvasTy };
@@ -3087,7 +3088,8 @@ document.addEventListener("click", function (e) {
       // them, and the token's own pointerup handler stops this event from
       // bubbling back up (see canvasMakeTokenDraggable).
       const dist = Math.hypot(e.clientX - canvasPanState.startX, e.clientY - canvasPanState.startY);
-      if (dist < CANVAS_CLICK_MOVE_THRESHOLD && !canvasDrawModeActive && canvasSelectedIds.size) {
+      const drawActive = canvasPaintTool && canvasPaintTool.isActive();
+      if (dist < CANVAS_CLICK_MOVE_THRESHOLD && !drawActive && canvasSelectedIds.size) {
         canvasSelectedIds.clear();
         canvasRefreshAllTokenVisuals();
       }
@@ -3142,7 +3144,7 @@ document.addEventListener("click", function (e) {
       return;
     }
     e.preventDefault();
-    canvasSetDrawModeActive(!canvasDrawModeActive);
+    if (canvasPaintTool) canvasPaintTool.setActive(!canvasPaintTool.isActive());
   });
 
   // -- Token visual registry (Nutzerwunsch 2026-08-10) --
@@ -3338,14 +3340,6 @@ document.addEventListener("click", function (e) {
     canvasPlacementRegistry.forEach(function (entry) { canvasRefreshTokenVisual(entry.placement.id); });
   }
 
-  function canvasSetDrawModeActive(active) {
-    canvasDrawModeActive = active;
-    stageEl.classList.toggle("draw-mode-active", active);
-    drawTool.classList.toggle("draw-active", active);
-    const tab = drawTool.querySelector(".canvas-draw-tool-tab");
-    if (tab) tab.setAttribute("aria-pressed", String(active));
-  }
-
   function canvasMakeStrokePath(id, size, color, solid) {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("class", "canvas-drawn-stroke");
@@ -3354,6 +3348,14 @@ document.addEventListener("click", function (e) {
     path.setAttribute("fill", "none");
     path.setAttribute("stroke", color);
     path.setAttribute("stroke-opacity", solid ? "1" : "0.5");
+    // Nutzerwunsch 2026-08-10: "Die Breite der gemalten Pfade muss beim
+    // Zoomen mitwachsen und schrumpfen" -- converted ONCE, right here, from
+    // the desired on-screen px size into this instant's canvas-space units
+    // (canvasScale at the moment of drawing), then never recomputed again
+    // (canvasApplyTransform no longer re-derives it on every zoom tick, see
+    // its own doc comment) -- left alone afterward, the stroke lives inside
+    // .canvas-transform same as the background image and every token, so it
+    // naturally grows/shrinks with future zoom just like they already do.
     path.setAttribute("stroke-width", String(size / canvasScale));
     path.setAttribute("stroke-linecap", "round");
     path.setAttribute("stroke-linejoin", "round");
@@ -3363,11 +3365,12 @@ document.addEventListener("click", function (e) {
   function canvasStartStroke(e) {
     const pt = canvasClientToImagePoint(e.clientX, e.clientY);
     const id = canvasUid();
-    const path = canvasMakeStrokePath(id, canvasDrawSize, canvasDrawColor, canvasDrawSolid);
+    const color = canvasPaintTool.getColor(), size = canvasPaintTool.getSize(), solid = canvasPaintTool.getSolid();
+    const path = canvasMakeStrokePath(id, size, color, solid);
     const d = "M " + pt.x + " " + pt.y;
     path.setAttribute("d", d);
     drawSvgEl.appendChild(path);
-    canvasActiveStroke = { id, path, d, color: canvasDrawColor, size: canvasDrawSize, solid: canvasDrawSolid };
+    canvasActiveStroke = { id, path, d, color, size, solid };
   }
   function canvasExtendStroke(e) {
     const pt = canvasClientToImagePoint(e.clientX, e.clientY);
@@ -3396,44 +3399,31 @@ document.addEventListener("click", function (e) {
     });
   }
 
-  // -- Draw tool panel: same color/size/solid picker as the Terrinoth map's
-  // own draw tool, but its own classes (.canvas-draw-tool-* vs. .terrinoth-
-  // draw-tool-*) -- the whole viewer (draw tool included) only ever exists
-  // while the real Stream-Modus is active, since opening an image IS what
-  // enters Stream-Modus now (see canvasOpenViewer above).
-  drawTool.querySelector(".canvas-draw-tool-tab").addEventListener("click", function () {
-    canvasSetDrawModeActive(!canvasDrawModeActive);
-  });
-  drawTool.querySelectorAll(".canvas-draw-swatch").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      drawTool.querySelectorAll(".canvas-draw-swatch").forEach(function (b) { b.classList.remove("selected"); });
-      btn.classList.add("selected");
-      canvasDrawColor = btn.dataset.color;
-      canvasSetDrawModeActive(true);
-    });
-  });
-  drawTool.querySelectorAll(".canvas-draw-size").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      drawTool.querySelectorAll(".canvas-draw-size").forEach(function (b) { b.classList.remove("selected"); });
-      btn.classList.add("selected");
-      canvasDrawSize = Number(btn.dataset.size);
-      canvasSetDrawModeActive(true);
-    });
-  });
-  drawTool.querySelector(".canvas-draw-solid-checkbox").addEventListener("change", function (e) {
-    canvasDrawSolid = e.target.checked;
-    canvasSetDrawModeActive(true);
+  // -- Draw tool panel (Nutzerwunsch 2026-08-10: now the shared
+  // createPaintTool module, same one the Terrinoth map's draw tool uses --
+  // see its own doc comment) -- the whole viewer (draw tool included) only
+  // ever exists while the real Stream-Modus is active, since opening an
+  // image IS what enters Stream-Modus now (see canvasOpenViewer above), so
+  // (unlike Terrinoth's) this one needs no idleHide/visibility wiring of
+  // its own.
+  canvasPaintTool = createPaintTool({
+    panel: drawTool,
+    getCursorScopes: function () { return [stageEl]; },
+    onModeChange: function (active) {
+      stageEl.classList.toggle("draw-mode-active", active);
+    },
   });
   // REAL BUG fix, found via screenshot: the draw tool's own dropdown body is
   // wide enough to reach past the adjacent token tray's tab (they sit right
-  // next to each other in .canvas-toolbar, Nutzerwunsch 2026-08-09), so
-  // both expanded at once visually overlapped. Opening one now always
-  // closes the other instead.
+  // next to each other in .canvas-toolbar, Nutzerwunsch 2026-08-09), so both
+  // expanded at once visually overlapped. Opening one now always closes the
+  // other instead -- an ADDITIONAL listener alongside createPaintTool's own
+  // internal mouseenter/mouseleave (which only ever manages drawTool's OWN
+  // .expanded class), since closing the SIBLING tray is Canvas-specific,
+  // not something the shared module has any reason to know about.
   drawTool.addEventListener("mouseenter", function () {
-    drawTool.classList.add("expanded");
     tokenTray.classList.remove("expanded");
   });
-  drawTool.addEventListener("mouseleave", function () { drawTool.classList.remove("expanded"); });
 
   // -- Global token size (Nutzerwunsch 2026-08-09: "+"/"-" in the token
   // panel scales EVERY token, existing and future, site-wide) --
