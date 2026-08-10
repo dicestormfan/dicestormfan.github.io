@@ -2301,6 +2301,29 @@ function createPaintTool(opts) {
     size = Number(sizeSlider.value);
     setActive(true);
   });
+  function setSize(v) {
+    size = Math.min(PAINT_TOOL_SIZE_MAX, Math.max(PAINT_TOOL_SIZE_MIN, v));
+    sizeSlider.value = String(size);
+    updateCursor();
+  }
+  // Shift+Mausrad aendert die Pinselgroesse (Nutzerwunsch 2026-08-10): nach
+  // oben (deltaY < 0, gleiche Konvention wie das Zoom-Wheel beider
+  // Konsumenten) = groesser, nach unten = kleiner. Capture-phase auf
+  // document (nicht bubble-phase am Panel) -- genau wie bei
+  // canvasClientToImagePoint/terrinothClientToLayerPoint's eigenem
+  // mousedown-Capture-Trick weiter unten: das ist die einzige Art, VOR dem
+  // jeweils eigenen (bubble-phase) Zoom-Wheel-Handler des Konsumenten auf
+  // stageEl/svg dranzukommen und ihn per stopPropagation zu unterdruecken,
+  // damit Shift+Wheel NUR die Pinselgroesse aendert, nicht gleichzeitig auch
+  // noch zoomt.
+  document.addEventListener("wheel", function (e) {
+    if (!active || !e.shiftKey) return;
+    const scopes = opts.getCursorScopes();
+    if (!scopes.some(function (el) { return el.contains(e.target); })) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setSize(size + (e.deltaY < 0 ? 5 : -5));
+  }, { capture: true, passive: false });
   solidCheckbox.addEventListener("change", function () {
     solid = solidCheckbox.checked;
     setActive(true);
@@ -2925,6 +2948,10 @@ document.addEventListener("click", function (e) {
   let canvasPendingRightClick = null; // { id, timer }
   const CANVAS_DBLCLICK_WINDOW_MS = 350;
   const CANVAS_CLICK_MOVE_THRESHOLD = 4; // px, below this a pointerdown/up pair counts as a click, not a drag
+  // Last known pointer position over the stage (Nutzerwunsch 2026-08-10:
+  // Strg+T legt einen neuen Ad-Hoc-Token "an der Stelle des Cursors" an) --
+  // updated on every pointermove, read only when Strg+T actually fires.
+  let canvasLastStageClientX = null, canvasLastStageClientY = null;
 
   // Opening an image enters the site's real, single Stream-Modus (the same
   // one Ctrl+Alt+W triggers everywhere else) instead of a separate custom
@@ -3069,6 +3096,8 @@ document.addEventListener("click", function (e) {
     stageEl.setPointerCapture(e.pointerId);
   });
   stageEl.addEventListener("pointermove", function (e) {
+    canvasLastStageClientX = e.clientX;
+    canvasLastStageClientY = e.clientY;
     if (canvasActiveStroke) {
       canvasExtendStroke(e);
     } else if (canvasPanState) {
@@ -3111,8 +3140,10 @@ document.addEventListener("click", function (e) {
     if (stroke) {
       e.preventDefault();
       const id = stroke.dataset.strokeId;
+      const removedZ = Number(stroke.dataset.z || 0);
       stroke.remove();
       if (id) canvasIdbDelete("strokes", id);
+      canvasCloseZGapAbove(removedZ);
       return;
     }
     const token = e.target.closest(".canvas-token");
@@ -3122,10 +3153,13 @@ document.addEventListener("click", function (e) {
       if (canvasPendingRightClick && canvasPendingRightClick.id === id) {
         clearTimeout(canvasPendingRightClick.timer);
         canvasPendingRightClick = null;
+        const entry = canvasPlacementRegistry.get(id);
+        const removedZ = entry ? entry.placement.z : 0;
         canvasSelectedIds.delete(id);
         canvasPlacementRegistry.delete(id);
         token.remove();
         canvasIdbDelete("placements", id);
+        canvasCloseZGapAbove(removedZ);
         canvasRenderDefaultTokenTray();
         return;
       }
@@ -3340,11 +3374,12 @@ document.addEventListener("click", function (e) {
     canvasPlacementRegistry.forEach(function (entry) { canvasRefreshTokenVisual(entry.placement.id); });
   }
 
-  function canvasMakeStrokePath(id, size, color, solid) {
+  function canvasMakeStrokePath(id, size, color, solid, z) {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("class", "canvas-drawn-stroke");
     path.dataset.drawSize = String(size);
     path.dataset.strokeId = id;
+    path.dataset.z = String(z || 0);
     path.setAttribute("fill", "none");
     path.setAttribute("stroke", color);
     path.setAttribute("stroke-opacity", solid ? "1" : "0.5");
@@ -3366,11 +3401,17 @@ document.addEventListener("click", function (e) {
     const pt = canvasClientToImagePoint(e.clientX, e.clientY);
     const id = canvasUid();
     const color = canvasPaintTool.getColor(), size = canvasPaintTool.getSize(), solid = canvasPaintTool.getSolid();
-    const path = canvasMakeStrokePath(id, size, color, solid);
+    // Z-Achse (Nutzerwunsch 2026-08-10): ein neuer Strich draengt sich ueber
+    // alle bisherigen Striche, ABER unter alle Token -- die gesamte Token-
+    // Schicht ruecft deshalb gleichzeitig um 1 nach oben, siehe
+    // canvasShiftAllTokensZUp's eigenen Kommentar.
+    const z = canvasNextPaintedZ();
+    canvasShiftAllTokensZUp();
+    const path = canvasMakeStrokePath(id, size, color, solid, z);
     const d = "M " + pt.x + " " + pt.y;
     path.setAttribute("d", d);
     drawSvgEl.appendChild(path);
-    canvasActiveStroke = { id, path, d, color, size, solid };
+    canvasActiveStroke = { id, path, d, color, size, solid, z };
   }
   function canvasExtendStroke(e) {
     const pt = canvasClientToImagePoint(e.clientX, e.clientY);
@@ -3386,13 +3427,14 @@ document.addEventListener("click", function (e) {
       color: canvasActiveStroke.color,
       size: canvasActiveStroke.size,
       solid: canvasActiveStroke.solid,
+      z: canvasActiveStroke.z,
     });
     canvasActiveStroke = null;
   }
   function canvasLoadStrokes(imageId) {
     canvasIdbGetByIndex("strokes", "imageId", imageId).then(function (rows) {
       rows.forEach(function (r) {
-        const path = canvasMakeStrokePath(r.id, r.size, r.color, r.solid);
+        const path = canvasMakeStrokePath(r.id, r.size, r.color, r.solid, r.z);
         path.setAttribute("d", r.d);
         drawSvgEl.appendChild(path);
       });
@@ -3550,8 +3592,8 @@ document.addEventListener("click", function (e) {
   // Blank token (Nutzerwunsch 2026-08-09): a template that lives ONLY in
   // this tray, never in the tokens store/gallery. Its dragstart sets this
   // sentinel instead of a real token id; the drop handler below branches on
-  // it. Each drop creates its own NEW named placement -- the template
-  // itself never carries a name, only the placements it spawns do.
+  // it. Each drop creates its own NEW placement (canvasCreateBlankTokenAt,
+  // see its own doc comment for the current no-prompt/select behavior).
   const CANVAS_BLANK_TOKEN_SENTINEL = "__blank__";
   document.getElementById("canvas-token-blank-template").addEventListener("dragstart", function (e) {
     e.dataTransfer.setData("text/plain", CANVAS_BLANK_TOKEN_SENTINEL);
@@ -3563,17 +3605,7 @@ document.addEventListener("click", function (e) {
     const tokenId = e.dataTransfer.getData("text/plain");
     if (!tokenId || !canvasCurrentImage) return;
     if (tokenId === CANVAS_BLANK_TOKEN_SENTINEL) {
-      // prompt() is synchronous/blocking -- the placement is only ever
-      // created (and only ever stored) if a name is actually confirmed;
-      // Cancel adds nothing, same convention as every other Canvas prompt.
-      const name = prompt("Name");
-      if (name === null) return;
-      const pt = canvasClientToImagePoint(e.clientX, e.clientY);
-      const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: name.trim(), cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: 0 };
-      canvasIdbAdd("placements", placement).then(function () {
-        canvasAddPlacementElement(placement, null);
-      });
+      canvasCreateBlankTokenAt(canvasClientToImagePoint(e.clientX, e.clientY));
       return;
     }
     canvasIdbGetAll("tokens").then(function (tokens) {
@@ -3591,7 +3623,7 @@ document.addEventListener("click", function (e) {
       // the bounding box is always a circle's square, not the photo's
       // original proportions.
       const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
-      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: 0 };
+      const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, tokenId: tok.id, cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
       canvasIdbAdd("placements", placement).then(function () {
         canvasAddPlacementElement(placement, tok);
         // If this was a default token dragged in from the default-token
@@ -3717,6 +3749,81 @@ document.addEventListener("click", function (e) {
       });
     });
   }
+  // ---- Z-Achsen-Verwaltung (Nutzerwunsch 2026-08-10) ----
+  // Luekenlose, exklusive Z-Werte pro Karte: das Hintergrundbild selbst ist
+  // implizit immer Z=0 (kein Objekt darf diesen Wert je bekommen -- nie
+  // explizit vergeben, aber jede Formel unten geht von diesem Boden aus).
+  // Jedes Token/jeder Malstrich bekommt einen eigenen, garantiert luecken-
+  // und ueberschneidungsfreien Wert ab 1. Tokens liegen IMMER komplett
+  // oberhalb aller Malstriche (der niedrigste Token-Z-Wert ist immer
+  // hoechster-Malstrich-Z+1) -- ein neuer Strich draengt sich deshalb beim
+  // Hinzufuegen zwischen die bisherigen Striche und die Token-Schicht,
+  // statt einfach ueber allem drueber gelegt zu werden (siehe
+  // canvasStartStroke, das nach canvasNextPaintedZ() auch
+  // canvasShiftAllTokensZUp() aufruft). PageUp/PageDown (weiter unten)
+  // vertauscht Werte statt sie zu addieren/subtrahieren, kann also fuer
+  // sich allein nie Luecken erzeugen -- nur Hinzufuegen/Entfernen kann das,
+  // und wird deshalb hier zentral behandelt.
+  function canvasMaxTokenZ() {
+    let max = 0;
+    canvasPlacementRegistry.forEach(function (entry) {
+      if (entry.placement.z > max) max = entry.placement.z;
+    });
+    return max;
+  }
+  function canvasMaxPaintedZ() {
+    let max = 0;
+    drawSvgEl.querySelectorAll(".canvas-drawn-stroke").forEach(function (el) {
+      const z = Number(el.dataset.z || 0);
+      if (z > max) max = z;
+    });
+    return max;
+  }
+  function canvasNextTokenZ() {
+    return Math.max(canvasMaxTokenZ(), canvasMaxPaintedZ()) + 1;
+  }
+  function canvasNextPaintedZ() {
+    return canvasMaxPaintedZ() + 1;
+  }
+  // Ein neuer Malstrich draengt sich ueber alle bisherigen Striche -- damit
+  // die Invariante "alle Token > alle Malstriche" dabei gewahrt bleibt,
+  // ruecft die GESAMTE Token-Schicht gleichzeitig um 1 nach oben.
+  function canvasShiftAllTokensZUp() {
+    canvasPlacementRegistry.forEach(function (entry) {
+      entry.placement.z += 1;
+      canvasIdbAdd("placements", entry.placement);
+      canvasRefreshTokenVisual(entry.placement.id);
+    });
+  }
+  // Nach dem Entfernen eines Objekts (Token ODER Malstrich) mit dem Wert
+  // removedZ: jedes verbleibende Objekt (beider Arten) mit einem groesseren
+  // Wert ruecft um 1 nach unten -- schliesst die Luecke exklusiv und
+  // luekenlos, unabhaengig davon, welche Art geloescht wurde.
+  function canvasCloseZGapAbove(removedZ) {
+    canvasPlacementRegistry.forEach(function (entry) {
+      if (entry.placement.z > removedZ) {
+        entry.placement.z -= 1;
+        canvasIdbAdd("placements", entry.placement);
+        canvasRefreshTokenVisual(entry.placement.id);
+      }
+    });
+    drawSvgEl.querySelectorAll(".canvas-drawn-stroke").forEach(function (el) {
+      const z = Number(el.dataset.z || 0);
+      if (z > removedZ) {
+        const newZ = z - 1;
+        el.dataset.z = String(newZ);
+        const strokeId = el.dataset.strokeId;
+        if (strokeId) {
+          canvasIdbGet("strokes", strokeId).then(function (row) {
+            if (!row) return;
+            row.z = newZ;
+            canvasIdbAdd("strokes", row);
+          });
+        }
+      }
+    });
+  }
+
   // Creates the DOM element for one placement (image-backed or blank),
   // registers it, and renders its initial visual -- shared by drop, load,
   // and default-token auto-placement.
@@ -3734,6 +3841,31 @@ document.addEventListener("click", function (e) {
     tokenLayerEl.appendChild(el);
     canvasPlacementRegistry.set(placement.id, { el: el, placement: placement, tok: tok || null });
     canvasRefreshTokenVisual(placement.id);
+  }
+  // Ad-hoc "leere" Token, ab jetzt OHNE prompt() (Nutzerwunsch 2026-08-10) --
+  // der Token bleibt zunaechst namenlos, wird aber sofort SELEKTIERT.
+  // Bestehende Selektierung wird geleert, AUSSER es sind selbst leere Ad-Hoc-
+  // Token (kind "blank", egal ob schon benannt oder nicht) darunter -- die
+  // bleiben mitselektiert. Die eigentliche Umbenennung passiert per
+  // Tastendruck (0-9/a-z), siehe den eigenen keydown-Handler weiter unten.
+  // Shared by the drag-from-tray drop handler and the new Strg+T-Shortcut.
+  function canvasCreateBlankTokenAt(pt) {
+    const w = Math.min(canvasCurrentImage.width, canvasCurrentImage.height) * 0.08;
+    const placement = { id: canvasUid(), imageId: canvasCurrentImage.id, kind: "blank", name: "", cx: pt.x, cy: pt.y, w: w, h: w, active: true, disabled: false, z: canvasNextTokenZ() };
+    canvasIdbAdd("placements", placement).then(function () {
+      canvasAddPlacementElement(placement, null);
+      const prevSelected = canvasSelectedIds;
+      const newSelected = new Set();
+      prevSelected.forEach(function (id) {
+        const entry = canvasPlacementRegistry.get(id);
+        if (entry && entry.placement.kind === "blank") newSelected.add(id);
+      });
+      newSelected.add(placement.id);
+      canvasSelectedIds = newSelected;
+      const changed = new Set(prevSelected);
+      newSelected.forEach(function (id) { changed.add(id); });
+      changed.forEach(function (id) { canvasRefreshTokenVisual(id); });
+    });
   }
   // Default tokens (Nutzerwunsch 2026-08-10, revised): a token flagged
   // "default" in the gallery (green checkmark) no longer auto-places itself
@@ -3777,7 +3909,10 @@ document.addEventListener("click", function (e) {
       placements.forEach(function (p) {
         if (p.active === undefined) p.active = true;
         if (p.disabled === undefined) p.disabled = false;
-        if (p.z === undefined) p.z = 0;
+        // 1, not 0 -- Z=0 is exclusively reserved for the background image
+        // itself (Nutzerwunsch 2026-08-10), no object may ever hold it. Only
+        // hit for placements saved before z-tracking existed at all.
+        if (p.z === undefined) p.z = 1;
         if (p.kind === "blank") { canvasAddPlacementElement(p, null); return; }
         const tok = tokens.find(function (t) { return t.id === p.tokenId; });
         if (tok) canvasAddPlacementElement(p, tok);
@@ -3786,18 +3921,95 @@ document.addEventListener("click", function (e) {
     });
   }
 
-  // Z-order (Nutzerwunsch 2026-08-10: "Betätigen von Bild-Hoch und Bild-
-  // Runter ändert den Z-Achsen-Wert aller markierten Token um 1") -- scoped
-  // to the Canvas viewer only, no-op whenever no image is open.
+  // Z-order (Nutzerwunsch 2026-08-10, ueberarbeitet): Bild-Hoch/-Runter
+  // VERTAUSCHT den Z-Wert jedes markierten Tokens mit dem seines direkten
+  // Nachbarn in der globalen Z-Reihenfolge (naechsthoeher bei PageUp,
+  // naechstniedriger bei PageDown), statt ihn zu addieren/subtrahieren --
+  // das alleine kann also nie Luecken erzeugen (siehe canvasCloseZGapAbove
+  // fuer die einzige andere Stelle, die die Reihenfolge sonst noch aendert).
+  // Betrifft ausschliesslich Tokens -- Malstriche sind nie markierbar
+  // (canvasSelectedIds enthaelt nur Placement-IDs), koennen also hier gar
+  // nicht vorkommen. Mehrere markierte Token werden zuerst GEMEINSAM anhand
+  // der urspruenglichen (unveraenderten) Reihenfolge zu Tausch-Paaren
+  // verplant, dann erst angewendet -- verhindert, dass zwei direkt
+  // benachbarte markierte Token sich gegenseitig zweimal vertauschen und
+  // damit effektiv wieder an ihrem Ausgangspunkt landen.
+  function canvasSwapSelectedTokenZ(dir) {
+    const selected = Array.from(canvasSelectedIds).map(function (id) { return canvasPlacementRegistry.get(id); }).filter(Boolean);
+    if (!selected.length) return;
+    const allTokens = Array.from(canvasPlacementRegistry.values()).sort(function (a, b) { return a.placement.z - b.placement.z; });
+    const claimed = new Set();
+    const swaps = [];
+    selected.sort(function (a, b) { return a.placement.z - b.placement.z; }).forEach(function (entry) {
+      if (claimed.has(entry.placement.id)) return;
+      const idx = allTokens.findIndex(function (e) { return e.placement.id === entry.placement.id; });
+      const neighborIdx = idx + dir;
+      if (neighborIdx < 0 || neighborIdx >= allTokens.length) return;
+      const neighbor = allTokens[neighborIdx];
+      if (claimed.has(neighbor.placement.id)) return;
+      swaps.push([entry, neighbor]);
+      claimed.add(entry.placement.id);
+      claimed.add(neighbor.placement.id);
+    });
+    swaps.forEach(function (pair) {
+      const a = pair[0], b = pair[1];
+      const za = a.placement.z, zb = b.placement.z;
+      a.placement.z = zb;
+      b.placement.z = za;
+      canvasIdbAdd("placements", a.placement);
+      canvasIdbAdd("placements", b.placement);
+      canvasRefreshTokenVisual(a.placement.id);
+      canvasRefreshTokenVisual(b.placement.id);
+    });
+  }
   document.addEventListener("keydown", function (e) {
     if (!canvasCurrentImage || !canvasSelectedIds.size) return;
     if (e.key !== "PageUp" && e.key !== "PageDown") return;
     e.preventDefault();
-    const delta = e.key === "PageUp" ? 1 : -1;
-    canvasSelectedIds.forEach(function (id) {
+    canvasSwapSelectedTokenZ(e.key === "PageUp" ? 1 : -1);
+  });
+
+  // Strg+T legt einen neuen Ad-Hoc-Token an der zuletzt bekannten
+  // Cursorposition ueber der Karte an (Nutzerwunsch 2026-08-10). Browser
+  // reservieren Strg+T normalerweise fuer "neuer Tab" und lassen Seiten das
+  // nicht zuverlaessig ueberschreiben -- dieser Handler bleibt trotzdem
+  // registriert (funktioniert z.B. in eingebetteten/Nicht-Browser-Kontexten
+  // oder falls der Browser es doch durchlaesst), ist aber in einem normalen
+  // Browser-Tab kein verlaesslicher Ersatz fuer einen Klick+Ziehen.
+  document.addEventListener("keydown", function (e) {
+    if (!canvasCurrentImage) return;
+    if (e.key.toLowerCase() !== "t" || !e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+    const active = document.activeElement;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+    if (canvasLastStageClientX === null) return;
+    e.preventDefault();
+    canvasCreateBlankTokenAt(canvasClientToImagePoint(canvasLastStageClientX, canvasLastStageClientY));
+  });
+
+  // Ad-Hoc-Token per Tastendruck umbenennen (Nutzerwunsch 2026-08-10, ersetzt
+  // den frueheren Name-Prompt): waehrend mindestens ein leerer Ad-Hoc-Token
+  // (kind "blank") markiert ist, setzt EIN Tastendruck von 0-9/a-z (nicht
+  // akkumulierend, ersetzt den bisherigen Namen komplett) dessen Grossschrift
+  // als Caption -- auf ALLE markierten Ad-Hoc-Token gleichzeitig, auch wenn
+  // die bereits einen Namen tragen ("auch wenn dieser nicht blanko ist").
+  // Normale (Bild-)Token in derselben Markierung bleiben unberuehrt, die
+  // haben gar kein Namensfeld.
+  document.addEventListener("keydown", function (e) {
+    if (!canvasCurrentImage) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key.length !== 1 || !/^[0-9a-zA-Z]$/.test(e.key)) return;
+    const active = document.activeElement;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+    const selectedBlankIds = Array.from(canvasSelectedIds).filter(function (id) {
       const entry = canvasPlacementRegistry.get(id);
-      if (!entry) return;
-      entry.placement.z = (entry.placement.z || 0) + delta;
+      return entry && entry.placement.kind === "blank";
+    });
+    if (!selectedBlankIds.length) return;
+    e.preventDefault();
+    const upper = e.key.toUpperCase();
+    selectedBlankIds.forEach(function (id) {
+      const entry = canvasPlacementRegistry.get(id);
+      entry.placement.name = upper;
       canvasIdbAdd("placements", entry.placement);
       canvasRefreshTokenVisual(id);
     });
