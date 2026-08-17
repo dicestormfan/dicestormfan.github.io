@@ -3044,6 +3044,7 @@ function wireImageUpload(addBtn, fileInput, opts) {
       const img = images.find(function (i) { return i.id === imageId; });
       if (!img) return;
       if (!img.ringColor) img.ringColor = "black";
+      if (!img.dismissedDefaults) img.dismissedDefaults = [];
       canvasCurrentImage = img;
       canvasSelectedIds = new Set();
       history.replaceState(null, "", "#canvas-image-" + imageId);
@@ -3223,6 +3224,16 @@ function wireImageUpload(addBtn, fileInput, opts) {
         canvasPendingRightClick = null;
         const entry = canvasPlacementRegistry.get(id);
         const removedZ = entry ? entry.placement.z : 0;
+        // Deleting a default token's placement (Nutzerwunsch 2026-08-17,
+        // reversing the 2026-08-10 "simply reappears here" design) must NOT
+        // bring it back into the default-token tray -- remember it as
+        // dismissed on this image so canvasRenderDefaultTokenTray keeps
+        // excluding it, unlike every other removal reason (drag back out,
+        // right-click-disable) which still leaves it eligible to return.
+        if (entry && entry.tok && entry.tok.isDefault && canvasCurrentImage.dismissedDefaults.indexOf(entry.tok.id) === -1) {
+          canvasCurrentImage.dismissedDefaults.push(entry.tok.id);
+          canvasIdb.add("images", canvasCurrentImage);
+        }
         canvasSelectedIds.delete(id);
         canvasPlacementRegistry.delete(id);
         token.remove();
@@ -3947,13 +3958,18 @@ function wireImageUpload(addBtn, fileInput, opts) {
   // Only dragging it from there onto the map (same drop handler as the
   // regular token-library tray below, reusing tok.id as the drag payload)
   // turns it into a real placement with image coordinates. Freshly
-  // recomputed on every open/drop/delete rather than tracked as a flag, so
-  // a default token whose placement gets deleted simply reappears here.
+  // recomputed on every open/drop -- EXCEPT a default token whose placement
+  // was explicitly deleted (double-right-click), which is remembered in
+  // canvasCurrentImage.dismissedDefaults and excluded from now on (Nutzer-
+  // wunsch 2026-08-17, reversing the original "simply reappears here"
+  // design); dragging it back out onto the map without deleting it, or
+  // right-click-disabling it, still leaves it eligible to return normally.
   function canvasRenderDefaultTokenTray() {
     const tray = document.getElementById("canvas-default-token-tray");
     if (!tray || !canvasCurrentImage) return;
+    const dismissed = canvasCurrentImage.dismissedDefaults || [];
     canvasIdb.getAll("tokens").then(function (tokens) {
-      const defaults = tokens.filter(function (t) { return t.isDefault; });
+      const defaults = tokens.filter(function (t) { return t.isDefault && dismissed.indexOf(t.id) === -1; });
       const placedTokenIds = new Set();
       canvasPlacementRegistry.forEach(function (entry) {
         if (entry.placement.kind !== "blank" && entry.placement.tokenId) placedTokenIds.add(entry.placement.tokenId);
