@@ -2927,7 +2927,13 @@ function wireImageUpload(addBtn, fileInput, opts) {
         });
         item.querySelector(".canvas-gallery-delete").addEventListener("click", function (e) {
           e.stopPropagation();
-          canvasIdb.delete("tokens", tok.id).then(renderCanvasTokenGrid);
+          canvasIdb.delete("tokens", tok.id).then(function () {
+            renderCanvasTokenGrid();
+            // Deleted token may currently be showing in the default-token
+            // tray of an open map (Nutzerwunsch 2026-08-17: it must not
+            // stay visible there after deletion).
+            canvasRenderDefaultTokenTray();
+          });
         });
         tokenGrid.appendChild(item);
       });
@@ -3055,7 +3061,6 @@ function wireImageUpload(addBtn, fileInput, opts) {
       document.getElementById("canvas-default-token-tray").innerHTML = "";
       canvasPlacementRegistry.clear();
       canvasUpdateRingColorButtons();
-      canvasApplyTrayIconScale();
       galleryEl.hidden = true;
       viewerEl.hidden = false;
       // REAL BUG fix, take 2 (Nutzerwunsch 2026-08-10, user confirmed after
@@ -3540,6 +3545,9 @@ function wireImageUpload(addBtn, fileInput, opts) {
   // fresh at drop time) automatically pick up whatever scale is current.
   // Kept in localStorage, not IndexedDB, since it's one scalar shared by
   // the whole page, not a record collection.
+  // Deliberately does NOT affect the tray items (library tray or default-
+  // token tray, Nutzerwunsch 2026-08-17: those stay a fixed, normal size --
+  // only actual map placements grow/shrink).
   const CANVAS_TOKEN_SCALE_KEY = "canvasTokenScale";
   function canvasGetTokenScale() {
     const v = parseFloat(localStorage.getItem(CANVAS_TOKEN_SCALE_KEY));
@@ -3559,21 +3567,8 @@ function wireImageUpload(addBtn, fileInput, opts) {
     el.style.width = w + "px";
     el.style.height = h + "px";
   }
-  // REAL BUG fix (Nutzerwunsch 2026-08-10): "+"/"-" must ALSO resize the
-  // tray icons sitting at the screen edge (library tray top-left, default
-  // tray top-right) -- NOT just the tokens already placed on the map. Those
-  // tray items aren't individual placements with their own base size like
-  // map tokens (canvasRenderTokenElement above); they're a fixed-size CSS
-  // preview (3.4em). Driving that 3.4em through a shared CSS custom property
-  // instead of a literal value means every tray item, present AND future
-  // (freshly rendered after a drop/delete), automatically reflects whatever
-  // scale is current -- see --canvas-tray-icon-scale in site.scss.
-  function canvasApplyTrayIconScale() {
-    viewerEl.style.setProperty("--canvas-tray-icon-scale", String(canvasGetTokenScale()));
-  }
   function canvasApplyTokenScaleToVisibleTokens() {
     tokenLayerEl.querySelectorAll(".canvas-token").forEach(canvasRenderTokenElement);
-    canvasApplyTrayIconScale();
   }
   document.getElementById("canvas-token-scale-up").addEventListener("click", function () {
     canvasSetTokenScale(canvasGetTokenScale() * 1.15);
